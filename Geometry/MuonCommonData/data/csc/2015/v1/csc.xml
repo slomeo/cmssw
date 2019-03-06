@@ -54,10 +54,11 @@
 
   <Tubs name="ME12Space" rMin="2.735*m  " rMax="4.685*m  " dz="105.2335*mm" startPhi="0*deg" deltaPhi="360*deg"/>
   <Trd1 name="ME12" dz="94.7*cm " dy1="105.2335*mm" dy2="105.2335*mm" dx1="37.614*cm " dx2="53.856*cm "/>
-  <!-- <Trd1 name="ME12AlumFrame" dz="94.7*cm " dy1="[AlumFrameHalfThick]" dy2="[AlumFrameHalfThick]" dx1="37.614*cm " dx2="53.856*cm " /> -->
+  <!-- Sergio: era <Trd1 name="ME12AlumFrame" dz="94.7*cm " dy1="[AlumFrameHalfThick]" dy2="[AlumFrameHalfThick]" dx1="37.614*cm " dx2="53.856*cm " /> -->
   <Trd1 name="ME12AlumFrameBlock" dz="947*mm" dy1="[AlumFrameHalfThick]" dy2="[AlumFrameHalfThick]" dx1="376.14*mm" dx2="538.56*mm"/>
   <!-- REB has not determined ME12 Al frame width but guesses it is approx. 81 mm like the others -->
   <Trd1 name="ME12AlumFrameSubtraction" dz="947*mm-81*mm" dy1="[AlumFrameSubtractionThick]" dy2="[AlumFrameSubtractionThick]" dx1="376.14*mm-81*mm" dx2="538.56*mm-81*mm"/>
+<!-- Sergio: era <Trd1 name="ME12AlumFrameSubtraction" dz="947*mm-81*mm" dy1="[AlumFrameSubtractionThick]" dy2="[AlumFrameSubtractionThick]" dx1="376.14*mm-81*mm" dx2="538.56*mm-81*mm"/> -->
   <SubtractionSolid name="ME12AlumFrameTempBlock">
    <rSolid name="ME12AlumFrameBlock"/>
    <rSolid name="ME12AlumFrameSubtraction"/>
@@ -70,12 +71,12 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME12FR4Body" dz="94.7*cm " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="37.614*cm " dx2="53.856*cm "/>
-  <Trd1 name="ME12PolycarbPanel" dz="92.8*cm " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="34.215*cm " dx2="51.654*cm "/>
-  <Trd1 name="ME_FR4Skin_1_ME12Layer" dz="92.8*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="34.215*cm " dx2="51.654*cm "/>
-  <Trd1 name="ME_FR4Skin_2_ME12Layer" dz="92.8*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="34.215*cm " dx2="51.654*cm "/>
-  <Trd1 name="MECU_1_ME12Layer" dz="92.8*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="34.215*cm " dx2="51.654*cm "/>
-  <Trd1 name="MECU_2_ME12Layer" dz="92.8*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="34.215*cm " dx2="51.654*cm "/>
+  <Trd1 name="ME12FR4Body" dz="94.7*cm " dy1="[FR4BodyHalfThick]-5.2*mm" dy2="[FR4BodyHalfThick]-5.2*mm" dx1="37.614*cm " dx2="53.856*cm "/>
+  <Trd1 name="ME12PolycarbPanel" dz="92.8*cm " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="34.215*cm " dx2="51.654*cm "/>
+  <Trd1 name="ME_FR4Skin_1_ME12Layer" dz="91.9*cm " dy1="[FR4SkinHalfThick]-0.5*mm" dy2="[FR4SkinHalfThick]-0.5*mm" dx1="33.605*cm " dx2="51.044*cm "/>
+  <Trd1 name="ME_FR4Skin_2_ME12Layer" dz="91.9*cm " dy1="[FR4SkinHalfThick]-0.5*mm" dy2="[FR4SkinHalfThick]-0.5*mm" dx1="33.605*cm " dx2="51.044*cm "/>
+  <Trd1 name="MECU_1_ME12Layer" dz="91.8*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="33.605*cm " dx2="51.044*cm "/>
+  <Trd1 name="MECU_2_ME12Layer" dz="91.8*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="33.605*cm " dx2="51.044*cm "/>
   <Trd1 name="ME12_ActiveGasVol" dz="87.245*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="25.5*cm " dx2="41.87*cm "/>
   <Trd1 name="ME_DeadGas_1_ME12_ActiveGasVol" dz="1.5*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="36.68*cm " dx2="36.97*cm "/>
   <Trd1 name="ME_DeadGas_2_ME12_ActiveGasVol" dz="1.5*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="30.52*cm " dx2="30.8*cm "/>
@@ -97,15 +98,15 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME13FR4Body" dz="89.65*cm " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="43.21*cm " dx2="58.925*cm "/>
-  <Trd1 name="ME13PolycarbPanel" dz="87.75*cm " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="40.425*cm " dx2="55.81*cm "/>
+  <Trd1 name="ME13FR4Body" dz="89.65*cm " dy1="[FR4BodyHalfThick]-5.2*mm" dy2="[FR4BodyHalfThick]-5.2*mm" dx1="43.21*cm " dx2="58.925*cm "/>
+  <Trd1 name="ME13PolycarbPanel" dz="87.75*cm " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="40.425*cm " dx2="55.81*cm "/>
   <Trd1 name="ME_FR4Skin_1_ME13Layer" dz="87.75*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="40.425*cm " dx2="55.81*cm "/>
   <Trd1 name="ME_FR4Skin_2_ME13Layer" dz="87.75*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="40.425*cm " dx2="55.81*cm "/>
   <Trd1 name="MECU_1_ME13Layer" dz="87.75*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="40.425*cm " dx2="55.81*cm "/>
   <Trd1 name="MECU_2_ME13Layer" dz="87.75*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="40.425*cm " dx2="55.81*cm "/>
   <Trd1 name="ME13_ActiveGasVol" dz="82.08*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="31.70*cm " dx2="46.05*cm "/>
-  <Trd1 name="ME_DeadGas_1_ME13_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="42.02*cm " dx2="42.24*cm "/>
-  <Trd1 name="ME_DeadGas_2_ME13_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="37.59*cm " dx2="37.81*cm "/>
+  <Trd1 name="ME_DeadGas_1_ME13_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="41.22*cm " dx2="41.34*cm "/>
+  <Trd1 name="ME_DeadGas_2_ME13_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="36.89*cm " dx2="37.01*cm "/>
 
   <Tubs name="ME21Space" rMin="1.39*m  " rMax="3.554*m  " dz="115.39*mm" startPhi="0*deg" deltaPhi="360*deg"/>
   <Trd1 name="ME21" dz="1.023*m  " dy1="115.39*mm" dy2="115.39*mm" dx1="37.405*cm " dx2="76.545*cm "/>
@@ -124,15 +125,15 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME21FR4Body" dz="1.023*m  " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="37.405*cm " dx2="76.545*cm "/>
-  <Trd1 name="ME21PolycarbPanel" dz="1.00395*m  " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="35.045*cm " dx2="73.225*cm "/>
+  <Trd1 name="ME21FR4Body" dz="1.023*m  " dy1="[FR4BodyHalfThick]-5.15*mm" dy2="[FR4BodyHalfThick]-5.15*mm" dx1="37.405*cm " dx2="76.545*cm "/>
+  <Trd1 name="ME21PolycarbPanel" dz="1.00395*m  " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="35.045*cm " dx2="73.225*cm "/>
   <Trd1 name="ME_FR4Skin_1_ME21Layer" dz="1.00395*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="35.045*cm " dx2="73.225*cm "/>
   <Trd1 name="ME_FR4Skin_2_ME21Layer" dz="1.00395*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="35.045*cm " dx2="73.225*cm "/>
   <Trd1 name="MECU_1_ME21Layer" dz="1.00395*m  " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="35.045*cm " dx2="73.225*cm "/>
   <Trd1 name="MECU_2_ME21Layer" dz="1.00395*m  " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="35.045*cm " dx2="73.225*cm "/>
   <Trd1 name="ME21_ActiveGasVol" dz="94.83*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="27.00*cm " dx2="62.855*cm "/>
-  <Trd1 name="ME_DeadGas_1_ME21_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="51.92*cm " dx2="52.39*cm "/>
-  <Trd1 name="ME_DeadGas_2_ME21_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="40.33*cm " dx2="40.805*cm "/>
+  <Trd1 name="ME_DeadGas_1_ME21_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="51.22*cm " dx2="51.69*cm "/>
+  <Trd1 name="ME_DeadGas_2_ME21_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="39.63*cm " dx2="40.105*cm "/>
 
   <Tubs name="ME22Space" rMin="3.555*m  " rMax="7.01*m  " dz="115.39*mm" startPhi="0*deg" deltaPhi="360*deg"/>
   <Trd1 name="ME22" dz="1.690*m  " dy1="115.39*mm" dy2="115.39*mm" dx1="45.519*cm " dx2="76.34*cm "/>
@@ -151,8 +152,8 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME22FR4Body" dz="1.690*m  " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="45.519*cm " dx2="76.34*cm "/>
-  <Trd1 name="ME22PolycarbPanel" dz="1.67095*m  " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
+  <Trd1 name="ME22FR4Body" dz="1.690*m  " dy1="[FR4BodyHalfThick]-5.15*mm" dy2="[FR4BodyHalfThick]-5.15*mm" dx1="45.519*cm " dx2="76.34*cm "/>
+  <Trd1 name="ME22PolycarbPanel" dz="1.67095*m  " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="ME_FR4Skin_1_ME22Layer" dz="1.67095*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="ME_FR4Skin_2_ME22Layer" dz="1.67095*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="MECU_1_ME22Layer" dz="1.67095*m  " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
@@ -160,8 +161,8 @@
   <Trd1 name="ME22_ActiveGasVol" dz="1.6153*m  " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="33.230*cm" dx2="63.575*cm"/>
   <Trd1 name="ME_DeadGas_1_ME22_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="57.7*cm " dx2="57.93*cm "/>
   <Trd1 name="ME_DeadGas_2_ME22_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="52.18*cm " dx2="52.42*cm "/>
-  <Trd1 name="ME_DeadGas_3_ME22_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="46.67*cm " dx2="46.9*cm "/>
-  <Trd1 name="ME_DeadGas_4_ME22_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="41.16*cm " dx2="41.38*cm "/>
+  <Trd1 name="ME_DeadGas_3_ME22_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="46.37*cm " dx2="46.6*cm "/>
+  <Trd1 name="ME_DeadGas_4_ME22_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="40.66*cm " dx2="40.88*cm "/>
 
   <Tubs name="ME31Space" rMin="1.59*m  " rMax="3.554*m  " dz="125.3*mm" startPhi="0*deg" deltaPhi="360*deg"/>
   <Trd1 name="ME31" dz="92.3*cm " dy1="125.3*mm" dy2="125.3*mm" dx1="41.46*cm " dx2="76.545*cm "/>
@@ -179,15 +180,15 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME31FR4Body" dz="92.3*cm " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="41.46*cm " dx2="76.545*cm "/>
-  <Trd1 name="ME31PolycarbPanel" dz="90.40*cm " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="39.105*cm " dx2="73.225*cm "/>
+  <Trd1 name="ME31FR4Body" dz="92.3*cm " dy1="[FR4BodyHalfThick]-5.15*mm" dy2="[FR4BodyHalfThick]-5.15*mm" dx1="41.46*cm " dx2="76.545*cm "/>
+  <Trd1 name="ME31PolycarbPanel" dz="90.40*cm " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="39.105*cm " dx2="73.225*cm "/>
   <Trd1 name="ME_FR4Skin_1_ME31Layer" dz="90.40*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="39.105*cm " dx2="73.225*cm "/>
   <Trd1 name="ME_FR4Skin_2_ME31Layer" dz="90.40*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="39.105*cm " dx2="73.225*cm "/>
   <Trd1 name="MECU_1_ME31Layer" dz="90.40*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="39.105*cm " dx2="73.225*cm "/>
   <Trd1 name="MECU_2_ME31Layer" dz="90.40*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="39.105*cm " dx2="73.225*cm "/>
   <Trd1 name="ME31_ActiveGasVol" dz="84.85*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="30.70*cm " dx2="62.855*cm "/>
-  <Trd1 name="ME_DeadGas_1_ME31_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="51.94*cm " dx2="52.405*cm "/>
-  <Trd1 name="ME_DeadGas_2_ME31_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="40.6*cm " dx2="41.07*cm "/>
+  <Trd1 name="ME_DeadGas_1_ME31_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="51.14*cm " dx2="51.605*cm "/>
+  <Trd1 name="ME_DeadGas_2_ME31_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="39.8*cm " dx2="40.27*cm "/>
 
   <Tubs name="ME32Space" rMin="3.555*m  " rMax="7.01*m  " dz="125.3*mm" startPhi="0*deg" deltaPhi="360*deg"/>
   <Trd1 name="ME32" dz="1.690*m  " dy1="125.3*mm" dy2="125.3*mm" dx1="45.519*cm " dx2="76.34*cm "/>
@@ -206,8 +207,8 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME32FR4Body" dz="1.690*m  " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="45.519*cm " dx2="76.34*cm "/>
-  <Trd1 name="ME32PolycarbPanel" dz="1.67095*m  " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
+  <Trd1 name="ME32FR4Body" dz="1.690*m  " dy1="[FR4BodyHalfThick]-5.15*mm" dy2="[FR4BodyHalfThick]-5.15*mm" dx1="45.519*cm " dx2="76.34*cm "/>
+  <Trd1 name="ME32PolycarbPanel" dz="1.67095*m  " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="ME_FR4Skin_1_ME32Layer" dz="1.67095*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="ME_FR4Skin_2_ME32Layer" dz="1.67095*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="MECU_1_ME32Layer" dz="1.67095*m  " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
@@ -215,8 +216,8 @@
   <Trd1 name="ME32_ActiveGasVol" dz="1.6153*m  " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="33.230*cm " dx2="63.575*cm "/>
   <Trd1 name="ME_DeadGas_1_ME32_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="57.7*cm " dx2="57.93*cm "/>
   <Trd1 name="ME_DeadGas_2_ME32_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="52.18*cm " dx2="52.42*cm "/>
-  <Trd1 name="ME_DeadGas_3_ME32_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="46.67*cm " dx2="46.9*cm "/>
-  <Trd1 name="ME_DeadGas_4_ME32_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="41.16*cm " dx2="41.38*cm "/>
+  <Trd1 name="ME_DeadGas_3_ME32_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="46.37*cm " dx2="46.6*cm "/>
+  <Trd1 name="ME_DeadGas_4_ME32_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="40.66*cm " dx2="40.88*cm "/>
 
   <Tubs name="ME41Space" rMin="1.79*m  " rMax="3.554*m  " dz="125.3*mm" startPhi="0*deg" deltaPhi="360*deg"/>
   <Trd1 name="ME41" dz="833.5*mm" dy1="125.3*mm" dy2="125.3*mm" dx1="44.985*cm " dx2="76.545*cm "/>
@@ -235,12 +236,12 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME41FR4Body" dz="83.35*cm " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="44.985*cm " dx2="76.545*cm "/>
-  <Trd1 name="ME41PolycarbPanel" dz="80.43*cm " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
-  <Trd1 name="ME_FR4Skin_1_ME41Layer" dz="80.71*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
-  <Trd1 name="ME_FR4Skin_2_ME41Layer" dz="80.71*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
-  <Trd1 name="MECU_1_ME41Layer" dz="80.71*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
-  <Trd1 name="MECU_2_ME41Layer" dz="80.71*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
+  <Trd1 name="ME41FR4Body" dz="83.35*cm " dy1="[FR4BodyHalfThick]-5.15*mm" dy2="[FR4BodyHalfThick]-5.15*mm" dx1="44.985*cm " dx2="76.545*cm "/>
+  <Trd1 name="ME41PolycarbPanel" dz="80.43*cm " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="42.63*cm " dx2="73.225*cm "/>
+  <Trd1 name="ME_FR4Skin_1_ME41Layer" dz="80.42*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
+  <Trd1 name="ME_FR4Skin_2_ME41Layer" dz="80.42*cm " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
+  <Trd1 name="MECU_1_ME41Layer" dz="80.41*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
+  <Trd1 name="MECU_2_ME41Layer" dz="80.41*cm " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="42.63*cm " dx2="73.225*cm "/>
   <Trd1 name="ME41_ActiveGasVol" dz="74.710*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="34.505*cm " dx2="62.825*cm "/>
   <Trd1 name="ME_DeadGas_1_ME41_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="52.296*cm " dx2="52.762*cm "/>
   <Trd1 name="ME_DeadGas_2_ME41_ActiveGasVol" dz="1.25*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="43.32*cm " dx2="43.8*cm "/>
@@ -261,8 +262,8 @@
    <rRotation name="rotations:000D"/>
    <Translation x="0.0*fm" y="-[AlumFrameHalfThick]+[AlumFrameSubtractionThick]" z="0.0*fm"/>
   </SubtractionSolid>
-  <Trd1 name="ME42FR4Body" dz="1.690*m  " dy1="[FR4BodyHalfThick]" dy2="[FR4BodyHalfThick]" dx1="45.519*cm " dx2="76.34*cm "/>
-  <Trd1 name="ME42PolycarbPanel" dz="1.67095*m  " dy1="[PolycarbPanelHalfThick]" dy2="[PolycarbPanelHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
+  <Trd1 name="ME42FR4Body" dz="1.690*m  " dy1="[FR4BodyHalfThick]-5.15*mm" dy2="[FR4BodyHalfThick]-5.15*mm" dx1="45.519*cm " dx2="76.34*cm "/>
+  <Trd1 name="ME42PolycarbPanel" dz="1.67095*m  " dy1="[PolycarbPanelHalfThick]-2.8*mm" dy2="[PolycarbPanelHalfThick]-2.8*mm" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="ME_FR4Skin_1_ME42Layer" dz="1.67095*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="ME_FR4Skin_2_ME42Layer" dz="1.67095*m  " dy1="[FR4SkinHalfThick]" dy2="[FR4SkinHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
   <Trd1 name="MECU_1_ME42Layer" dz="1.67095*m  " dy1="[CuFoilHalfThick]" dy2="[CuFoilHalfThick]" dx1="41.95*cm " dx2="73.345*cm "/>
@@ -270,8 +271,8 @@
   <Trd1 name="ME42_ActiveGasVol" dz="1.6153*m  " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="33.230*cm " dx2="63.575*cm "/>
   <Trd1 name="ME_DeadGas_1_ME42_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="57.7*cm " dx2="57.93*cm "/>
   <Trd1 name="ME_DeadGas_2_ME42_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="52.18*cm " dx2="52.42*cm "/>
-  <Trd1 name="ME_DeadGas_3_ME42_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="46.67*cm " dx2="46.9*cm "/>
-  <Trd1 name="ME_DeadGas_4_ME42_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="41.16*cm " dx2="41.38*cm "/>
+  <Trd1 name="ME_DeadGas_3_ME42_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="46.37*cm " dx2="46.6*cm "/>
+  <Trd1 name="ME_DeadGas_4_ME42_ActiveGasVol" dz="1.265*cm " dy1="[ActiveGasVolHalfThick]" dy2="[ActiveGasVolHalfThick]" dx1="40.66*cm " dx2="40.88*cm "/>
  </SolidSection>
 
  <LogicalPartSection label="csc.xml">
