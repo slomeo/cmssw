@@ -60,27 +60,31 @@ void RPCNumberingScheme::initMe(const MuonConstants& muonConstants) {
   // RPCDetId(int region, int ring, int station, int sector, int layer, int subsector, int roll);
 }
 
-int RPCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
+void RPCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
 
  
   const int mylevel = num.getLevels();
-    cout<<"------------myDEBUG--------------------------------------------------"<<endl;
-    cout<<"DD4hep_RPCNumberingScheme.cc: levels "<<mylevel<<endl;
-    cout<<"DD4hep_RPCNumberingScheme.cc: superNo "<<num.getSuperNo(mylevel)<<endl;
-    cout<<"DD4hep_RPCNumberingScheme.cc: baseNo "<<num.getBaseNo(mylevel)<<endl;
-    cout<<"---------------------------------------------------------------------"<<endl;
-    const int barrel = num.getSuperNo(theRegionLevel);
+  cout<<"------------myDEBUG--------------------------------------------------"<<endl;
+  cout<<"DD4hep_RPCNumberingScheme.cc: levels "<<num.getLevels()<<endl;
+  cout<<"DD4hep_RPCNumberingScheme.cc: superNo "<<num.getSuperNo(mylevel)<<endl;
+  cout<<"DD4hep_RPCNumberingScheme.cc: baseNo "<<num.getBaseNo(mylevel)<<endl;
+  cout<<"---------------------------------------------------------------------"<<endl;
+  const int barrel = num.getSuperNo(theRegionLevel);
+  cout<<"DD4hep_RPCNumberingScheme.cc: barrel "<<barrel<<endl;
   bool barrel_muon = (barrel == 1);
   int maxLevel;
   if (barrel_muon) {
     maxLevel = theBChamberLevel;
+    cout<<"(if) DD4hep_RPCNumberingScheme.cc: maxLevel "<<maxLevel<<endl;
   } else {
     maxLevel = theERollLevel;
+    cout<<"(else) DD4hep_RPCNumberingScheme.cc: maxLevel "<<maxLevel<<endl;
   }
 
   if (num.getLevels() != maxLevel) {
-
-    return 0;
+   cout<<"ATTENTION -from DD4hep RPC NumberingScheme - num.getLevels not equal to maxLevel - ABORT RUN"<<endl;
+    abort();
+    //    return 0;
   }
 
   int plane_id = 0;
@@ -217,17 +221,17 @@ int RPCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
   // Build the actual numbering
   RPCDetId id;
   id.buildfromTrIndex(trIndex);
-  cout<<"From DD4Hep_RPCNumebringScheme.cc "<<endl;
-  //  cout<<"------------myDEBUG------------"<<endl;
-  // cout<<"trIndex: "<<trIndex<<endl;
+  //  cout<<"From DD4Hep_RPCNumebringScheme.cc "<<endl;
+  //cout<<"------------myDEBUG------------"<<endl;
+  //cout<<"trIndex: "<<trIndex<<endl;
   //cout<<"-------------------------------"<<endl;
 
-  cout<<"------------myDEBUG------------"<<endl;
-  cout<<"id.rawId: "<<id.rawId()<<endl;
-  cout<<"-------------------------------"<<endl;
+  //cout<<"------------myDEBUG------------"<<endl;
+  //cout<<"id.rawId: "<<id.rawId()<<endl;
+  //cout<<"-------------------------------"<<endl;
 
-  SetDetID(id.rawId());  
-  return id.rawId();
+  SetDetId(id.rawId());  
+  //  return id.rawId();
 
 }
 

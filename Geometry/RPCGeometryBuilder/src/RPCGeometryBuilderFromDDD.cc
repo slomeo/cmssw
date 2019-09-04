@@ -296,19 +296,10 @@ RPCGeometry* RPCGeometryBuilderFromDDD::buildGeometry(cms::DDFilteredView& fview
   //cout<<"-------------------------------"<<endl;
 
   while (doSubDets) {
-    cout<<"From RPCGeometryBuilderFromDDD.cc "<<endl;
+    //    cout<<"From RPCGeometryBuilderFromDDD.cc "<<endl;
     //    cout<<"------------myDEBUG------------"<<endl;
     // cout<<"inside while(doSubDets)"<<endl;
     //cout<<"-------------------------------"<<endl;
-
-    /* // DDD
-    // Get the Base Muon Number (const MuonDDDConstants& muonConstants)
-    MuonDDDNumbering mdddnum(muonConstants);
-    MuonBaseNumber mbn = mdddnum.geoHistoryToBaseNumber(fview.geoHistory());
-    // Get the The Rpc det Id
-    RPCNumberingScheme rpcnum(muonConstants);
-    const int detid = rpcnum.baseNumberToUnitNumber(mbn);
-     */
 
     MuonBaseNumber mbn = muonConstants.geoHistoryToBaseNumber(fview.history());
     const int mylevel = mbn.getLevels();
@@ -326,10 +317,11 @@ RPCGeometry* RPCGeometryBuilderFromDDD::buildGeometry(cms::DDFilteredView& fview
     cms::RPCNumberingScheme rpcnum(muonConstants.values());
     
     //cout<<"------------myDEBUG--------------------------------------------------"<<endl;
-    // cout<<"after line:  cms::RPCNumberingScheme rpcnum(muonConstants.values()); "<<endl;
+    //cout<<"after line:  cms::RPCNumberingScheme rpcnum(muonConstants.values()); "<<endl;
     //cout<<"---------------------------------------------------------------------"<<endl;
 
-    const int detid = rpcnum.baseNumberToUnitNumber(mbn);
+    rpcnum.baseNumberToUnitNumber(mbn);
+    int detid = rpcnum.GetDetId();
    
     cout<<"------------myDEBUG------------"<<endl;
     cout<<"detid: "<<detid<<endl;

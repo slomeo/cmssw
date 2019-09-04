@@ -61,11 +61,11 @@ std::unique_ptr<RPCGeometry> RPCGeometryESModule::produce(const MuonGeometryReco
     auto const& mdc = record.get(dd4hepConstantsToken_);
     cout<<"From RPCGeometryESModule.cc "<<endl;
     for (auto& i: mdc.values()) 
-        { 
-	  //	  cout<<"inside mdc value loop: "<<endl;
-	  cout<<"RPCGeometryESModule.cc "<<i.first<<": "<<i.second<<endl; 
-        } 
-   
+      { 
+	//	cout<<"inside mdc value loop: "<<endl;
+	cout<<"RPCGeometryESModule.cc "<<i.first<<": "<<i.second<<endl; 
+      } 
+    
     // cout<<"------------myDEBUG------------"<<endl;
     //cout<<"mdc: "<<endl;
     // cout<<"-------------------------------"<<endl;

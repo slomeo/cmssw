@@ -27,8 +27,8 @@ public:
 
   RPCNumberingScheme(const MuonConstants& muonConstants);
 
-  int baseNumberToUnitNumber(const MuonBaseNumber&);
-  void SetDetID(int idnew){detId=idnew;}
+  void baseNumberToUnitNumber(const MuonBaseNumber&);
+  void SetDetId(int idnew){detId=idnew;}
   int GetDetId()const {return detId;}
 
 private:
