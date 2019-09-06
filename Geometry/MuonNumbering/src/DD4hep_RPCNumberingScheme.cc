@@ -44,35 +44,37 @@ void RPCNumberingScheme::initMe(const MuonConstants& muonConstants) {
   theEPlaneLevel = get("mr_eplane", muonConstants) / levelPart;
   theESectorLevel = get("mr_esector", muonConstants) / levelPart;
   theERollLevel = get("mr_eroll", muonConstants) / levelPart;
-
+ 
   cout<<"------------myDEBUG------------"<<endl;
   cout<<"levelPart: "<<levelPart<<endl;
-  cout<<"RegionLevel: "<<theRegionLevel*levelPart<<endl;
-  cout<<"BWheelLevel: "<<theBWheelLevel*levelPart<<endl;
-  cout<<"BStationLevel: "<<theBStationLevel*levelPart<<endl;
-  cout<<"BPlaneLevel: "<<theBPlaneLevel*levelPart<<endl;
-  cout<<"BChamberLevel: "<<theBChamberLevel*levelPart<<endl;
-  cout<<"EPlaneLevel: "<<theEPlaneLevel*levelPart<<endl;
-  cout<<"ESectorLevel: "<<theESectorLevel*levelPart<<endl;
-  cout<<"ERollLevel: "<<theERollLevel*levelPart<<endl;
+  cout<<"RegionLevel: "<<theRegionLevel<<endl;
+  cout<<"BWheelLevel: "<<theBWheelLevel<<endl;
+  cout<<"BStationLevel: "<<theBStationLevel<<endl;
+  cout<<"BPlaneLevel: "<<theBPlaneLevel<<endl;
+  cout<<"BChamberLevel: "<<theBChamberLevel<<endl;
+  cout<<"EPlaneLevel: "<<theEPlaneLevel<<endl;
+  cout<<"ESectorLevel: "<<theESectorLevel<<endl;
+  cout<<"ERollLevel: "<<theERollLevel<<endl;
   cout<<"-------------------------------"<<endl;
-
+ 
   // RPCDetId(int region, int ring, int station, int sector, int layer, int subsector, int roll);
 }
 
 void RPCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
 
  
-  const int mylevel = num.getLevels();
-  cout<<"------------myDEBUG--------------------------------------------------"<<endl;
+  const int mylevel = num.getLevels();// that's the problem: first round of the loop OK num.getLevels = 5, second round num.getLevels= 4 and not 5
+  cout<<"------------myDEBUG DD4HEP-------------------------------------------"<<endl;
   cout<<"DD4hep_RPCNumberingScheme.cc: levels "<<num.getLevels()<<endl;
   cout<<"DD4hep_RPCNumberingScheme.cc: superNo "<<num.getSuperNo(mylevel)<<endl;
   cout<<"DD4hep_RPCNumberingScheme.cc: baseNo "<<num.getBaseNo(mylevel)<<endl;
   cout<<"---------------------------------------------------------------------"<<endl;
-  const int barrel = num.getSuperNo(theRegionLevel);
+  cout<<"DD4hep_RPCNumberingScheme.cc: theRegionLevel "<<theRegionLevel<<endl;
+  cout<<"DD4hep_RPCNumberingScheme.cc: num.getSuperNo(theRegionLevel) "<<num.getSuperNo(theRegionLevel)<<endl;
+  const int barrel = num.getSuperNo(theRegionLevel);// that's the problem: first round of the loop OK barrel = 1, second round barrel = 0
   cout<<"DD4hep_RPCNumberingScheme.cc: barrel "<<barrel<<endl;
   bool barrel_muon = (barrel == 1);
-  int maxLevel;
+   int maxLevel;
   if (barrel_muon) {
     maxLevel = theBChamberLevel;
     cout<<"(if) DD4hep_RPCNumberingScheme.cc: maxLevel "<<maxLevel<<endl;
@@ -81,7 +83,7 @@ void RPCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
     cout<<"(else) DD4hep_RPCNumberingScheme.cc: maxLevel "<<maxLevel<<endl;
   }
 
-  if (num.getLevels() != maxLevel) {
+   if (num.getLevels() != maxLevel) {
    cout<<"ATTENTION -from DD4hep RPC NumberingScheme - num.getLevels not equal to maxLevel - ABORT RUN"<<endl;
     abort();
     //    return 0;

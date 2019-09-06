@@ -85,11 +85,26 @@ RPCGeometry* RPCGeometryBuilderFromDDD::buildGeometry(DDFilteredView& fview, con
     LogDebug("RPCGeometryBuilderFromDDD") << "Getting the Muon base Number";
     MuonBaseNumber mbn = mdddnum.geoHistoryToBaseNumber(fview.geoHistory());
     LogDebug("RPCGeometryBuilderFromDDD") << "Start the Rpc Numbering Schema";
+
+    const int mylevel = mbn.getLevels();
+    cout<<"------------myDEBUG  DDD--------------------------------------------------"<<endl;
+    cout<<"DDD RPCGeometryBuilderFromDDD.cc: levels "<<mylevel<<endl;
+    cout<<"DDD RPCGeometryBuilderFromDDD.cc: superNo "<<mbn.getSuperNo(mylevel)<<endl;
+    cout<<"DDD RPCGeometryBuilderFromDDD.cc: baseNo "<<mbn.getBaseNo(mylevel)<<endl;
+    cout<<"---------------------------------------------------------------------"<<endl;
+
+
     // Get the The Rpc det Id
     RPCNumberingScheme rpcnum(muonConstants);
 
+
     LogDebug("RPCGeometryBuilderFromDDD") << "Getting the Unit Number";
     const int detid = rpcnum.baseNumberToUnitNumber(mbn);
+
+    cout<<"------------myDEBUG  DDD------------"<<endl;
+    cout<<"DDD detid: "<<detid<<endl;
+    cout<<"------------------------------------"<<endl;
+
     LogDebug("RPCGeometryBuilderFromDDD") << "Getting the RPC det Id " << detid;
 
     RPCDetId rpcid(detid);
@@ -303,16 +318,16 @@ RPCGeometry* RPCGeometryBuilderFromDDD::buildGeometry(cms::DDFilteredView& fview
 
     MuonBaseNumber mbn = muonConstants.geoHistoryToBaseNumber(fview.history());
     const int mylevel = mbn.getLevels();
-    cout<<"------------myDEBUG--------------------------------------------------"<<endl;
-    cout<<"RPCGeometryBuilderFromDDD.cc: levels "<<mylevel<<endl;
-    cout<<"RPCGeometryBuilderFromDDD.cc: superNo "<<mbn.getSuperNo(mylevel)<<endl;
-    cout<<"RPCGeometryBuilderFromDDD.cc: baseNo "<<mbn.getBaseNo(mylevel)<<endl;
+    cout<<"------------myDEBUG  DD4HEP--------------------------------------------------"<<endl;
+    cout<<"DD4HEP RPCGeometryBuilderFromDDD.cc: levels "<<mylevel<<endl;
+    cout<<"DD4HEP RPCGeometryBuilderFromDDD.cc: superNo "<<mbn.getSuperNo(mylevel)<<endl;
+    cout<<"DD4HEP RPCGeometryBuilderFromDDD.cc: baseNo "<<mbn.getBaseNo(mylevel)<<endl;
     cout<<"---------------------------------------------------------------------"<<endl;
     
-    for (auto& i: muonConstants.values()) 
-      { 
-	cout<<"RPCGeometryBuilderFromDDD.cc  "<<i.first<<": "<<i.second<<endl; 
-      } 
+    //    for (auto& i: muonConstants.values()) 
+    //  { 
+    //	cout<<"RPCGeometryBuilderFromDDD.cc  "<<i.first<<": "<<i.second<<endl; 
+    //  } 
 
     cms::RPCNumberingScheme rpcnum(muonConstants.values());
     

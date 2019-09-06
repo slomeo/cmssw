@@ -59,12 +59,12 @@ std::unique_ptr<RPCGeometry> RPCGeometryESModule::produce(const MuonGeometryReco
     edm::ESTransientHandle<cms::DDCompactView> cpv = record.getTransientHandle(idealDD4hepGeomToken_);
 
     auto const& mdc = record.get(dd4hepConstantsToken_);
-    cout<<"From RPCGeometryESModule.cc "<<endl;
-    for (auto& i: mdc.values()) 
-      { 
+    //    cout<<"From RPCGeometryESModule.cc "<<endl;
+    // for (auto& i: mdc.values()) 
+    // { 
 	//	cout<<"inside mdc value loop: "<<endl;
-	cout<<"RPCGeometryESModule.cc "<<i.first<<": "<<i.second<<endl; 
-      } 
+	//	cout<<"RPCGeometryESModule.cc "<<i.first<<": "<<i.second<<endl; 
+	// } 
     
     // cout<<"------------myDEBUG------------"<<endl;
     //cout<<"mdc: "<<endl;
