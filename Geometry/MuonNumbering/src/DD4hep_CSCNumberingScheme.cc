@@ -48,6 +48,11 @@ cout<<"MYDEBUG, CSCNumbering "<< "theLayerLevel= " << theLayerLevel<<endl;
 
 void CSCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
 
+  cout<<"MYDEBUG, CSCNumbering " << "num.getLevels() " << num.getLevels()<<endl;
+  for (int level = 1; level <= num.getLevels(); level++) {
+    cout<<"MYDEBUG, CSCNumbering level, num.getSuperNo, num.getBaseNo" << level << " " << num.getSuperNo(level) << " " << num.getBaseNo(level)<<endl;
+  }
+
   int fwbw_id = 0;
   int station_id = 0;
   int ring_id = 0;
@@ -62,82 +67,82 @@ void CSCNumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
     if (level == theRegionLevel) {
       const int copyno = num.getBaseNo(level);
       fwbw_id = copyno + 1;
-cout<<"MYDEBUG, CSCNumbering "<< "endcap= " << fwbw_id<<endl;
+      cout<<"MYDEBUG, CSCNumbering "<< "endcap= " << fwbw_id<<endl;
 
     } else if (level == theStationLevel) {
       const int station_tag = num.getSuperNo(level);
       station_id = station_tag;
-cout<<"MYDEBUG, CSCNumbering " << "station= " << station_id<<endl;
+      cout<<"MYDEBUG, CSCNumbering " << "station= " << station_id<<endl;
 
     } else if (level == theSubringLevel) {
       const int copyno = num.getBaseNo(level);
       subring_id = copyno + 1;
-cout<<"MYDEBUG, CSCNumbering " << "subring= " << subring_id<<endl;
-
+      cout<<"MYDEBUG, CSCNumbering " << "subring= " << subring_id<<endl;
+ 
     } else if (level == theSectorLevel) {
       const int copyno = num.getBaseNo(level);
       sector_id = copyno + 1;
-cout<<"MYDEBUG, CSCNumbering " << "sector= " << sector_id<<endl;
+      cout<<"MYDEBUG, CSCNumbering " << "sector= " << sector_id<<endl;
 
     } else if (level == theLayerLevel) {
       const int copyno = num.getBaseNo(level);
       layer_id = copyno + 1;
-cout<<"MYDEBUG, CSCNumbering " << "layer= " << layer_id<<endl;
+      cout<<"MYDEBUG, CSCNumbering " << "layer= " << layer_id<<endl;
 
     } else if (level == theRingLevel) {
       const int ring_tag = num.getSuperNo(level);
       ring_id = ring_tag;
-cout<<"MYDEBUG, CSCNumbering" << "ring= " << ring_id<<endl;
+      cout<<"MYDEBUG, CSCNumbering" << "ring= " << ring_id<<endl;
     }
   }
 
   // check validity
 
   if ((fwbw_id < 1) || (fwbw_id > 2)) {
-cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
-   << "forward/backward id out of range: " << fwbw_id<<endl;
+    cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
+	<< "forward/backward id out of range: " << fwbw_id<<endl;
   }
-
+  
   if ((station_id < 1) || (station_id > 4)) {
-cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
-<< "station id out of range: " << station_id<<endl;
+    cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
+	<< "station id out of range: " << station_id<<endl;
   }
-
+  
   if ((ring_id < 1) || (ring_id > 4)) {
-cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
-<< "ring id out of range: " << ring_id<<endl;
+    cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
+	<< "ring id out of range: " << ring_id<<endl;
   }
-
+  
   if ((subring_id < 1) || (subring_id > 2)) {
-cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
-<< "subring id out of range: " << subring_id<<endl;
+    cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
+	<< "subring id out of range: " << subring_id<<endl;
   }
-
+  
   if ((sector_id < 1) || (sector_id > 36)) {
     cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
 	<< "sector id out of range:" << sector_id<<endl;
   }
-
+  
   // Allow id=0 since that means a chamber
   if ((layer_id < 0) || (layer_id > 6)) {
-cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
-<< "layer id out of range " << layer_id<<endl;
+    cout<<"MYDEBUG, CSCNumbering " << "@SUB=CSCNumberingScheme::baseNumberToUnitNumber"
+	<< "layer id out of range " << layer_id<<endl;
   }
-
+  
   // find appropriate chamber label
 
   int chamber_id = chamberIndex(station_id, ring_id, subring_id, sector_id);
-
+  
   // convert into raw id of appropriate DetId
-
+  
   int intIndex = CSCDetId::rawIdMaker(fwbw_id, station_id, ring_id, chamber_id, layer_id);
-
-
+  
+  
 cout<<"MYDEBUG, CSCNumbering " << "CSCNumberingScheme :  fw/bw " << fwbw_id << " station " << station_id << " ring "
-<< ring_id << " subring " << subring_id << " chamber " << chamber_id << " sector "
-<< sector_id << " layer " << layer_id<<endl;
-
-  setDetId(intIndex);
+    << ring_id << " subring " << subring_id << " chamber " << chamber_id << " sector "
+    << sector_id << " layer " << layer_id<<endl;
+ 
+ setDetId(intIndex);
  
 }
 
