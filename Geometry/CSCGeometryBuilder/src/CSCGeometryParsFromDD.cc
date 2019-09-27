@@ -1,3 +1,14 @@
+/*
+// \class CSCGeometryParsFromDDD
+//
+//  Description: CSC Geometry Pars for DD4hep
+//              
+//
+// \author Sergio Lo Meo (sergio.lo.meo@cern.ch) following what Ianna Osburne made for DTs (DD4HEP migration)
+//         Created:  Fri, 27 Sep 2019 
+//   
+//         Old DD version author: Tim Cox
+*/
 #include "CSCGeometryParsFromDD.h"
 
 #include <DetectorDescription/Core/interface/DDFilteredView.h>
@@ -16,6 +27,20 @@
 #include "CLHEP/Units/GlobalSystemOfUnits.h"
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
+
+#include <DetectorDescription/DDCMS/interface/DDFilteredView.h>
+#include <DetectorDescription/DDCMS/interface/DDCompactView.h>
+#include "Geometry/MuonNumbering/interface/DD4hep_MuonNumbering.h"
+#include <Geometry/MuonNumbering/interface/DD4hep_CSCNumberingScheme.h>
+
+// to debug
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <math.h>
+
+using namespace std; // to debug
 
 CSCGeometryParsFromDD::CSCGeometryParsFromDD() : myName("CSCGeometryParsFromDD") {}
 
@@ -75,6 +100,9 @@ bool CSCGeometryParsFromDD::build(const DDCompactView* cview,
     int jring = detid.ring();
     int jchamber = detid.chamber();
     int jlayer = detid.layer();
+
+    cout<<"MYDEBUG, CSCGeometryPars detid: "<<detid<<" name: "<<fv.name()<<endl;
+    cout<<"MYDEBUG, CSCGeometryPars jendcap: "<<jendcap<<" jstation "<<jstation<<" jring "<<jring<<" jchamber "<<jchamber<<" jlayer "<<endl;
 
     // Package up the wire group info as it's decoded
     CSCWireGroupPackage wg;
@@ -300,4 +328,13 @@ bool CSCGeometryParsFromDD::build(const DDCompactView* cview,
     doSubDets = fv.next();
   }
   return true;
+}
+
+bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
+                                  const cms::MuonNumbering& muonConstants,
+                                  RecoIdealGeometry& rig,
+                                  CSCRecoDigiParameters& rdp) {
+  // to be done
+
+ return true;
 }

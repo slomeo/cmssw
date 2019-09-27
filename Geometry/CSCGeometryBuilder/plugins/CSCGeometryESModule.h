@@ -1,12 +1,17 @@
 #ifndef CSCGeometryBuilder_CSCGeometryESModule_h
 #define CSCGeometryBuilder_CSCGeometryESModule_h
 
-/** \class CSCGeometryESModule
- * 
- *  ESProducer for CSCGeometry in MuonGeometryRecord
- *
- *  \author Tim Cox
- */
+/*
+// \class CSCGeometryESModule
+//
+//  Description: CSC ESModule for DD4hep
+//              
+//
+// \author Sergio Lo Meo (sergio.lo.meo@cern.ch) following what Ianna Osburne made for DTs (DD4HEP migration)
+//         Created:  Fri, 27 Sep 2019 
+//   
+//         Old DD version author: Tim Cox
+*/
 
 #include <FWCore/Framework/interface/ESProducer.h>
 #include "FWCore/Framework/interface/ESProductHost.h"

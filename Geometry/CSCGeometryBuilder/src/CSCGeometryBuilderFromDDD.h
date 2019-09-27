@@ -1,12 +1,18 @@
 #ifndef CSCGeometryBuilder_CSCGeometryBuilderFromDDD_h
 #define CSCGeometryBuilder_CSCGeometryBuilderFromDDD_h
 
-/** \class CSCGeometryBuilderFromDDD
- *
- *  Build the CSCGeometry from the DDD description.
- *
- *  \author Tim Cox
- */
+/*
+// \class CSCGeometryBuilderFromDDD
+//
+//  Description: CSC Geometry Builder for DD4hep
+//              
+//
+// \author Sergio Lo Meo (sergio.lo.meo@cern.ch) following what Ianna Osburne made for DTs (DD4HEP migration)
+//         Created:  Fri, 27 Sep 2019 
+//   
+//         Old DD version author: Tim Cox
+*/
+// 
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include "Geometry/MuonNumbering/interface/DD4hep_MuonNumbering.h"

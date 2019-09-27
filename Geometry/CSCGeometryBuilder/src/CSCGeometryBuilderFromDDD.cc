@@ -1,3 +1,15 @@
+/*
+// \class CSCGeometryBuilderFromDDD
+//
+//  Description: CSC Geometry Builder for DD4hep
+//              
+//
+// \author Sergio Lo Meo (sergio.lo.meo@cern.ch) following what Ianna Osburne made for DTs (DD4HEP migration)
+//         Created:  Fri, 27 Sep 2019 
+//   
+//         Old DD version author: Tim Cox
+*/
+// 
 #include "CSCGeometryBuilderFromDDD.h"
 #include "CSCGeometryBuilder.h"
 #include "CSCGeometryParsFromDD.h"
@@ -12,6 +24,15 @@
 #include <FWCore/Utilities/interface/Exception.h>
 
 #include <utility>
+
+// to debug
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <math.h>
+
+using namespace std;// to debug
 
 CSCGeometryBuilderFromDDD::CSCGeometryBuilderFromDDD() : myName("CSCGeometryBuilderFromDDD") {}
 
@@ -28,6 +49,7 @@ void CSCGeometryBuilderFromDDD::build(CSCGeometry& geom,
   CSCGeometryParsFromDD cscp;
   if (!cscp.build(cview, muonConstants, rig, rdp)) {
     throw cms::Exception("CSCGeometryBuilderFromDDD", "Failed to build the necessary objects from the DDD");
+    cout<<"MYDEBUG, CSCGeometryBuilderFromDDD "<< "Failed to build the necessary objects from the DDD" <<endl;
   }
   CSCGeometryBuilder realbuilder;
   realbuilder.build(geom, rig, rdp);
@@ -42,12 +64,12 @@ void CSCGeometryBuilderFromDDD::build(CSCGeometry& geom,
   RecoIdealGeometry rig;
   CSCRecoDigiParameters rdp;
   
-  /* // delete comment after modifications in CSCGeometryParsFromDD
-  CSCGeometryParsFromDD cscp;
+   CSCGeometryParsFromDD cscp;
   if (!cscp.build(cview, muonConstants, rig, rdp)) {
-    throw cms::Exception("CSCGeometryBuilderFromDDD", "Failed to build the necessary objects from the DDD");
+    throw cms::Exception("CSCGeometryBuilderFromDDD", "Failed to build the necessary objects from the DD4HEP");
+    cout<<"MYDEBUG, CSCGeometryBuilderFromDDD "<< "Failed to build the necessary objects from the DD4HEP" <<endl;
   }
- */
+ 
   CSCGeometryBuilder realbuilder;
   realbuilder.build(geom, rig, rdp);
  

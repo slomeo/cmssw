@@ -1,4 +1,14 @@
-
+/*
+// \class CSCGeometryESModule
+//
+//  Description: CSC ESModule for DD4hep
+//              
+//
+// \author Sergio Lo Meo (sergio.lo.meo@cern.ch) following what Ianna Osburne made for DTs (DD4HEP migration)
+//         Created:  Fri, 27 Sep 2019 
+//   
+//         Old DD version author: Tim Cox
+*/
 #include "CSCGeometryESModule.h"
 #include "Geometry/CSCGeometryBuilder/src/CSCGeometryBuilderFromDDD.h"
 #include "Geometry/CSCGeometryBuilder/src/CSCGeometryBuilder.h"
@@ -15,7 +25,15 @@
 #include "Geometry/MuonNumbering/interface/MuonDDDNumbering.h"
 #include "Geometry/MuonNumbering/interface/MuonBaseNumber.h"
 
+// to debug
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <math.h>
+
 using namespace edm;
+using namespace std; // to debug
 
 CSCGeometryESModule::CSCGeometryESModule(const edm::ParameterSet& p)
     : alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
@@ -124,6 +142,10 @@ void CSCGeometryESModule::initCSCGeometry_(const MuonGeometryRecord& record, std
       host->clear();
       edm::ESTransientHandle<cms::DDCompactView> cpv = record.getTransientHandle(cpvTokendd4hep_);
       const auto& mdc = rec.get(mdcTokendd4hep_);
+      for (auto& i: mdc.values()) 
+	{ 
+	  cout<<"MYDEBUG, CSCGeometryESModule, mdc.values() first and second "<<i.first<<": "<<i.second<<endl; 
+	} 
       CSCGeometryBuilderFromDDD builder;
       builder.build(*host, cpv.product(), mdc);
     });
