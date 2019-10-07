@@ -329,12 +329,275 @@ bool CSCGeometryParsFromDD::build(const DDCompactView* cview,
   }
   return true;
 }
-
+// dd4hep // DA SISTEMARE
 bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
                                   const cms::MuonNumbering& muonConstants,
                                   RecoIdealGeometry& rig,
                                   CSCRecoDigiParameters& rdp) {
-  // to be done
+ 
+  const std::string attribute = "MuStructure"; 
+  const std::string value = "MuonEndcapCSC";   
+  cms::DDFilteredView fv(cview->detector(), cview->detector()->worldVolume());
+  cms::DDSpecParRefs refs;
+  const cms::DDSpecParRegistry& mypar = cview->specpars();
+  mypar.filter(refs, attribute, value);
+  fv.mergedSpecifics(refs);
+
+  //bool doSubDets = fv.firstChild();
+  int noOfAnonParams = 0;
+  //  std::vector<const DDsvalues_type*> spec = fv.specifics();
+  // std::vector<const DDsvalues_type*>::const_iterator spit = spec.begin();
+  std::vector<double> uparvals;
+  std::vector<double> fpar;
+  std::vector<double> dpar;
+  std::vector<double> gtran(3);
+  std::vector<double> grmat(9);
+  std::vector<double> trm(9);
+  // while (doSubDets) {
+   while (fv.firstChild()) {
+    // spec = fv.specifics();
+    // spit = spec.begin();
+
+     MuonBaseNumber mbn = muonConstants.geoHistoryToBaseNumber(fv.history());
+
+    cms::CSCNumberingScheme cscnum(muonConstants.values());
+
+    cscnum.baseNumberToUnitNumber(mbn);
+    int id = cscnum.getDetId();
+    
+    CSCDetId detid = CSCDetId(id);
+    int jendcap = detid.endcap();
+    int jstation = detid.station();
+    int jring = detid.ring();
+    int jchamber = detid.chamber();
+    int jlayer = detid.layer();
+
+    cout<<"MYDEBUG, CSCGeometryPars detid: "<<detid<<" name: "<<fv.name()<<endl;
+    cout<<"MYDEBUG, CSCGeometryPars jendcap: "<<jendcap<<" jstation "<<jstation<<" jring "<<jring<<" jchamber "<<jchamber<<" jlayer "<<endl;
+
+    // Package up the wire group info as it's decoded
+    CSCWireGroupPackage wg;
+    uparvals.clear();
+   
+    // if the specs are made no need to get all this crap!
+    int chamberType = CSCChamberSpecs::whatChamberType(jstation, jring);
+  
+    size_t ct = 0;
+    bool chSpecsAlreadyExist = false;
+    for (; ct < rdp.pChamberType.size(); ++ct) {
+      if (chamberType == rdp.pChamberType[ct]) {
+        break;
+      }
+    }
+    if (ct < rdp.pChamberType.size() && rdp.pChamberType[ct] == chamberType) {
+      // it was found, therefore no need to load all the intermediate crap from DD.
+      LogDebug(myName) << "already found a " << chamberType << " at index " << ct;
+      chSpecsAlreadyExist = true;
+    } else {
+      for (; spit != spec.end(); spit++) {//COSA METTERE AL POSTO DI SPLIT?
+        DDsvalues_type::const_iterator it = (**spit).begin();
+        for (; it != (**spit).end(); it++) {
+          LogDebug(myName) << "it->second.name()=" << it->second.name();
+          if (it->second.name() == "upar") {
+            uparvals.emplace_back(it->second.doubles().size());
+            for (double i : it->second.doubles()) {
+              uparvals.emplace_back(i);
+            }
+            LogDebug(myName) << "found upars ";
+          } else if (it->second.name() == "NoOfAnonParams") {
+            noOfAnonParams = static_cast<int>(it->second.doubles()[0]);
+          } else if (it->second.name() == "NumWiresPerGrp") {
+            //numWiresInGroup = it->second.doubles();
+            for (double i : it->second.doubles()) {
+              wg.wiresInEachGroup.emplace_back(int(i));
+            }
+            LogDebug(myName) << "found upars " << std::endl;
+          } else if (it->second.name() == "NumGroups") {
+            //numGroups = it->second.doubles();
+            for (double i : it->second.doubles()) {
+              wg.consecutiveGroups.emplace_back(int(i));
+            }
+          } else if (it->second.name() == "WireSpacing") {
+            wg.wireSpacing = it->second.doubles()[0];
+          } else if (it->second.name() == "AlignmentPinToFirstWire") {
+            wg.alignmentPinToFirstWire = it->second.doubles()[0];
+          } else if (it->second.name() == "TotNumWireGroups") {
+            wg.numberOfGroups = int(it->second.doubles()[0]);
+          } else if (it->second.name() == "LengthOfFirstWire") {
+            wg.narrowWidthOfWirePlane = it->second.doubles()[0];
+          } else if (it->second.name() == "LengthOfLastWire") {
+            wg.wideWidthOfWirePlane = it->second.doubles()[0];
+          } else if (it->second.name() == "RadialExtentOfWirePlane") {
+            wg.lengthOfWirePlane = it->second.doubles()[0];
+          }
+        }
+      }
+
+      /** crap: using a constructed wg to deconstruct it and put it in db... alternative?
+	  use temporary (not wg!) storage.
+	  
+	  format as inserted is best documented by the actualy emplace_back statements below.
+	  
+	  fupar size now becomes origSize+6+wg.wiresInEachGroup.size()+wg.consecutiveGroups.size()
+      **/
+      uparvals.emplace_back(wg.wireSpacing);
+      uparvals.emplace_back(wg.alignmentPinToFirstWire);
+      uparvals.emplace_back(wg.numberOfGroups);
+      uparvals.emplace_back(wg.narrowWidthOfWirePlane);
+      uparvals.emplace_back(wg.wideWidthOfWirePlane);
+      uparvals.emplace_back(wg.lengthOfWirePlane);
+      uparvals.emplace_back(wg.wiresInEachGroup.size());
+      for (CSCWireGroupPackage::Container::const_iterator it = wg.wiresInEachGroup.begin();
+           it != wg.wiresInEachGroup.end();
+           ++it) {
+        uparvals.emplace_back(*it);
+      }
+      for (CSCWireGroupPackage::Container::const_iterator it = wg.consecutiveGroups.begin();
+           it != wg.consecutiveGroups.end();
+           ++it) {
+        uparvals.emplace_back(*it);
+      }
+      /** end crap **/
+    }
+    fpar.clear();
+    dpar = fv.parameters();// controllare i parametri DD vs DD4HEP
+    // if (fv.logicalPart().solid().shape() == DDSolidShape::ddsubtraction) 
+    if (fv.shape() == cms::DDSolidShape::ddsubtraction) {// MODIFICARE
+      const DDSubtraction& first = fv.logicalPart().solid();// MODIFICARE
+      const DDSubtraction& second = first.solidA();// MODIFICARE
+      const DDSolid& third = second.solidA();// MODIFICARE
+      dpar = third.parameters();//MODIFICARE
+    } else {
+      dpar = fv.logicalPart().solid().parameters();//MODIFICARE
+    }
+
+    LogTrace(myName) << myName << ": noOfAnonParams=" << noOfAnonParams;
+    LogTrace(myName) << myName << ": fill fpar...";
+    LogTrace(myName) << myName << ": dpars are... " << dpar[4] / cm << ", " << dpar[8] / cm << ", " << dpar[3] / cm
+                     << ", " << dpar[0] / cm;
+
+    fpar.emplace_back((dpar[4] / cm));
+    fpar.emplace_back((dpar[8] / cm));
+    fpar.emplace_back((dpar[3] / cm));
+    fpar.emplace_back((dpar[0] / cm));
+
+    LogTrace(myName) << myName << ": fill gtran...";
+
+    gtran[0] = (float)1.0 * (fv.translation().X() / cm);
+    gtran[1] = (float)1.0 * (fv.translation().Y() / cm);
+    gtran[2] = (float)1.0 * (fv.translation().Z() / cm);
+
+    LogTrace(myName) << myName << ": gtran[0]=" << gtran[0] << ", gtran[1]=" << gtran[1] << ", gtran[2]=" << gtran[2];
+
+    LogTrace(myName) << myName << ": fill grmat...";
+
+    fv.rotation().GetComponents(trm.begin(), trm.end());
+    size_t rotindex = 0;
+    for (size_t i = 0; i < 9; ++i) {
+      grmat[i] = (float)1.0 * trm[rotindex];
+      rotindex = rotindex + 3;
+      if ((i + 1) % 3 == 0) {
+        rotindex = (i + 1) / 3;
+      }
+    }
+    LogTrace(myName) << myName << ": looking for wire group info for layer "
+                     << "E" << CSCDetId::endcap(id) << " S" << CSCDetId::station(id) << " R" << CSCDetId::ring(id)
+                     << " C" << CSCDetId::chamber(id) << " L" << CSCDetId::layer(id);
+
+    if (wg.numberOfGroups != 0) {
+      LogTrace(myName) << myName << ": fv.geoHistory:      = " << fv.history();
+      LogTrace(myName) << myName << ": TotNumWireGroups     = " << wg.numberOfGroups;
+      LogTrace(myName) << myName << ": WireSpacing          = " << wg.wireSpacing;
+      LogTrace(myName) << myName << ": AlignmentPinToFirstWire = " << wg.alignmentPinToFirstWire;
+      LogTrace(myName) << myName << ": Narrow width of wire plane = " << wg.narrowWidthOfWirePlane;
+      LogTrace(myName) << myName << ": Wide width of wire plane = " << wg.wideWidthOfWirePlane;
+      LogTrace(myName) << myName << ": Length in y of wire plane = " << wg.lengthOfWirePlane;
+      LogTrace(myName) << myName << ": wg.consecutiveGroups.size() = " << wg.consecutiveGroups.size();
+      LogTrace(myName) << myName << ": wg.wiresInEachGroup.size() = " << wg.wiresInEachGroup.size();
+      LogTrace(myName) << myName << ": \tNumGroups\tWiresInGroup";
+      for (size_t i = 0; i < wg.consecutiveGroups.size(); i++) {
+        LogTrace(myName) << myName << " \t" << wg.consecutiveGroups[i] << "\t\t" << wg.wiresInEachGroup[i];
+      }
+    } else {
+      LogTrace(myName) << myName << ": DDD is MISSING SpecPars for wire groups";
+    }
+    LogTrace(myName) << myName << ": end of wire group info. ";
+
+    LogTrace(myName) << myName << ":_z_ E" << jendcap << " S" << jstation << " R" << jring << " C" << jchamber << " L"
+                     << jlayer << " gx=" << gtran[0] << ", gy=" << gtran[1] << ", gz=" << gtran[2]
+                     << " thickness=" << fpar[2] * 2.;
+
+    if (jlayer == 0) {  // Can only build chambers if we're filtering them
+
+      LogTrace(myName) << myName << ":_z_ frame=" << uparvals[31] / 10. << " gap=" << uparvals[32] / 10.
+                       << " panel=" << uparvals[33] / 10. << " offset=" << uparvals[34] / 10.;
+
+      if (jstation == 1 && jring == 1) {
+        // set up params for ME1a and ME1b and call buildChamber *for each*
+        // Both get the full ME11 dimensions
+
+        // detid is for ME11 and that's what we're using for ME1b in the software
+
+        rig.insert(id, gtran, grmat, fpar);
+        if (!chSpecsAlreadyExist) {
+          //	rdp.pCSCDetIds.emplace_back(CSCDetId(id));
+          LogDebug(myName) << " inserting chamber type " << chamberType << std::endl;
+          rdp.pChamberType.emplace_back(chamberType);
+          rdp.pUserParOffset.emplace_back(rdp.pfupars.size());
+          rdp.pUserParSize.emplace_back(uparvals.size());
+          std::copy(uparvals.begin(), uparvals.end(), std::back_inserter(rdp.pfupars));
+        }
+
+        // No. of anonymous parameters per chamber type should be read from cscSpecs file...
+        // Only required for ME11 splitting into ME1a and ME1b values,
+        // If it isn't seen may as well try to get further but this value will depend
+        // on structure of the file so may not even match!
+        const int kNoOfAnonParams = 35;
+        if (noOfAnonParams == 0) {
+          noOfAnonParams = kNoOfAnonParams;
+        }  // in case it wasn't seen
+
+        // copy ME1a params from back to the front
+        std::copy(
+            uparvals.begin() + noOfAnonParams + 1, uparvals.begin() + (2 * noOfAnonParams) + 2, uparvals.begin() + 1);
+
+        CSCDetId detid1a = CSCDetId(jendcap, 1, 4, jchamber, 0);  // reset to ME1A
+        rig.insert(detid1a.rawId(), gtran, grmat, fpar);
+        int chtypeA = CSCChamberSpecs::whatChamberType(1, 4);
+        ct = 0;
+        for (; ct < rdp.pChamberType.size(); ++ct) {
+          if (chtypeA == rdp.pChamberType[ct]) {
+            break;
+          }
+        }
+        if (ct < rdp.pChamberType.size() && rdp.pChamberType[ct] == chtypeA) {
+          // then its in already, don't put it
+          LogDebug(myName) << "found chamber type " << chtypeA << " so don't put it in! ";
+        } else {
+          //	rdp.pCSCDetIds.emplace_back(detid1a);
+          LogDebug(myName) << " inserting chamber type " << chtypeA;
+          rdp.pChamberType.emplace_back(chtypeA);
+          rdp.pUserParOffset.emplace_back(rdp.pfupars.size());
+          rdp.pUserParSize.emplace_back(uparvals.size());
+          std::copy(uparvals.begin(), uparvals.end(), std::back_inserter(rdp.pfupars));
+        }
+
+      } else {
+        rig.insert(id, gtran, grmat, fpar);
+        if (!chSpecsAlreadyExist) {
+          //   rdp.pCSCDetIds.emplace_back(CSCDetId(id));
+          LogDebug(myName) << " inserting chamber type " << chamberType;
+          rdp.pChamberType.emplace_back(chamberType);
+          rdp.pUserParOffset.emplace_back(rdp.pfupars.size());
+          rdp.pUserParSize.emplace_back(uparvals.size());
+          std::copy(uparvals.begin(), uparvals.end(), std::back_inserter(rdp.pfupars));
+        }
+      }
+
+    }  // filtering chambers.
+
+    //    doSubDets = fv.next();
+  }
 
  return true;
 }
