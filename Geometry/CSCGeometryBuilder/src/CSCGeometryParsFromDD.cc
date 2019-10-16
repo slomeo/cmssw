@@ -460,8 +460,8 @@ bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
       /** end crap **/
     }
     fpar.clear();
-    dpar = fv.parameters();// controllare i parametri DD vs DD4HEP
-    // if (fv.logicalPart().solid().shape() == DDSolidShape::ddsubtraction) 
+   
+    /* DDD
     if (fv.shape() == cms::DDSolidShape::ddsubtraction) {// MODIFICARE
       const DDSubtraction& first = fv.logicalPart().solid();// MODIFICARE
       const DDSubtraction& second = first.solidA();// MODIFICARE
@@ -469,6 +469,17 @@ bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
       dpar = third.parameters();//MODIFICARE
     } else {
       dpar = fv.logicalPart().solid().parameters();//MODIFICARE
+    }
+    */
+
+    if (fv.isASubtraction() == 1) {
+      
+      cms::DDSolid mysolid(fv.solid());
+      auto solidA = mysolid.solidA();
+      cms::DDSolid a(solidA);
+      dpar = a.parameters();
+    } else {
+    dpar = fv.parameters();// controllare i parametri DD vs DD4HEP   
     }
 
     LogTrace(myName) << myName << ": noOfAnonParams=" << noOfAnonParams;
