@@ -20,11 +20,16 @@ process.CSCGeometryESProducer = cms.ESProducer("CSCGeometryESModule",
                                                appendToDataLabel = cms.string(''),
                                                attribute = cms.string('MuStructure'),
                                                value = cms.string('MuonEndcapCSC'),
-                                               useDDD = cms.untracked.bool(True),
-                                               useDD4hep = cms.untracked.bool(False)
-                                              )
+                                               useDDD = cms.bool(True),
+                                               useDD4hep = cms.bool(False),
+                                               debugV = cms.untracked.bool(False),
+                                               useGangedStripsInME1a = cms.bool(False),
+                                               useOnlyWiresInME1a = cms.bool(False),
+                                               useRealWireGeometry = cms.bool(True),
+                                               useCentreTIOffsets = cms.bool(False)
+                                           )
 
- process.DDSpecParRegistryESProducer = cms.ESProducer("DDSpecParRegistryESProducer",
+process.DDSpecParRegistryESProducer = cms.ESProducer("DDSpecParRegistryESProducer",
                                                      appendToDataLabel = cms.string('MUON')
                                                      )
 
