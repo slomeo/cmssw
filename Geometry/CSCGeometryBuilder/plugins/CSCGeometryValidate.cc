@@ -84,7 +84,7 @@ private:
     stripslen_.clear();
   }
 
-  edm::ESHandle<CSCGeometry> rpcGeometry_;
+  edm::ESHandle<CSCGeometry> cscGeometry_;
   FWGeometry fwGeometry_;
   TFile* outFile_;
   vector<float> globalDistances_;
@@ -109,8 +109,8 @@ CSCGeometryValidate::CSCGeometryValidate(const edm::ParameterSet& iConfig)
 }
 
 void CSCGeometryValidate::analyze(const edm::Event& event, const edm::EventSetup& eventSetup) {
-  eventSetup.get<MuonGeometryRecord>().get(rpcGeometry_);
-  if (rpcGeometry_.isValid()) {
+  eventSetup.get<MuonGeometryRecord>().get(cscGeometry_);
+  if (cscGeometry_.isValid()) {
     LogVerbatim("CSCGeometry") << "Validating CSC chamber geometry";
     validateCSCChamberGeometry();
     validateCSCStripsGeometry();
@@ -121,8 +121,7 @@ void CSCGeometryValidate::analyze(const edm::Event& event, const edm::EventSetup
 void CSCGeometryValidate::validateCSCChamberGeometry() {
   clearData();
 
-  /*
-  for (auto const& it : rpcGeometry_->rolls()) {
+  for (auto const& it : cscGeometry_->chambers()) {
     CSCDetId chId = it->id();
     GlobalPoint gp = it->surface().toGlobal(LocalPoint(0.0, 0.0, 0.0));
 
@@ -143,13 +142,13 @@ void CSCGeometryValidate::validateCSCChamberGeometry() {
     compareShape(it, shape);
   }
   makeHistograms("CSC Chamber");
-  */
+
 }
 
 void CSCGeometryValidate::validateCSCStripsGeometry() {
   clearData2();
   /*
-  for (auto const& it : rpcGeometry_->rolls()) {
+  for (auto const& it : cscGeometry_->rolls()) {
     CSCDetId chId = it->id();
     const int n_strips = it->nstrips();
     const float n_pitch = it->pitch();
