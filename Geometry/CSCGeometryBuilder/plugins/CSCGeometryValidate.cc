@@ -18,6 +18,9 @@
 #include "Geometry/CSCGeometry/interface/CSCGeometry.h"
 #include "Geometry/CSCGeometry/interface/CSCChamber.h"
 #include "Geometry/CSCGeometry/interface/CSCLayer.h"
+#include "Geometry/CSCGeometry/interface/CSCLayerGeometry.h"
+#include <Geometry/CSCGeometry/interface/CSCStripTopology.h>
+#include <Geometry/CSCGeometry/interface/CSCWireTopology.h>
 #include "Geometry/CommonTopologies/interface/StripTopology.h"
 #include "Geometry/Records/interface/MuonGeometryRecord.h"
 
@@ -58,7 +61,7 @@ private:
   void endJob() override;
 
   void validateCSCChamberGeometry();
-  void validateCSCStripsGeometry();
+  void validateCSCLayerGeometry();
 
   void compareTransform(const GlobalPoint&, const TGeoMatrix*);
   void compareShape(const GeomDet*, const float*);
@@ -79,8 +82,8 @@ private:
   }
 
   void clearData2() {
-    nstrips_.clear();
-    pitch_.clear();
+    yaxisorientation_.clear();
+    soffset_.clear();
     stripslen_.clear();
   }
 
@@ -92,8 +95,8 @@ private:
   vector<float> bottomWidths_;
   vector<float> lengths_;
   vector<float> thicknesses_;
-  vector<float> nstrips_;
-  vector<float> pitch_;
+  vector<float> yaxisorientation_;
+  vector<float> soffset_;
   vector<float> stripslen_;
   string infileName_;
   string outfileName_;
@@ -113,7 +116,7 @@ void CSCGeometryValidate::analyze(const edm::Event& event, const edm::EventSetup
   if (cscGeometry_.isValid()) {
     LogVerbatim("CSCGeometry") << "Validating CSC chamber geometry";
     validateCSCChamberGeometry();
-    validateCSCStripsGeometry();
+    validateCSCLayerGeometry();
   } else
     LogVerbatim("CSCGeometry") << "Invalid CSC geometry";
 }
@@ -145,29 +148,49 @@ void CSCGeometryValidate::validateCSCChamberGeometry() {
 
 }
 
-void CSCGeometryValidate::validateCSCStripsGeometry() {
+void CSCGeometryValidate::validateCSCLayerGeometry() {
   clearData2();
-  /*
-  for (auto const& it : cscGeometry_->rolls()) {
+ 
+  for (auto const& it : cscGeometry_->layers()) {
     CSCDetId chId = it->id();
-    const int n_strips = it->nstrips();
-    const float n_pitch = it->pitch();
-    const StripTopology& topo = it->specificTopology();
-    const float stripLen = topo.stripLength();
+    const CSCLayerGeometry* laygeo = it->geometry();
+    const int n_strips = laygeo->numberOfStrips();
+    const int n_wire = laygeo->numberOfWires();
+    const float strips_offset = laygeo->stripOffset();
+  
+    const CSCStripTopology* stopo = laygeo->topology();
+    const float ycentre_of_strip_plane = stopo->yCentreOfStripPlane();   
+    const float angular_width = stopo->angularWidth();   
+    const float y_axis_orientation = stopo->yAxisOrientation();   
+    const float centre_to_intersection = stopo->centreToIntersection();   
+    const float phi_of_one_edge = stopo->phiOfOneEdge();   
     const float* parameters = fwGeometry_.getParameters(chId.rawId());
-
+    cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" nstrips: "<<n_strips<<" nwire: "<<n_wire<<endl;
+    cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" strpis offset: "<<strips_offset<<" y centre of strip plane: "<<ycentre_of_strip_plane<<" angular width: "<<angular_width<<endl;
+    cout<<"MYVALIDATE From Reco, detid: "<<chId.rawId()<<" strpis offset: "<<parameters[4]<<" y centre of strip plane: "<<parameters[2]<<" angular width: "<<parameters[5]<<endl;
+    cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" y axis orientation: "<<y_axis_orientation<<" centre to intersection: "<<centre_to_intersection<<" phi of one edge: "<<phi_of_one_edge<<endl;
+    cout<<"MYVALIDATE From Reco, detid: "<<chId.rawId()<<" y axis orientation: "<<parameters[0]<<" centre to intersection: "<<parameters[1]<<" phi of one edge: "<<parameters[3]<<endl;
+   
+    const CSCWireTopology* wiretopo = laygeo->wireTopology();
+    const double wire_spacing = wiretopo->wireSpacing();   
+    const float wire_angle = wiretopo->wireAngle();   
+    cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" wire spacing: "<<wire_spacing<<" wire angle: "<<wire_angle<<endl;
+    cout<<"MYVALIDATE From Reco, detid: "<<chId.rawId()<<" wire spacing: "<<parameters[6]<<" wire angle: "<<parameters[7]<<endl;
+    /*
+    
     if (n_strips) {
       for (int istrips = 1; istrips <= n_strips; istrips++) {
-        nstrips_.push_back(fabs(n_strips - parameters[0]));
-        pitch_.push_back(fabs(n_pitch - parameters[2]));
+        yaxisorientation_.push_back(fabs(y_axis_orientation - parameters[0]));
+	soffset_.push_back(fabs(strips_offset - parameters[4]));
         stripslen_.push_back(fabs(stripLen - parameters[1]));
       }
     } else {
-      LogVerbatim("CSCGeometry") << "ATTENTION! nStrips == 0";
+      LogVerbatim("CSCGeometry") << "ATTENTION! nLayers == 0";
     }
-  }
-  makeHistograms2("CSC Strips");
   */
+  }
+  makeHistograms2("CSC Layer");
+  
 }
 
 void CSCGeometryValidate::compareTransform(const GlobalPoint& gp, const TGeoMatrix* matrix) {
@@ -271,11 +294,11 @@ void CSCGeometryValidate::makeHistograms2(const char* detector) {
 
   string d(detector);
 
-  string ns = d + ": absolute difference between nStrips";
-  makeHistogram(ns, nstrips_);
+  string ns = d + ": absolute difference between Y Axis Orientation of the Strips";
+  makeHistogram(ns, yaxisorientation_);
 
-  string pi = d + ": absolute difference between Strips Pitch";
-  makeHistogram(pi, pitch_);
+  string pi = d + ": absolute difference between Strips Offset";
+  makeHistogram(pi, soffset_);
 
   string pl = d + ": absolute difference between Strips Length";
   makeHistogram(pl, stripslen_);
