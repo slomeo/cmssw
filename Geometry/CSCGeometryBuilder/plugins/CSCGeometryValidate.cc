@@ -82,22 +82,36 @@ private:
   }
 
   void clearData2() {
-    yaxisorientation_.clear();
-    soffset_.clear();
-    stripslen_.clear();
+    yAxisOrientation_.clear();
+    sOffset_.clear();
+    yCentreOfStripPlane_.clear();
+    angularWidth_.clear();
+    centreToIntersection_.clear();
+    phiOfOneEdge_.clear();
+    wireSpacing_.clear();
+    wireAngle_.clear();
   }
 
   edm::ESHandle<CSCGeometry> cscGeometry_;
   FWGeometry fwGeometry_;
   TFile* outFile_;
+  //chambers
   vector<float> globalDistances_;
   vector<float> topWidths_;
   vector<float> bottomWidths_;
   vector<float> lengths_;
   vector<float> thicknesses_;
-  vector<float> yaxisorientation_;
-  vector<float> soffset_;
-  vector<float> stripslen_;
+  // strips
+  vector<float> yAxisOrientation_;
+  vector<float> sOffset_;
+  vector<float> yCentreOfStripPlane_;
+  vector<float> angularWidth_;
+  vector<float> centreToIntersection_;
+  vector<float> phiOfOneEdge_;
+  //wires
+  vector<float> wireSpacing_;   
+  vector<float> wireAngle_;   
+  //files
   string infileName_;
   string outfileName_;
   int tolerance_;
@@ -157,7 +171,6 @@ void CSCGeometryValidate::validateCSCLayerGeometry() {
     const int n_strips = laygeo->numberOfStrips();
     const int n_wire = laygeo->numberOfWires();
     const float strips_offset = laygeo->stripOffset();
-  
     const CSCStripTopology* stopo = laygeo->topology();
     const float ycentre_of_strip_plane = stopo->yCentreOfStripPlane();   
     const float angular_width = stopo->angularWidth();   
@@ -166,8 +179,10 @@ void CSCGeometryValidate::validateCSCLayerGeometry() {
     const float phi_of_one_edge = stopo->phiOfOneEdge();   
     const float* parameters = fwGeometry_.getParameters(chId.rawId());
     cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" nstrips: "<<n_strips<<" nwire: "<<n_wire<<endl;
+    
     cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" strpis offset: "<<strips_offset<<" y centre of strip plane: "<<ycentre_of_strip_plane<<" angular width: "<<angular_width<<endl;
     cout<<"MYVALIDATE From Reco, detid: "<<chId.rawId()<<" strpis offset: "<<parameters[4]<<" y centre of strip plane: "<<parameters[2]<<" angular width: "<<parameters[5]<<endl;
+    
     cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" y axis orientation: "<<y_axis_orientation<<" centre to intersection: "<<centre_to_intersection<<" phi of one edge: "<<phi_of_one_edge<<endl;
     cout<<"MYVALIDATE From Reco, detid: "<<chId.rawId()<<" y axis orientation: "<<parameters[0]<<" centre to intersection: "<<parameters[1]<<" phi of one edge: "<<parameters[3]<<endl;
    
@@ -176,18 +191,30 @@ void CSCGeometryValidate::validateCSCLayerGeometry() {
     const float wire_angle = wiretopo->wireAngle();   
     cout<<"MYVALIDATE From Geo, detid: "<<chId.rawId()<<" wire spacing: "<<wire_spacing<<" wire angle: "<<wire_angle<<endl;
     cout<<"MYVALIDATE From Reco, detid: "<<chId.rawId()<<" wire spacing: "<<parameters[6]<<" wire angle: "<<parameters[7]<<endl;
-    /*
+   
     
     if (n_strips) {
       for (int istrips = 1; istrips <= n_strips; istrips++) {
-        yaxisorientation_.push_back(fabs(y_axis_orientation - parameters[0]));
-	soffset_.push_back(fabs(strips_offset - parameters[4]));
-        stripslen_.push_back(fabs(stripLen - parameters[1]));
+        yAxisOrientation_.push_back(fabs(y_axis_orientation - parameters[0]));
+	sOffset_.push_back(fabs(strips_offset - parameters[4]));
+        yCentreOfStripPlane_.push_back(fabs(ycentre_of_strip_plane - parameters[2]));
+	angularWidth_.push_back(fabs(angular_width - parameters[5]));
+	centreToIntersection_.push_back(fabs(centre_to_intersection - parameters[1]));
+	phiOfOneEdge_.push_back(fabs(phi_of_one_edge - parameters[3]));
       }
     } else {
-      LogVerbatim("CSCGeometry") << "ATTENTION! nLayers == 0";
+      LogVerbatim("CSCGeometry") << "ATTENTION! nStrips == 0";
     }
-  */
+
+    if (n_wire) {
+      for (int iwires = 1; iwires <= n_wire; iwires++) {
+        wireSpacing_.push_back(fabs(wire_spacing - parameters[6]));
+	wireAngle_.push_back(fabs(wire_angle - parameters[7]));
+      }
+    } else {
+      LogVerbatim("CSCGeometry") << "ATTENTION! nWires == 0";
+    }
+ 
   }
   makeHistograms2("CSC Layer");
   
@@ -295,13 +322,29 @@ void CSCGeometryValidate::makeHistograms2(const char* detector) {
   string d(detector);
 
   string ns = d + ": absolute difference between Y Axis Orientation of the Strips";
-  makeHistogram(ns, yaxisorientation_);
+  makeHistogram(ns, yAxisOrientation_);
 
   string pi = d + ": absolute difference between Strips Offset";
-  makeHistogram(pi, soffset_);
+  makeHistogram(pi, sOffset_);
 
-  string pl = d + ": absolute difference between Strips Length";
-  makeHistogram(pl, stripslen_);
+  string pl = d + ": absolute difference between 'Y centre' of the Strips Planes";
+  makeHistogram(pl, yCentreOfStripPlane_);
+
+  string aw = d + ": absolute difference between 'angular width' of the Strips ";
+  makeHistogram(aw, angularWidth_);
+
+  string ci = d + ": absolute difference between 'centre to intersection' of the Strips ";
+  makeHistogram(ci, centreToIntersection_);
+
+  string po = d + ": absolute difference between 'phi of one edge' of the Strips ";
+  makeHistogram(po, phiOfOneEdge_);
+
+  string ws = d + ": absolute difference between 'wire spacing' of the Wires ";
+  makeHistogram(ws, wireSpacing_);
+
+  string wa = d + ": absolute difference between 'wire angle' of the Wires ";
+  makeHistogram(wa, wireAngle_);
+
 }
 
 void CSCGeometryValidate::makeHistogram(const string& name, vector<float>& data) {
