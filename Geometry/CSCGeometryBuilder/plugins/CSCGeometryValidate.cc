@@ -126,18 +126,25 @@ CSCGeometryValidate::CSCGeometryValidate(const edm::ParameterSet& iConfig)
 }
 
 void CSCGeometryValidate::analyze(const edm::Event& event, const edm::EventSetup& eventSetup) {
+  cout<<"MYVALIDATE  STARTING CREATION cscGeometry_ "<<endl;
   eventSetup.get<MuonGeometryRecord>().get(cscGeometry_);
+  cout<<"MYVALIDATE  cscGeometry_ CREATED"<<endl;
   if (cscGeometry_.isValid()) {
+    cout<<"MYVALIDATE  cscGeometry_.isValid() = OK"<<endl;
     LogVerbatim("CSCGeometry") << "Validating CSC chamber geometry";
+    cout<<"MYVALIDATE START CHAMBERS VALIDATION "<<endl;
     validateCSCChamberGeometry();
+    cout<<"MYVALIDATE END CHAMBERS VALIDATION "<<endl;
+    cout<<"MYVALIDATE START LAYERS VALIDATION "<<endl;
     validateCSCLayerGeometry();
+    cout<<"MYVALIDATE END LAYERS VALIDATION "<<endl;
   } else
     LogVerbatim("CSCGeometry") << "Invalid CSC geometry";
 }
 
 void CSCGeometryValidate::validateCSCChamberGeometry() {
   clearData();
-
+  
   for (auto const& it : cscGeometry_->chambers()) {
     CSCDetId chId = it->id();
     GlobalPoint gp = it->surface().toGlobal(LocalPoint(0.0, 0.0, 0.0));
@@ -149,7 +156,7 @@ void CSCGeometryValidate::validateCSCChamberGeometry() {
       continue;
     }
     compareTransform(gp, matrix);
-
+    cout<<"MYVALIDATE CSC Chamber ID "<<chId.rawId()<<" compareTransform: DONE"<<endl;
     auto const& shape = fwGeometry_.getShapePars(chId.rawId());
 
     if (!shape) {
@@ -157,9 +164,10 @@ void CSCGeometryValidate::validateCSCChamberGeometry() {
       continue;
     }
     compareShape(it, shape);
+    cout<<"MYVALIDATE CSC Chamber ID "<<chId.rawId()<<" compareShape: DONE"<<endl;
   }
   makeHistograms("CSC Chamber");
-
+  cout<<"MYVALIDATE HISTOS DONE"<<endl;
 }
 
 void CSCGeometryValidate::validateCSCLayerGeometry() {

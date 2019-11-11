@@ -36,8 +36,10 @@ using namespace edm;
 using namespace std; // to debug
 
 CSCGeometryESModule::CSCGeometryESModule(const edm::ParameterSet& p)
-    : alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
-      myLabel_(p.getParameter<std::string>("appendToDataLabel")) {
+  : useDDD_(p.getParameter<bool>("useDDD")),
+    useDD4hep_(p.getParameter<bool>("useDD4hep")), 
+    alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
+    myLabel_(p.getParameter<std::string>("appendToDataLabel")) {
   auto cc = setWhatProduced(this);
 
   // Choose wire geometry modelling
@@ -142,10 +144,10 @@ void CSCGeometryESModule::initCSCGeometry_(const MuonGeometryRecord& record, std
       host->clear();
       edm::ESTransientHandle<cms::DDCompactView> cpv = record.getTransientHandle(cpvTokendd4hep_);
       const auto& mdc = rec.get(mdcTokendd4hep_);
-      for (auto& i: mdc.values()) 
-	{ 
-	  cout<<"MYDEBUG, CSCGeometryESModule, mdc.values() first and second "<<i.first<<": "<<i.second<<endl; 
-	} 
+      //for (auto& i: mdc.values()) 
+      //	{ 
+      //	  cout<<"MYDEBUG, CSCGeometryESModule, mdc.values() first and second "<<i.first<<": "<<i.second<<endl; 
+      //	} 
       CSCGeometryBuilderFromDDD builder;
       builder.build(*host, cpv.product(), mdc);
     });

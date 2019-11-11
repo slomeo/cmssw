@@ -102,8 +102,8 @@ bool CSCGeometryParsFromDD::build(const DDCompactView* cview,
     int jlayer = detid.layer();
 
     cout<<"MYDEBUG, CSCGeometryPars detid: "<<detid<<" name: "<<fv.name()<<endl;
-    cout<<"MYDEBUG, CSCGeometryPars jendcap: "<<jendcap<<" jstation "<<jstation<<" jring "<<jring<<" jchamber "<<jchamber<<" jlayer "<<endl;
-
+    cout<<"MYDEBUG, CSCGeometryPars jendcap: "<<jendcap<<" jstation "<<jstation<<" jring "<<jring<<" jchamber "<<jchamber<<" jlayer "<<jlayer<<endl;
+   
     // Package up the wire group info as it's decoded
     CSCWireGroupPackage wg;
     uparvals.clear();
@@ -384,7 +384,7 @@ bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
     
     size_t ct = 0;
     bool chSpecsAlreadyExist = false;
-    cout<<"MYDEBUG, chSpecsAlreadyExist "<<chSpecsAlreadyExist<<endl;
+    //cout<<"MYDEBUG, chSpecsAlreadyExist "<<chSpecsAlreadyExist<<endl;
     for (; ct < rdp.pChamberType.size(); ++ct) {
       if (chamberType == rdp.pChamberType[ct]) {
         break;
