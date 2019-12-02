@@ -5,6 +5,14 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
+// to debug
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <math.h>
+
+using namespace std;// to debug
 //#define LOCAL_DEBUG
 
 ME0NumberingScheme::ME0NumberingScheme(const MuonDDDConstants& muonConstants) { initMe(muonConstants); }
@@ -30,6 +38,11 @@ void ME0NumberingScheme::initMe(const MuonDDDConstants& muonConstants) {
                                          << "\ntheNEtaPart  " << theNEtaPart;
 #endif
   // -----------------------
+
+cout << "MYDEBUG, ME0NumberingScheme: "
+       << " \ntheRegionLevel " << theRegionLevel << " \ntheLayerLevel "
+       << theLayerLevel << " \ntheSectorLevel "
+      << theSectorLevel << " \ntheRollLevel " << theRollLevel<< " \ntheNEtaPart "<<theNEtaPart<<endl;
 }
 
 int ME0NumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
@@ -40,6 +53,7 @@ int ME0NumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
   for (int level = 1; level <= num.getLevels(); level++) {
     edm::LogVerbatim("ME0NumberingScheme")
         << "level " << level << " " << num.getSuperNo(level) << " " << num.getBaseNo(level);
+ cout<<"MYDEBUG, ME0NumberingScheme: "<< "level " << level << " " << num.getSuperNo(level) << " " << num.getBaseNo(level);
   }
 #endif
   // -----------------------
@@ -49,6 +63,9 @@ int ME0NumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
     throw cms::Exception("MuonNumbering") << "MuonME0NS::BNToUN "
                                           << "BaseNumber has " << num.getLevels() << " levels,"
                                           << "need " << maxLevel << std::endl;
+ cout<<"MYDEBUG, ME0NumberingScheme: " << "MuonME0NS::BNToUN "
+                                          << "BaseNumber has " << num.getLevels() << " levels,"
+                                          << "need " << maxLevel <<endl;
     return 0;
   }
 
@@ -65,6 +82,8 @@ int ME0NumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
   roll = num.getBaseNo(theRollLevel) + 1;
 
   // collect all info
+ cout << "MYDEBUG, ME0NumberingScheme: Region " << region << " Layer " << layer << " Chamber "
+       << chamber << " Roll " << roll<<endl;
 
   // Debug using LOCAL_DEBUG
 #ifdef LOCAL_DEBUG
@@ -75,7 +94,7 @@ int ME0NumberingScheme::baseNumberToUnitNumber(const MuonBaseNumber& num) {
 
   // Build the actual numbering
   ME0DetId id(region, layer, chamber, roll);
-
+ cout<<"MYDEBUG, ME0NumberingScheme " << id.rawId() << " DetId " << id<<endl;
   // Debug using LOCAL_DEBUG
 #ifdef LOCAL_DEBUG
   edm::LogVerbatim("ME0NumberingScheme") << " DetId " << id;
