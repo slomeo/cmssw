@@ -20,6 +20,14 @@
 #include <iostream>
 #include <string>
 
+// to debug
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <math.h>
+
+using namespace std;// to debug
+
 ME0GeometryBuilderFromDDD::ME0GeometryBuilderFromDDD() {}
 
 ME0GeometryBuilderFromDDD::~ME0GeometryBuilderFromDDD() {}
@@ -27,7 +35,7 @@ ME0GeometryBuilderFromDDD::~ME0GeometryBuilderFromDDD() {}
 ME0Geometry* ME0GeometryBuilderFromDDD::build(const DDCompactView* cview, const MuonDDDConstants& muonConstants) {
   std::string attribute = "MuStructure";
   std::string value = "MuonEndCapME0";
-
+  cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside build"<<endl;
   // Asking only for the MuonME0's
   DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
   DDFilteredView fview(*cview, filter);
@@ -37,7 +45,7 @@ ME0Geometry* ME0GeometryBuilderFromDDD::build(const DDCompactView* cview, const 
 
 ME0Geometry* ME0GeometryBuilderFromDDD::buildGeometry(DDFilteredView& fv, const MuonDDDConstants& muonConstants) {
   ME0Geometry* geometry = new ME0Geometry();
-
+  cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside buildGeometry " << "Top level logical part: " << fv.logicalPart().name().name()<<endl;
   LogTrace("ME0GeometryBuilderFromDDD") << "Building the geometry service";
   LogTrace("ME0GeometryBuilderFromDDD") << "About to run through the ME0 structure\n"
                                         << "Top level logical part: " << fv.logicalPart().name().name();
@@ -143,7 +151,9 @@ ME0Geometry* ME0GeometryBuilderFromDDD::buildGeometry(DDFilteredView& fv, const 
   // === Here the Real ME0 Geometry Builder ===
   // ==========================================
   bool doChambers = fv.firstChild();
+  cout<<" MYDEBUG, ME0GeometryBuilderFromDDD after bool doChambers = fv.firstChild(); bool value:  "<<doChambers<<endl;
   while (doChambers) {
+    cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside while(doChambers)"<<endl;
     // to etapartitions and back again to pick up DetId
     fv.firstChild();
     fv.firstChild();
@@ -162,6 +172,7 @@ ME0Geometry* ME0GeometryBuilderFromDDD::buildGeometry(DDFilteredView& fv, const 
     // loop over layers of the chamber
     bool doLayers = fv.firstChild();
     while (doLayers) {
+      cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside while(doLayers)"<<endl;
       // to etapartitions and back again to pick up DetId
       fv.firstChild();
       MuonDDDNumbering mdddnum(muonConstants);
@@ -179,6 +190,7 @@ ME0Geometry* ME0GeometryBuilderFromDDD::buildGeometry(DDFilteredView& fv, const 
       // loop over etapartitions of the layer
       bool doEtaParts = fv.firstChild();
       while (doEtaParts) {
+	cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside while(doEtaParts)"<<endl;
         // pick up DetId
         MuonDDDNumbering mdddnum(muonConstants);
         ME0NumberingScheme me0Num(muonConstants);
@@ -205,7 +217,7 @@ ME0Geometry* ME0GeometryBuilderFromDDD::buildGeometry(DDFilteredView& fv, const 
 ME0Chamber* ME0GeometryBuilderFromDDD::buildChamber(DDFilteredView& fv, ME0DetId detId) const {
   LogTrace("ME0GeometryBuilderFromDDD") << "buildChamber " << fv.logicalPart().name().name() << " " << detId
                                         << std::endl;
-
+  cout<<" MYDEBUG, ME0GeometryBuilderFromDDD buildChambers"<<endl;
   DDBooleanSolid solid = (DDBooleanSolid)(fv.logicalPart().solid());
   // std::vector<double> dpar = solid.solidA().parameters();
   std::vector<double> dpar = solid.parameters();
@@ -233,7 +245,7 @@ ME0Chamber* ME0GeometryBuilderFromDDD::buildChamber(DDFilteredView& fv, ME0DetId
 
 ME0Layer* ME0GeometryBuilderFromDDD::buildLayer(DDFilteredView& fv, ME0DetId detId) const {
   LogTrace("ME0GeometryBuilderFromDDD") << "buildLayer " << fv.logicalPart().name().name() << " " << detId << std::endl;
-
+  cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside buildLayer"<<endl;
   DDBooleanSolid solid = (DDBooleanSolid)(fv.logicalPart().solid());
   // std::vector<double> dpar = solid.solidA().parameters();
   std::vector<double> dpar = solid.parameters();
@@ -264,7 +276,7 @@ ME0Layer* ME0GeometryBuilderFromDDD::buildLayer(DDFilteredView& fv, ME0DetId det
 ME0EtaPartition* ME0GeometryBuilderFromDDD::buildEtaPartition(DDFilteredView& fv, ME0DetId detId) const {
   LogTrace("ME0GeometryBuilderFromDDD") << "buildEtaPartition " << fv.logicalPart().name().name() << " " << detId
                                         << std::endl;
-
+  cout<<" MYDEBUG, ME0GeometryBuilderFromDDD inside buildEtaPartition"<<endl;
   // EtaPartition specific parameter (nstrips and npads)
   DDValue numbOfStrips("nStrips");
   DDValue numbOfPads("nPads");

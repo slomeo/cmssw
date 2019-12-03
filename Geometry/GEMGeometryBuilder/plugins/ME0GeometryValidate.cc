@@ -89,7 +89,7 @@ private:
     stripslen_.clear();
   }
   
-  edm::ESHandle<ME0Geometry> gemGeometry_;
+  edm::ESHandle<ME0Geometry> me0Geometry_;
   FWGeometry fwGeometry_;
   TFile* outFile_;
   vector<float> globalDistances_;
@@ -114,11 +114,11 @@ ME0GeometryValidate::ME0GeometryValidate(const edm::ParameterSet& iConfig)
 }
 
 void ME0GeometryValidate::analyze(const edm::Event& event, const edm::EventSetup& eventSetup) {
-  cout<<" MYVALIDATE, before get gemGeometry_"<<endl;
-  eventSetup.get<MuonGeometryRecord>().get(gemGeometry_);
-  cout<<" MYVALIDATE, after get gemGeometry_"<<endl;
-  if (gemGeometry_.isValid()) {
-    cout<<" MYVALIDATE, gemGeometry_.isvalid()"<<endl;
+  cout<<" MYVALIDATE, before get me0Geometry_"<<endl;
+  eventSetup.get<MuonGeometryRecord>().get(me0Geometry_);
+  cout<<" MYVALIDATE, after get me0Geometry_"<<endl;
+  if (me0Geometry_.isValid()) {
+    cout<<" MYVALIDATE, me0Geometry_.isvalid()"<<endl;
     LogVerbatim("ME0Geometry") << "Validating ME0 chamber geometry";
     cout<<" MYVALIDATE, start validate chambers"<<endl;
     validateME0ChamberGeometry();
@@ -134,8 +134,8 @@ void ME0GeometryValidate::validateME0ChamberGeometry() {
   
   clearData();
     cout<<" MYVALIDATE, inside validate chambers"<<endl;
-    /*
-  for (auto const& it : gemGeometry_->chambers()) {
+
+  for (auto const& it : me0Geometry_->chambers()) {
     cout<<" MYVALIDATE, inside chambers loop"<<endl;
     ME0DetId chId = it->id();
     GlobalPoint gp = it->surface().toGlobal(LocalPoint(0.0, 0.0, 0.0));
@@ -157,7 +157,7 @@ void ME0GeometryValidate::validateME0ChamberGeometry() {
     compareShape(it, shape);
   }
   makeHistograms("ME0 Chamber");
-  */
+
   cout<<" MYVALIDATE, done histos ME0 Chambers"<<endl;
 
 }
@@ -165,8 +165,8 @@ void ME0GeometryValidate::validateME0ChamberGeometry() {
 void ME0GeometryValidate::validateME0EtaPartitionGeometry() {
   clearData2();
   cout<<" MYVALIDATE, inside validate EtaPartion (strips)"<<endl;
-  /*
-  for (auto const& it : gemGeometry_->etaPartitions()) {
+
+  for (auto const& it : me0Geometry_->etaPartitions()) {
     cout<<" MYVALIDATE, inside Eta partition loop"<<endl;
     ME0DetId chId = it->id();
     const int n_strips = it->nstrips();
@@ -191,7 +191,7 @@ void ME0GeometryValidate::validateME0EtaPartitionGeometry() {
     }
   }
   makeHistograms2("ME0 Eta Partition");
-  */
+
   cout<<" MYVALIDATE, done histos ME0 EtaPartitions"<<endl;
 }
 

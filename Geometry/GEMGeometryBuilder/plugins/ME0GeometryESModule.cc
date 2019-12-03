@@ -24,6 +24,14 @@
 
 #include <memory>
 
+// to debug
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <math.h>
+
+using namespace std;// to debug
+
 using namespace edm;
 
 class ME0GeometryESModule : public edm::ESProducer {
@@ -49,8 +57,10 @@ ME0GeometryESModule::ME0GeometryESModule(const edm::ParameterSet& p) {
   useDDD_ = p.getParameter<bool>("useDDD");
   auto cc = setWhatProduced(this);
   if (useDDD_) {
+    cout<<" MYDEBUG, ME0GeometryESModule inside if useDDD_"<<endl;
     cc.setConsumes(cpvToken_).setConsumes(mdcToken_);
   } else {
+    cout<<" MYDEBUG, ME0GeometryESModule inside else and NOT if useDDD_"<<endl;
     cc.setConsumes(rigme0Token_);
   }
 }
@@ -59,15 +69,17 @@ ME0GeometryESModule::~ME0GeometryESModule() {}
 
 std::unique_ptr<ME0Geometry> ME0GeometryESModule::produce(const MuonGeometryRecord& record) {
   LogTrace("ME0GeometryESModule") << "ME0GeometryESModule::produce with useDDD = " << useDDD_;
-
+  cout<<" MYDEBUG, ME0GeometryESModule inside produce "<<endl;
   if (useDDD_) {
     LogTrace("ME0GeometryESModule") << "ME0GeometryESModule::produce :: ME0GeometryBuilderFromDDD builder";
+    cout<<" MYDEBUG, ME0GeometryESModule inside produce and if useDDD_"<<endl;
     auto cpv = record.getTransientHandle(cpvToken_);
     const auto& mdc = record.get(mdcToken_);
     ME0GeometryBuilderFromDDD builder;
     return std::unique_ptr<ME0Geometry>(builder.build(cpv.product(), mdc));
   } else {
     LogTrace("ME0GeometryESModule") << "ME0GeometryESModule::produce :: ME0GeometryBuilderFromCondDB builder";
+    cout<<" MYDEBUG, ME0GeometryESModule inside produce and else and NOT if  useDDD_"<<endl;
     const auto& rigme0 = record.get(rigme0Token_);
     ME0GeometryBuilderFromCondDB builder;
     return std::unique_ptr<ME0Geometry>(builder.build(rigme0));
