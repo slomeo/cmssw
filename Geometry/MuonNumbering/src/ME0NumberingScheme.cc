@@ -15,11 +15,17 @@
 using namespace std;// to debug
 //#define LOCAL_DEBUG
 
-ME0NumberingScheme::ME0NumberingScheme(const MuonDDDConstants& muonConstants) { initMe(muonConstants); }
+ME0NumberingScheme::ME0NumberingScheme(const MuonDDDConstants& muonConstants) {
+  cout << "MYDEBUG, ME0NumberingScheme: inside constructor before initMe(muonConstants);"<<endl;
+ initMe(muonConstants); 
+
+}
 
 ME0NumberingScheme::ME0NumberingScheme(const DDCompactView& cpv) {
   MuonDDDConstants muonConstants(cpv);
+ cout << "MYDEBUG, ME0NumberingScheme: before initMe(muonConstants);"<<endl;
   initMe(muonConstants);
+  cout << "MYDEBUG, ME0NumberingScheme: after initMe(muonConstants);"<<endl;
 }
 
 void ME0NumberingScheme::initMe(const MuonDDDConstants& muonConstants) {
