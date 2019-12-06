@@ -92,14 +92,14 @@ std::unique_ptr<ME0Geometry> ME0GeometryESModule::produce(const MuonGeometryReco
     const auto& mdc = record.get(mdcToken_);
     ME0GeometryBuilderFromDDD builder;
     return std::unique_ptr<ME0Geometry>(builder.build(cpv.product(), mdc));
-  } /* else if (useDD4hep_) { // TO BE FIXED SEE ME0GEOMETRYBUILDERFROMMDDD CLASS
+  } else if (useDD4hep_) {
     LogTrace("ME0GeometryESModule") << "ME0GeometryESModule::produce :: ME0GeometryBuilderFromDDD builder DD4hep";
     cout<<" MYDEBUG, ME0GeometryESModule inside produce and if useDD4hep_"<<endl;
     auto cpv = record.getTransientHandle(dd4hepcpvToken_);
     const auto& mdc = record.get(dd4hepmdcToken_);
     ME0GeometryBuilderFromDDD builder;
     return std::unique_ptr<ME0Geometry>(builder.build(cpv.product(), mdc));
-    } */else {
+    } else {
     LogTrace("ME0GeometryESModule") << "ME0GeometryESModule::produce :: ME0GeometryBuilderFromCondDB builder";
     cout<<" MYDEBUG, ME0GeometryESModule inside produce and else and NOT if  useDDD_"<<endl;
     const auto& rigme0 = record.get(rigme0Token_);
