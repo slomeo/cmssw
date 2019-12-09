@@ -20,7 +20,8 @@ process.ME0GeometryESProducer = cms.ESProducer("ME0GeometryESModule",
                                                attribute = cms.string('MuStructure'),
                                                value = cms.string('MuonEndCapME0'),
                                                useDDD = cms.bool(False),
-                                               useDD4hep = cms.bool(True)
+                                               useDD4hep = cms.bool(True),
+                                               use10EtaPart = cms.bool(True)
                                               )
 
 process.DDSpecParRegistryESProducer = cms.ESProducer("DDSpecParRegistryESProducer",
@@ -38,10 +39,10 @@ process.test = cms.EDAnalyzer("DDTestMuonNumbering")
 # Note: Please, download the geometry file from a location
 #       specified by Fireworks/Geometry/data/download.url
 #
-# For example: cmsRun $CMSSW_RELEASE_BASE/src/Fireworks/Geometry/python/dumpRecoGeometry_cfg.py tag=2021
+# For example: cmsRun $CMSSW_RELEASE_BASE/src/Fireworks/Geometry/python/dumpRecoGeometry_cfg.py tag=2026 version=D49
 #
 process.valid = cms.EDAnalyzer("ME0GeometryValidate",
-                               infileName = cms.untracked.string('cmsRecoGeom-2021.root'),
+                               infileName = cms.untracked.string('cmsRecoGeom-2026.root'),
                                outfileName = cms.untracked.string('validateME0Geometry.root'),
                                tolerance = cms.untracked.int32(7)
                                )

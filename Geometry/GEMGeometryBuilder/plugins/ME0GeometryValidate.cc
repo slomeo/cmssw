@@ -106,7 +106,7 @@ private:
 };
 
 ME0GeometryValidate::ME0GeometryValidate(const edm::ParameterSet& iConfig)
-  : infileName_(iConfig.getUntrackedParameter<string>("infileName", "cmsRecoGeom-2021.root")),//it was cmsGeom10.root
+  : infileName_(iConfig.getUntrackedParameter<string>("infileName", "cmsRecoGeom-2026.root")),//it was cmsGeom10.root
     outfileName_(iConfig.getUntrackedParameter<string>("outfileName", "validateME0Geometry.root")),
     tolerance_(iConfig.getUntrackedParameter<int>("tolerance", 6)) {
   fwGeometry_.loadMap(infileName_.c_str());
@@ -143,6 +143,7 @@ void ME0GeometryValidate::validateME0ChamberGeometry() {
     const TGeoMatrix* matrix = fwGeometry_.getMatrix(chId.rawId());
 
     if (!matrix) {
+    cout<<" MYVALIDATE, Failed to get matrix of ME0 chamber with detid:"  << chId.rawId()<<endl;
       LogVerbatim("ME0Geometry") << "Failed to get matrix of ME0 chamber with detid: " << chId.rawId();
       continue;
     }
@@ -152,6 +153,7 @@ void ME0GeometryValidate::validateME0ChamberGeometry() {
 
     if (!shape) {
       LogVerbatim("ME0Geometry") << "Failed to get shape of ME0 chamber with detid: " << chId.rawId();
+      cout<<" MYVALIDATE, Failed to get shape of ME0 chamber with detid:"  << chId.rawId()<<endl;
       continue;
     }
     compareShape(it, shape);
@@ -164,10 +166,10 @@ void ME0GeometryValidate::validateME0ChamberGeometry() {
 
 void ME0GeometryValidate::validateME0EtaPartitionGeometry() {
   clearData2();
-  cout<<" MYVALIDATE, inside validate EtaPartion (strips)"<<endl;
+  // cout<<" MYVALIDATE, inside validate EtaPartion (strips)"<<endl;
 
   for (auto const& it : me0Geometry_->etaPartitions()) {
-    cout<<" MYVALIDATE, inside Eta partition loop"<<endl;
+    // cout<<" MYVALIDATE, inside Eta partition loop"<<endl;
     ME0DetId chId = it->id();
     const int n_strips = it->nstrips();
     const float n_pitch = it->pitch();
@@ -176,14 +178,14 @@ void ME0GeometryValidate::validateME0EtaPartitionGeometry() {
     const float stripLen = topo.stripLength();
     const float* parameters = fwGeometry_.getParameters(chId.rawId());
     nstrips_.push_back(fabs(n_strips - parameters[0]));
-    cout<<" MYVALIDATE, nstrips: "<<n_strips<<" nstrips RECO: "<<parameters[0]<<endl;
-    cout<<" MYVALIDATE, npads: "<<n_pads<<endl;
+    //  cout<<" MYVALIDATE, nstrips: "<<n_strips<<" nstrips RECO: "<<parameters[0]<<endl;
+    // cout<<" MYVALIDATE, npads: "<<n_pads<<endl;
     if (n_strips) {
       for (int istrips = 1; istrips <= n_strips; istrips++) {
 
-	cout<<" MYVALIDATE, npitch: "<<n_pitch<<" npitch RECO: "<<parameters[2]<<endl;
+	//	cout<<" MYVALIDATE, npitch: "<<n_pitch<<" npitch RECO: "<<parameters[2]<<endl;
 	pitch_.push_back(fabs(n_pitch - parameters[2]));
-	cout<<" MYVALIDATE, striplen: "<<stripLen<<" stripLen RECO: "<<parameters[1]<<endl;
+	//	cout<<" MYVALIDATE, striplen: "<<stripLen<<" stripLen RECO: "<<parameters[1]<<endl;
         stripslen_.push_back(fabs(stripLen - parameters[1]));
       }
     } else {
@@ -192,7 +194,7 @@ void ME0GeometryValidate::validateME0EtaPartitionGeometry() {
   }
   makeHistograms2("ME0 Eta Partition");
 
-  cout<<" MYVALIDATE, done histos ME0 EtaPartitions"<<endl;
+  // cout<<" MYVALIDATE, done histos ME0 EtaPartitions"<<endl;
 }
 
 void ME0GeometryValidate::compareTransform(const GlobalPoint& gp, const TGeoMatrix* matrix) {
@@ -218,12 +220,17 @@ void ME0GeometryValidate::compareShape(const GeomDet* det, const float* shape) {
     shapeBottomWidth = shape[1];
     shapeLength = shape[4];
     shapeThickness = shape[3];
+    cout<<" MYVALIDATE, RECO shape[0] == 1"<<endl;
+    cout<<" MYVALIDATE, RECO: shapeTopWidth: "<<shapeTopWidth<<" shapeBottomWidth: "<<shapeBottomWidth<<" shapeLength: "<<shapeLength<<" shapeThickness: "<<shapeThickness<<endl;
   } else if (shape[0] == 2) {
+    cout<<" MYVALIDATE, RECO shape[0] == 2"<<endl;
+    cout<<" MYVALIDATE, RECO: shapeTopWidth: "<<shapeTopWidth<<" shapeBottomWidth: "<<shapeBottomWidth<<" shapeLength: "<<shapeLength<<" shapeThickness: "<<shapeThickness<<endl;
     shapeTopWidth = shape[1];
     shapeBottomWidth = shape[1];
     shapeLength = shape[2];
     shapeThickness = shape[3];
   } else {
+    cout<<" MYVALIDATE, Failed  to get box or trapezoid from shape"<<endl;
     LogVerbatim("ME0Geometry") << "Failed to get box or trapezoid from shape";
 
     return;
@@ -237,19 +244,22 @@ void ME0GeometryValidate::compareShape(const GeomDet* det, const float* shape) {
     array<const float, 4> const& ps = tpbs->parameters();
 
     assert(ps.size() == 4);
-
+    cout<<" MYVALIDATE, inside TrapezoidalPlaneBounds"<<endl;
     bottomWidth = ps[0];
     topWidth = ps[1];
     thickness = ps[2];
     length = ps[3];
+    cout<<" MYVALIDATE : shapeTopWidth: "<<topWidth<<" shapeBottomWidth: "<<bottomWidth<<" shapeLength: "<<length<<" shapeThickness: "<<thickness<<endl;
   } else if ((dynamic_cast<const RectangularPlaneBounds*>(bounds))) {
+    cout<<" MYVALIDATE, inside RectangularPlaneBounds"<<endl;
     length = det->surface().bounds().length() * 0.5;
     topWidth = det->surface().bounds().width() * 0.5;
     bottomWidth = topWidth;
     thickness = det->surface().bounds().thickness() * 0.5;
+    cout<<" MYVALIDATE : shapeTopWidth: "<<topWidth<<" shapeBottomWidth: "<<bottomWidth<<" shapeLength: "<<length<<" shapeThickness: "<<thickness<<endl;
   } else {
     LogVerbatim("ME0Geometry") << "Failed to get bounds";
-
+    cout<<" MYVALIDATE, Failed to get bounds"<<endl;
     return;
   }
   topWidths_.push_back(fabs(shapeTopWidth - topWidth));
