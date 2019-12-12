@@ -170,14 +170,16 @@ dd4hep::Volume DDNamespace::addVolume(dd4hep::Volume vol) const {
   dd4hep::Material m = vol.material();
   //vol->SetName(n.c_str());
   m_context->volumes[n] = vol;
+
   dd4hep::printout(m_context->debug_volumes ? dd4hep::ALWAYS : dd4hep::DEBUG,
                    "DD4CMS",
                    "+++ Add volume:%-38s as [%s] Solid:%-26s[%-16s] Material:%s",
                    vol.name(),
                    n.c_str(),
-                   s.name(),
+		   "dummy",//                   s.name(),
                    s.type(),
                    m.name());
+
   return vol;
 }
 
