@@ -343,7 +343,7 @@ bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
   mypar.filter(refs, attribute, value);
   fv.mergedSpecifics(refs);
   
-  //bool doSubDets = fv.firstChild();
+  //  bool doSubDets = fv.firstChild();
   int noOfAnonParams = 0;
   //std::vector<const DDsvalues_type*> spec = fv.specifics();// to be modified
   //std::vector<const DDsvalues_type*>::const_iterator spit = spec.begin();//to be modified
@@ -354,7 +354,7 @@ bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
   std::vector<double> grmat(9);
   std::vector<double> trm(9);
   // while (doSubDets) {
-  while (fv.firstChild()) {
+    while (fv.firstChild()) {
     // spec = fv.specifics();// to be modified
     // spit = spec.begin();// to be modified
     
@@ -635,7 +635,8 @@ bool CSCGeometryParsFromDD::build(const cms::DDCompactView* cview,
 
   }  // filtering chambers.
   
-  //    doSubDets = fv.next();
+  //doSubDets = fv.next();
+
 }
 
 return true;
