@@ -1,5 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
+from Configuration.Eras.Era_Phase2C4_cff import Phase2C4
+process = cms.Process('PROD',Phase2C4)
+
 process = cms.Process("GeometryWriter")
 
 process.load('CondCore.CondDB.CondDB_cfi')
@@ -7,9 +10,11 @@ process.load('CondCore.CondDB.CondDB_cfi')
 # This will read all the little XML files and from
 # that fill the DDCompactView. The modules that fill
 # the reco part of the database need the DDCompactView.
+
 process.load('Configuration.Geometry.GeometryExtended2026D49_cff')
 process.load('Geometry.MuonNumbering.muonNumberingInitialization_cfi')
 process.load('Geometry.CaloEventSetup.CaloGeometry2026DBWriter_cfi')
+process.load('Geometry.CaloEventSetup.HGCalTopology_cfi')
 
 process.source = cms.Source("EmptyIOVSource",
                             lastValue = cms.uint64(1),
@@ -50,6 +55,8 @@ process.RPCGeometryWriter = cms.EDAnalyzer("RPCRecoIdealDBLoader")
 
 process.GEMGeometryWriter = cms.EDAnalyzer("GEMRecoIdealDBLoader")
 
+process.ME0GeometryWriter = cms.EDAnalyzer("ME0RecoIdealDBLoader")
+
 process.CondDB.timetype = cms.untracked.string('runnumber')
 process.CondDB.connect = cms.string('sqlite_file:myfile.db')
 process.PoolDBOutputService = cms.Service("PoolDBOutputService",
@@ -79,4 +86,4 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1)
     )
 
-process.p1 = cms.Path(process.XMLGeometryWriter+process.TrackerGeometryWriter+process.TrackerGeometryExtraWriter+process.TrackerParametersWriter+process.CaloGeometryWriter+process.HcalParametersWriter+process.CSCGeometryWriter+process.DTGeometryWriter+process.RPCGeometryWriter+process.GEMGeometryWriter)
+process.p1 = cms.Path(process.XMLGeometryWriter+process.TrackerGeometryWriter+process.TrackerGeometryExtraWriter+process.TrackerParametersWriter+process.CaloGeometryWriter+process.HcalParametersWriter+process.CSCGeometryWriter+process.DTGeometryWriter+process.RPCGeometryWriter+process.GEMGeometryWriter+process.ME0GeometryWriter)
