@@ -16,7 +16,7 @@
   <Trd1 name="REC2" dz="37.95*cm " dy1="1*mm " dy2="1*mm " dx1="49.369*cm " dx2="56.009*cm "/>
   <Trd1 name="REC3" dz="28*cm " dy1="1*mm " dy2="1*mm " dx1="44.382*cm " dx2="49.281*cm "/>
   <Tubs name="RTXU" rMin="3.29*m  " rMax="6.99*m  " dz="2*cm " startPhi="-8*deg" deltaPhi="16*deg"/>
-  <Tubs name="RTXUR" rMin="3.31*m  " rMax="6.99*m  " dz="2*cm " startPhi="-8*deg" deltaPhi="16*deg"/>
+  <Tubs name="RTXUR" rMin="3.31*m  " rMax="6.99*m  " dz="2*cm " startPhi="-8*deg" deltaPhi="16*deg"/><!-- Sergio: there was -0.16*cm in dz-->
   <Trd1 name="RFEX" dz="82.8*cm " dy1="5.5*mm " dy2="5.5*mm " dx1="29.089*cm " dx2="43.569*cm "/>
   <Trd1 name="RHEX" dz="82.75*cm " dy1="5*mm " dy2="5*mm " dx1="29.039*cm " dx2="43.519*cm "/>
   <Trd1 name="REE1" dz="30.85*cm " dy1="1*mm " dy2="1*mm " dx1="38.118*cm " dx2="43.516*cm "/>
@@ -35,7 +35,7 @@
        <Trd1 name="REG1" dz="16.05*cm " dy1="1*mm " dy2="1*mm " dx1="51.134*cm " dx2="56.794*cm " />
        <Trd1 name="REG2" dz="22.5*cm " dy1="1*mm " dy2="1*mm " dx1="43.023*cm " dx2="50.957*cm " />
        RE3/1 stage volumes -->
-  <Tubs name="RR4X" rMin="2.644*m  " rMax="6.99*m  " dz="4.5*cm " startPhi="0*deg" deltaPhi="360*deg"/>
+  <Tubs name="RR4X" rMin="2.644*m  " rMax="6.99*m  " dz="4.5*cm " startPhi="0*deg" deltaPhi="360*deg"/><!-- Sergio: there was -0.46*cm in dz-->
   <!-- RE4/1 staged volume
        <Tubs name="RT4H" rMin="2.644*m  " rMax="3.3*m  " dz="2*cm " startPhi="-13*deg" deltaPhi="26*deg"/>
        <Trd1 name="RFHX" dz="27.85*cm " dy1="5.5*mm " dy2="5.5*mm " dx1="47.044*cm " dx2="56.847*cm " />

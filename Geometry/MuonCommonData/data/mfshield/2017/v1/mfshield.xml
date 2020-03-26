@@ -620,13 +620,13 @@
    <rParent name="mf:MEP"/>
    <rChild name="mfshield:ShieldingBoronPoly_1_ME"/>
    <rRotation name="rotations:000D"/>
-   <Translation x="0*fm " y="0*fm " z="10.805*m  "/>
+   <Translation x="0*fm " y="0*fm " z="10.805*m + 0.455*cm "/><!-- Sergio: non c'era + 0.455-->
   </PosPart>
   <PosPart copyNumber="1">
    <rParent name="mf:MEN"/>
    <rChild name="mfshield:ShieldingBoronPoly_1_ME"/>
    <rRotation name="rotations:000D"/>
-   <Translation x="0*fm " y="0*fm " z="10.805*m  "/>
+   <Translation x="0*fm " y="0*fm " z="10.805*m + 0.455*cm "/><!-- Sergio: non c'era + 0.455-->
   </PosPart>
  </PosPartSection>
 </DDDefinition>

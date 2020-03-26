@@ -23,8 +23,9 @@
     </UnionSolid>
     <Tubs name="YE23" rMin="1.0400*m" rMax="1.3600*m" dz="0.2675*m" startPhi="75*deg" deltaPhi="30*deg"/>
     <Tubs name="YE3_a" rMin="1.0400*m" rMax="1.5299*m" dz="0.175*m" startPhi="75*deg" deltaPhi="30*deg"/>
-    <TruncTubs name="YE3_bl" rMin="1.5299*m" rMax="7.20024*m" cutAtStart="6.9549*m" cutAtDelta="7.20024*m" cutInside="false" startPhi="0*deg" deltaPhi="15*deg" zHalf="0.1159*m - 0.45*cm"/>
-    <TruncTubs name="YE3_br" rMin="1.5299*m" rMax="7.20024*m" cutAtStart="7.20024*m" cutAtDelta="6.9549*m" cutInside="false" startPhi="0*deg" deltaPhi="15*deg" zHalf="0.1159*m - 0.45*cm"/>
+    <TruncTubs name="YE3_bl" rMin="1.5299*m" rMax="7.20024*m" cutAtStart="6.9549*m" cutAtDelta="7.20024*m" cutInside="false" startPhi="0*deg" deltaPhi="15*deg" zHalf="0.116*m"/>
+    <!--Sergio: it was zHalf="0.1159*m - 0.45*cm" -->
+    <TruncTubs name="YE3_br" rMin="1.5299*m" rMax="7.20024*m" cutAtStart="7.20024*m" cutAtDelta="6.9549*m" cutInside="false" startPhi="0*deg" deltaPhi="15*deg" zHalf="0.116*m"/>
     <UnionSolid name="YE3_b">
       <rSolid name="YE3_bl"/>
       <rSolid name="YE3_br"/>
@@ -1396,7 +1397,7 @@
       <Numeric name="StartAngle" value="0*deg"/>
       <Numeric name="RangeAngle" value="360*deg"/>
       <Numeric name="Radius" value="0"/>
-      <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 10.7175*m </Vector>
+      <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 10.7175*m + 0.455*cm </Vector><!-- Sergio: non c'era 0.455-->
       <Vector name="RotateSolid" type="numeric" nEntries="3"> 0.*deg, 0.*deg, -90*deg </Vector>
     </Algorithm>
     <Algorithm name="global:DDAngular">
@@ -1408,7 +1409,7 @@
       <Numeric name="StartAngle"  value="0*deg"/> 
       <Numeric name="RangeAngle"  value="360*deg"/> 
       <Numeric name="Radius"      value="0*m"/> 
-      <Vector  name="Center" type="numeric" nEntries="3"> 0, 0, 10.7425*m </Vector>
+      <Vector  name="Center" type="numeric" nEntries="3"> 0, 0, 10.7425*m + 0.455*cm</Vector><!-- Sergio: non c'era 0.455-->
       <Vector  name="RotateSolid" type="numeric" nEntries="3"> 0*deg, 0.*deg, 0*deg </Vector>
     </Algorithm>
     <PosPart copyNumber="3">
@@ -1568,7 +1569,7 @@
       <Numeric name="StartAngle" value="0*deg"/>
       <Numeric name="RangeAngle" value="360*deg"/>
       <Numeric name="Radius" value="0"/>
-      <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 10.7175*m </Vector>
+      <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 10.7175*m + 0.455*cm </Vector><!-- Sergio: non c'era 0.455-->
       <Vector name="RotateSolid" type="numeric" nEntries="3"> 0.*deg, 0.*deg, -90*deg </Vector>
     </Algorithm>
     <Algorithm name="global:DDAngular">
@@ -1580,7 +1581,7 @@
       <Numeric name="StartAngle"  value="0*deg"/> 
       <Numeric name="RangeAngle"  value="360*deg"/> 
       <Numeric name="Radius"      value="0*m"/> 
-      <Vector  name="Center" type="numeric" nEntries="3"> 0, 0, 10.7425*m </Vector>
+      <Vector  name="Center" type="numeric" nEntries="3"> 0, 0, 10.7425*m + 0.455*cm </Vector><!-- Sergio: non c'era 0.455-->
       <Vector  name="RotateSolid" type="numeric" nEntries="3"> 0.*deg, 0*deg, 0.*deg </Vector>
     </Algorithm> 
     <Algorithm name="global:DDAngular">
