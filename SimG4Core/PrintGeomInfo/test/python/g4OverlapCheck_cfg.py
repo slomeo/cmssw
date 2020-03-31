@@ -23,8 +23,8 @@ process.g4SimHits.G4CheckOverlap.Resolution = cms.int32(10000)
 process.g4SimHits.G4CheckOverlap.Depth      = cms.int32(-1)
 # tells if NodeName is G4Region or G4PhysicalVolume
 process.g4SimHits.G4CheckOverlap.RegionFlag = cms.bool(False)
-# list of names
-process.g4SimHits.G4CheckOverlap.NodeNames  = cms.vstring('OCMS')
+# list of names: it was OCMS
+process.g4SimHits.G4CheckOverlap.NodeNames  = cms.vstring('MUON')
 process.g4SimHits.G4CheckOverlap.Tolerance  = cms.double(1)
 # enable dump gdml file 
 process.g4SimHits.G4CheckOverlap.gdmlFlag   = cms.bool(False)

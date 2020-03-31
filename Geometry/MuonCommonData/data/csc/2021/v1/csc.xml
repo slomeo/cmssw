@@ -1399,7 +1399,7 @@
    <rParent name="mf:ME3RingP"/>
    <rChild name="csc:ME31Space"/>
    <rRotation name="rotations:R025"/>
-   <Translation x="0*fm " y="0*fm " z="45.8875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.8875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <PosPart copyNumber="1">
    <rParent name="mf:ME3RingN"/>
@@ -1411,7 +1411,7 @@
    <rParent name="mf:ME3RingN"/>
    <rChild name="csc:ME31Space"/>
    <rRotation name="rotations:R025R"/>
-   <Translation x="0*fm " y="0*fm " z="45.8875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.8875*mm + 2.6*mm "/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <Division name="csc:ME31SpaceDivision" parent="csc:ME31Space" axis="phi" offset="-20*deg" width="40*deg"/>
   <PosPart copyNumber="1">
@@ -1489,7 +1489,7 @@
    <rParent name="mf:ME3RingP"/>
    <rChild name="csc:ME32Space"/>
    <rRotation name="rotations:R010"/>
-   <Translation x="0*fm " y="0*fm " z="45.8875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.8875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <PosPart copyNumber="1">
    <rParent name="mf:ME3RingN"/>
@@ -1501,7 +1501,7 @@
    <rParent name="mf:ME3RingN"/>
    <rChild name="csc:ME32Space"/>
    <rRotation name="rotations:R010R"/>
-   <Translation x="0*fm " y="0*fm " z="45.8875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.8875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <Division name="csc:ME32SpaceDivision" parent="csc:ME32Space" axis="phi" offset="-10*deg" width="20*deg"/>
   <PosPart copyNumber="1">
@@ -1592,7 +1592,7 @@
    <rParent name="mf:ME4RingP"/>
    <rChild name="csc:ME41Space"/>
    <rRotation name="rotations:R025"/>
-   <Translation x="0*fm " y="0*fm " z="45.1875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.1875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <PosPart copyNumber="1">
    <rParent name="mf:ME4RingN"/>
@@ -1604,7 +1604,7 @@
    <rParent name="mf:ME4RingN"/>
    <rChild name="csc:ME41Space"/>
    <rRotation name="rotations:R025R"/>
-   <Translation x="0*fm " y="0*fm " z="45.1875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.1875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <Division name="csc:ME41SpaceDivision" parent="csc:ME41Space" axis="phi" offset="-20*deg" width="40*deg"/>
   <PosPart copyNumber="1">
@@ -1683,7 +1683,7 @@
    <rParent name="mf:ME4RingP"/>
    <rChild name="csc:ME42Space"/>
    <rRotation name="rotations:R010"/>
-   <Translation x="0*fm " y="0*fm " z="45.1875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.1875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <PosPart copyNumber="1">
    <rParent name="mf:ME4RingN"/>
@@ -1695,7 +1695,7 @@
    <rParent name="mf:ME4RingN"/>
    <rChild name="csc:ME42Space"/>
    <rRotation name="rotations:R010R"/>
-   <Translation x="0*fm " y="0*fm " z="45.1875*mm "/>
+   <Translation x="0*fm " y="0*fm " z="45.1875*mm + 2.6*mm"/><!-- Sergio: there was not +2.6*mm -->
   </PosPart>
   <Division name="csc:ME42SpaceDivision" parent="csc:ME42Space" axis="phi" offset="-10*deg" width="20*deg"/>
   <PosPart copyNumber="1">
