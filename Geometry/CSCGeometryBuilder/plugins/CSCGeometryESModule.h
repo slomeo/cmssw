@@ -53,6 +53,8 @@ public:
   /// Produce CSCGeometry
   std::shared_ptr<CSCGeometry> produce(const MuonGeometryRecord& record);
 
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
 private:
   using HostType = edm::ESProductHost<CSCGeometry, MuonNumberingRecord, CSCRecoGeometryRcd, CSCRecoDigiParametersRcd>;
 

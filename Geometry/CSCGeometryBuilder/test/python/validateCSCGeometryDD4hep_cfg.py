@@ -12,7 +12,7 @@ process.maxEvents = cms.untracked.PSet(
 process.load('Configuration.StandardSequences.DD4hep_GeometrySim_cff')
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
-
+process.load("Geometry.CSCGeometryBuilder.cscSetParameters_cfi")
 
 process.CSCGeometryESProducer = cms.ESProducer("CSCGeometryESModule",
                                                DDDetector = cms.ESInputTag('',''),
@@ -21,8 +21,8 @@ process.CSCGeometryESProducer = cms.ESProducer("CSCGeometryESModule",
                                                appendToDataLabel = cms.string(''),
                                                attribute = cms.string('MuStructure'),
                                                value = cms.string('MuonEndcapCSC'),
-                                               useDDD = cms.bool(False),
-                                               useDD4hep = cms.untracked.bool(True),
+                                               #useDDD = cms.bool(False),
+                                               #useDD4hep = cms.bool(True),
                                                debugV = cms.untracked.bool(False),
                                                useGangedStripsInME1a = cms.bool(False),
                                                useOnlyWiresInME1a = cms.bool(False),

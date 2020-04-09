@@ -25,11 +25,14 @@
 #include "Geometry/MuonNumbering/interface/MuonDDDNumbering.h"
 #include "Geometry/MuonNumbering/interface/MuonBaseNumber.h"
 
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
 using namespace edm;
 
 CSCGeometryESModule::CSCGeometryESModule(const edm::ParameterSet& p)
     : useDDD_(p.getParameter<bool>("useDDD")),
-      useDD4hep_{p.getUntrackedParameter<bool>("useDD4hep", false)},
+      useDD4hep_{p.getParameter<bool>("useDD4hep")},
       alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
       myLabel_(p.getParameter<std::string>("appendToDataLabel")) {
   auto cc = setWhatProduced(this);
@@ -64,7 +67,7 @@ CSCGeometryESModule::CSCGeometryESModule(const edm::ParameterSet& p)
   debugV = p.getUntrackedParameter<bool>("debugV", false);
 
   // Find out if using the DDD or CondDB Geometry source.
-  useDDD_ = p.getParameter<bool>("useDDD");
+  //useDDD_ = p.getParameter<bool>("useDDD"); // non dovrebbe servire piu' perche' c'e' la void 
   if (useDDD_) {
     cpvToken_ = cc.consumesFrom<DDCompactView, IdealGeometryRecord>(edm::ESInputTag{});
     mdcToken_ = cc.consumesFrom<MuonDDDConstants, MuonNumberingRecord>(edm::ESInputTag{});
@@ -120,6 +123,13 @@ std::shared_ptr<CSCGeometry> CSCGeometryESModule::produce(const MuonGeometryReco
     }
   }
   return host;  // automatically converts to std::shared_ptr<CSCGeometry>
+}
+
+void CSCGeometryESModule::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  edm::ParameterSetDescription desc;
+  desc.add<bool>("useDDD", true);
+  desc.add<bool>("useDD4hep", false);
+  descriptions.add("cscSetParameters", desc);
 }
 
 void CSCGeometryESModule::initCSCGeometry_(const MuonGeometryRecord& record, std::shared_ptr<HostType>& host) {
