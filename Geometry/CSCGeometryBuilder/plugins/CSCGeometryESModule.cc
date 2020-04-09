@@ -67,7 +67,7 @@ CSCGeometryESModule::CSCGeometryESModule(const edm::ParameterSet& p)
   debugV = p.getUntrackedParameter<bool>("debugV", false);
 
   // Find out if using the DDD or CondDB Geometry source.
-  //useDDD_ = p.getParameter<bool>("useDDD"); // non dovrebbe servire piu' perche' c'e' la void 
+  useDDD_ = p.getParameter<bool>("useDDD"); // non dovrebbe servire piu' perche' c'e' la void 
   if (useDDD_) {
     cpvToken_ = cc.consumesFrom<DDCompactView, IdealGeometryRecord>(edm::ESInputTag{});
     mdcToken_ = cc.consumesFrom<MuonDDDConstants, MuonNumberingRecord>(edm::ESInputTag{});
@@ -129,6 +129,17 @@ void CSCGeometryESModule::fillDescriptions(edm::ConfigurationDescriptions& descr
   edm::ParameterSetDescription desc;
   desc.add<bool>("useDDD", true);
   desc.add<bool>("useDD4hep", false);
+  desc.add<bool>("applyAlignment", false); 
+  desc.add<bool>("debugV", false);
+  desc.add<bool>("useGangedStripsInME1a", false);
+  desc.add<bool>("useOnlyWiresInME1a", false);
+  desc.add<bool>("useRealWireGeometry", true);
+  desc.add<bool>("useCentreTIOffsets", false);   
+  desc.add<std::string>("alignmentsLabel", ""); 
+  desc.add<std::string>("appendToDataLabel", ""); 
+  desc.add<std::string>("attribute", "MuStructure"); 
+  desc.add<std::string>("value", "MuonEndcapCSC");
+  desc.add<edm::InputTag>("DDDetector", edm::InputTag("","")); 
   descriptions.add("cscSetParameters", desc);
 }
 
