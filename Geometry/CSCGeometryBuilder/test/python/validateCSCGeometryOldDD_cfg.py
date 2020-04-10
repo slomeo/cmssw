@@ -12,22 +12,23 @@ process.maxEvents = cms.untracked.PSet(
 process.load('Configuration.Geometry.GeometryExtended2021_cff')
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
+process.load("Geometry.CSCGeometryBuilder.cscSetParameters_cfi")
 
-process.CSCGeometryESProducer = cms.ESProducer("CSCGeometryESModule",
-                                               DDDetector = cms.ESInputTag('',''),
-                                               applyAlignment = cms.bool(False),
-                                               alignmentsLabel = cms.string(''),
-                                               appendToDataLabel = cms.string(''),
-                                               attribute = cms.string('MuStructure'),
-                                               value = cms.string('MuonEndcapCSC'),
-                                               useDDD = cms.bool(True),
-                                               useDD4hep = cms.bool(False),
-                                               debugV = cms.untracked.bool(False),
-                                               useGangedStripsInME1a = cms.bool(False),
-                                               useOnlyWiresInME1a = cms.bool(False),
-                                               useRealWireGeometry = cms.bool(True),
-                                               useCentreTIOffsets = cms.bool(False)
-                                           )
+ #process.CSCGeometryESProducer = cms.ESProducer("CSCGeometryESModule",
+   #                                             DDDetector = cms.ESInputTag('',''),
+     #                                           applyAlignment = cms.bool(False),
+     #                                           alignmentsLabel = cms.string(''),
+      #                                          appendToDataLabel = cms.string(''),
+       #                                         attribute = cms.string('MuStructure'),
+        #                                        value = cms.string('MuonEndcapCSC'),
+         #                                       useDDD = cms.bool(True),
+          #                                      useDD4hep = cms.bool(False),
+           #                                     debugV = cms.untracked.bool(False),
+            #                                    useGangedStripsInME1a = cms.bool(False),
+              #                                  useOnlyWiresInME1a = cms.bool(False),
+              #                                  useRealWireGeometry = cms.bool(True),
+                #                                useCentreTIOffsets = cms.bool(False)
+                  #                          )
 
 process.DDSpecParRegistryESProducer = cms.ESProducer("DDSpecParRegistryESProducer",
                                                      appendToDataLabel = cms.string('MUON')
