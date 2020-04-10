@@ -127,10 +127,10 @@ std::shared_ptr<CSCGeometry> CSCGeometryESModule::produce(const MuonGeometryReco
 
 void CSCGeometryESModule::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
-  desc.add<bool>("useDDD", true);
-  desc.add<bool>("useDD4hep", false);
+  desc.add<bool>("useDDD", false);
+  desc.add<bool>("useDD4hep", true);
   desc.add<bool>("applyAlignment", false); 
-  desc.add<bool>("debugV", false);
+  desc.addUntracked<bool>("debugV", false);
   desc.add<bool>("useGangedStripsInME1a", false);
   desc.add<bool>("useOnlyWiresInME1a", false);
   desc.add<bool>("useRealWireGeometry", true);
