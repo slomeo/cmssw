@@ -67,7 +67,8 @@ CSCGeometryESModule::CSCGeometryESModule(const edm::ParameterSet& p)
   debugV = p.getUntrackedParameter<bool>("debugV", false);
 
   // Find out if using the DDD or CondDB Geometry source.
-  useDDD_ = p.getParameter<bool>("useDDD"); // non dovrebbe servire piu' perche' c'e' la void 
+   useDDD_ = p.getParameter<bool>("useDDD"); // non dovrebbe servire piu' perche' c'e' la void 
+   std::cout<<"pos 1: "<<"useDDD_ : "<<useDDD_<<" useDD4hep_: "<<useDD4hep_<<std::endl;
   if (useDDD_) {
     cpvToken_ = cc.consumesFrom<DDCompactView, IdealGeometryRecord>(edm::ESInputTag{});
     mdcToken_ = cc.consumesFrom<MuonDDDConstants, MuonNumberingRecord>(edm::ESInputTag{});
@@ -144,6 +145,7 @@ void CSCGeometryESModule::fillDescriptions(edm::ConfigurationDescriptions& descr
 }
 
 void CSCGeometryESModule::initCSCGeometry_(const MuonGeometryRecord& record, std::shared_ptr<HostType>& host) {
+ std::cout<<"pos 2: "<<"useDDD_ : "<<useDDD_<<" useDD4hep_: "<<useDD4hep_<<std::endl;
   if (useDDD_) {
     host->ifRecordChanges<MuonNumberingRecord>(record, [&host, &record, this](auto const& rec) {
       host->clear();
