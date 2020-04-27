@@ -24,16 +24,15 @@ class MuonConstants;
 namespace cms {
   class MuonSimHitNumberingScheme : public MuonNumberingScheme {
   public:
-
     MuonSimHitNumberingScheme(MuonSubDetector*, const MuonConstants& muonConstants);
     //   ~MuonSimHitNumberingScheme() override;
-    
-    int CSCbaseNumberToUnitNumber(const MuonBaseNumber&); // override;
-    int RPCbaseNumberToUnitNumber(const MuonBaseNumber&); // override;
-    int GEMbaseNumberToUnitNumber(const MuonBaseNumber&); // override;
-    int DTbaseNumberToUnitNumber(const MuonBaseNumber&); // override;
+
+    int CSCbaseNumberToUnitNumber(const MuonBaseNumber&);  // override;
+    int RPCbaseNumberToUnitNumber(const MuonBaseNumber&);  // override;
+    int GEMbaseNumberToUnitNumber(const MuonBaseNumber&);  // override;
+    int DTbaseNumberToUnitNumber(const MuonBaseNumber&);   // override;
     //int ME0baseNumberToUnitNumber(const MuonBaseNumber&); // override;
-    
+
   private:
     MuonSubDetector* theDetector;
     CSCNumberingScheme* theNumberingCSC;

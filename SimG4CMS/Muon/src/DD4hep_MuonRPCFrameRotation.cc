@@ -10,7 +10,7 @@ MuonRPCFrameRotation::MuonRPCFrameRotation(const MuonConstants& muonConstants)
     : MuonFrameRotation::MuonFrameRotation() {
   g4numbering = new MuonG4Numbering(muonConstants);
   int theLevelPart = get("level", muonConstants);
-   theRegion = get("mr_region", muonConstants) / theLevelPart;
+  theRegion = get("mr_region", muonConstants) / theLevelPart;
 }
 
 MuonRPCFrameRotation::~MuonRPCFrameRotation() { delete g4numbering; }

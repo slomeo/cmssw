@@ -15,15 +15,14 @@ MuonSimHitNumberingScheme::MuonSimHitNumberingScheme(MuonSubDetector* d, const M
   if (theDetector->isEndcap()) {
     theNumberingCSC = new CSCNumberingScheme(muonConstants);
   } else if (theDetector->isBarrel()) {
-   theNumberingDT = new DTNumberingScheme(muonConstants);
-   } 
-  else if (theDetector->isRPC()) {
-   theNumberingRPC = new RPCNumberingScheme(muonConstants);
-   } else if (theDetector->isGEM()) {
-   theNumberingGEM = new GEMNumberingScheme(muonConstants);
-   } //else if (theDetector->isME0()) {
-    // theNumbering = new ME0NumberingScheme(muonConstants);
-    // }
+    theNumberingDT = new DTNumberingScheme(muonConstants);
+  } else if (theDetector->isRPC()) {
+    theNumberingRPC = new RPCNumberingScheme(muonConstants);
+  } else if (theDetector->isGEM()) {
+    theNumberingGEM = new GEMNumberingScheme(muonConstants);
+  }  //else if (theDetector->isME0()) {
+     // theNumbering = new ME0NumberingScheme(muonConstants);
+     // }
 }
 
 //MuonSimHitNumberingScheme::~MuonSimHitNumberingScheme() { delete theNumberingCSC; }

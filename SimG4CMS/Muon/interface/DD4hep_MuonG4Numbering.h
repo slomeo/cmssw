@@ -17,27 +17,26 @@ class MuonBaseNumber;
 class MuonConstants;
 
 namespace cms {
- 
+
   class MuonG4Numbering {
   public:
-   
     MuonG4Numbering(const MuonConstants& muonConstants);
     ~MuonG4Numbering(){};
-    
+
     MuonBaseNumber PhysicalVolumeToBaseNumber(const G4Step* aStep);
-    
+
   private:
     const int get(const char*, const MuonConstants&) const;
     const int getCopyNoLevel(const int);
     const int getCopyNoSuperNo(const int);
     const int getCopyNoBaseNo(const int);
     const bool copyNoRelevant(const int);
-    
+
     int theLevelPart;
     int theSuperPart;
     int theBasePart;
     int theStartCopyNo;
   };
-  
+
 }  // namespace cms
 #endif

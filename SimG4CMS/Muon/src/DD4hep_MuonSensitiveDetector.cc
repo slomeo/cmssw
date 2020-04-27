@@ -39,11 +39,11 @@ using namespace cms;
 //#define DebugLog
 
 MuonSensitiveDetector::MuonSensitiveDetector(const std::string& name,
-					       const edm::EventSetup& es,
-					       const SensitiveDetectorCatalog& clg,
-					       edm::ParameterSet const& p,
-					       const SimTrackManager* manager,
-					       const MuonConstants& muonConstants)
+                                             const edm::EventSetup& es,
+                                             const SensitiveDetectorCatalog& clg,
+                                             edm::ParameterSet const& p,
+                                             const SimTrackManager* manager,
+                                             const MuonConstants& muonConstants)
     : SensitiveTkDetector(name, es, clg, p),
       thePV(nullptr),
       theHit(nullptr),
@@ -62,28 +62,27 @@ MuonSensitiveDetector::MuonSensitiveDetector(const std::string& name,
   LogDebug("MuonSimDebug") << "create MuonSubDetector " << name;
   detector = new MuonSubDetector(name);
 
-//  edm::ESTransientHandle<DDCompactView> cpv;
-//  es.get<IdealGeometryRecord>().get(cpv);
+  //  edm::ESTransientHandle<DDCompactView> cpv;
+  //  es.get<IdealGeometryRecord>().get(cpv);
 
   //The constants take time to calculate and are needed by many helpers
-//  MuonDDDConstants constants(*cpv);
-
+  //  MuonDDDConstants constants(*cpv);
 
   G4String sdet = "unknown";
   if (detector->isEndcap()) {
     theRotation = new MuonEndcapFrameRotation();
     sdet = "Endcap";
   } else if (detector->isRPC()) {
-theRotation = new MuonRPCFrameRotation(muonConstants);//era constants
+    theRotation = new MuonRPCFrameRotation(muonConstants);  //era constants
     sdet = "RPC";
   } else if (detector->isGEM()) {
     theRotation = new MuonGEMFrameRotation(muonConstants);
     sdet = "GEM";
-} //else if (detector->isME0()) {
-//theRotation = new MuonME0FrameRotation(constants);
-//  sdet = "ME0";
-// }
- else {
+  }  //else if (detector->isME0()) {
+     //theRotation = new MuonME0FrameRotation(constants);
+     //  sdet = "ME0";
+     // }
+  else {
     theRotation = new MuonFrameRotation();
   }
   slaveMuon = new MuonSlaveSD(detector, theManager);

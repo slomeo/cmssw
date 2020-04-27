@@ -15,18 +15,18 @@
 #include "G4Step.hh"
 
 namespace cms {
-class MuonG4Numbering;
- 
- class MuonRPCFrameRotation : public MuonFrameRotation {
- public:
-   MuonRPCFrameRotation(const MuonConstants& constants);
-   ~MuonRPCFrameRotation() override;
-   Local3DPoint transformPoint(const Local3DPoint&, const G4Step*) const override;
-   
- private:
-   const int get(const char*, const MuonConstants&) const;
-   MuonG4Numbering* g4numbering;
-   int theRegion;
- };
+  class MuonG4Numbering;
+
+  class MuonRPCFrameRotation : public MuonFrameRotation {
+  public:
+    MuonRPCFrameRotation(const MuonConstants& constants);
+    ~MuonRPCFrameRotation() override;
+    Local3DPoint transformPoint(const Local3DPoint&, const G4Step*) const override;
+
+  private:
+    const int get(const char*, const MuonConstants&) const;
+    MuonG4Numbering* g4numbering;
+    int theRegion;
+  };
 }  // namespace cms
 #endif

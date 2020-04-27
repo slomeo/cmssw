@@ -21,9 +21,7 @@
 using namespace cms;
 //#define LOCAL_DEBUG
 
-
 MuonG4Numbering::MuonG4Numbering(const MuonConstants& muonConstants) {
-
   int theLevelPart = get("level", muonConstants);
   assert(theLevelPart != 0);
   theSuperPart = get("super", muonConstants);

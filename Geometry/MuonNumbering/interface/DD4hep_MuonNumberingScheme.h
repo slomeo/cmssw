@@ -21,9 +21,9 @@ namespace cms {
   public:
     MuonNumberingScheme(){};
     virtual ~MuonNumberingScheme(){};
-    
+
     virtual int baseNumberToUnitNumber(const MuonBaseNumber&);
-    
+
   private:
   };
 }  // namespace cms
