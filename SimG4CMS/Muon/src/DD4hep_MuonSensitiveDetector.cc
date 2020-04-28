@@ -16,6 +16,7 @@
 #include "Geometry/MuonNumbering/interface/DD4hep_MuonSimHitNumberingScheme.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 //#include "DetectorDescription/Core/interface/DDCompactView.h" //is it necessary?
+#include "DetectorDescription/DDCMS/interface/DDCompactView.h"
 
 #include "SimG4Core/Notification/interface/TrackInformation.h"
 #include "SimG4Core/Notification/interface/G4TrackToParticleID.h"
@@ -44,6 +45,13 @@ MuonSensitiveDetector::MuonSensitiveDetector(const std::string& name,
                                              edm::ParameterSet const& p,
                                              const SimTrackManager* manager,
                                              const MuonConstants& muonConstants)
+/*
+MuonSensitiveDetector::MuonSensitiveDetector(const std::string& name,
+                                             const edm::EventSetup& es,
+                                             const SensitiveDetectorCatalog& clg,
+                                             edm::ParameterSet const& p,
+                                             const SimTrackManager* manager)
+*/
     : SensitiveTkDetector(name, es, clg, p),
       thePV(nullptr),
       theHit(nullptr),
@@ -62,11 +70,12 @@ MuonSensitiveDetector::MuonSensitiveDetector(const std::string& name,
   LogDebug("MuonSimDebug") << "create MuonSubDetector " << name;
   detector = new MuonSubDetector(name);
 
-  //  edm::ESTransientHandle<DDCompactView> cpv;
-  //  es.get<IdealGeometryRecord>().get(cpv);
+  edm::ESTransientHandle<cms::DDCompactView> cpv;//is it necessary?
+  es.get<IdealGeometryRecord>().get(cpv);// is it necessary?
 
   //The constants take time to calculate and are needed by many helpers
   //  MuonDDDConstants constants(*cpv);
+        
 
   G4String sdet = "unknown";
   if (detector->isEndcap()) {

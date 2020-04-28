@@ -42,12 +42,21 @@ namespace cms {
 
   class MuonSensitiveDetector : public SensitiveTkDetector, public Observer<const BeginOfEvent*> {
   public:
+    
     explicit MuonSensitiveDetector(const std::string&,
                                    const edm::EventSetup&,
                                    const SensitiveDetectorCatalog&,
                                    edm::ParameterSet const&,
                                    const SimTrackManager*,
                                    const MuonConstants& muonConstants);
+    
+    /*
+    explicit MuonSensitiveDetector(const std::string&,
+                                   const edm::EventSetup&,
+                                   const SensitiveDetectorCatalog&,
+                                   edm::ParameterSet const&,
+                                   const SimTrackManager*);
+    */
     ~MuonSensitiveDetector() override;
     G4bool ProcessHits(G4Step*, G4TouchableHistory*) override;
     uint32_t setDetUnitId(const G4Step*) override;
@@ -99,6 +108,8 @@ namespace cms {
     G4ProcessTypeEnumerator* theG4ProcessTypeEnumerator;
 
     const SimTrackManager* theManager;
+
+   
   };
 
 }  // namespace cms
