@@ -8,6 +8,8 @@
 #include "DetectorDescription/Core/interface/DDFilteredView.h"
 #include "DetectorDescription/DDCMS/interface/DDFilteredView.h"
 
+#include "Geometry/MuonNumbering/interface/DD4hep_MuonNumbering.h"
+
 //#define EDM_ML_DEBUG
 
 bool MuonGeometryConstantsBuild::build(const DDCompactView* cpv, MuonGeometryConstants& php) {
@@ -51,11 +53,20 @@ bool MuonGeometryConstantsBuild::build(const DDCompactView* cpv, MuonGeometryCon
   return true;
 }
 
-bool MuonGeometryConstantsBuild::build(const cms::DDCompactView* cpv, MuonGeometryConstants& php) {
-#ifdef EDM_ML_DEBUG
-  edm::LogVerbatim("Geometry")
-      << "MuonGeometryConstantsBuild;:build (const cms::DDCompactView* cpv, MuonGeometryConstants& php)";
-#endif
+// dd4hep
 
+bool MuonGeometryConstantsBuild::build(const cms::DDCompactView* cpv, MuonGeometryConstants& php) {
+
+  std::string attribute = "OnlyForMuonNumbering";
+  std::string value = "level";
+  cms::DDFilteredView fv(cpv->detector(), cpv->detector()->worldVolume());
+  cms::DDSpecParRefs refs;
+  const cms::DDSpecParRegistry& mypar = cpv->specpars();
+  mypar.filter(refs, attribute, value);
+  fv.mergedSpecifics(refs);
+  
+  fv.firstChild();
+  
   return false;
 }
+
