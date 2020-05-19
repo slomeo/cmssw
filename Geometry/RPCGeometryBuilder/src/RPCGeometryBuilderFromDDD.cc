@@ -6,40 +6,34 @@
 //
 // Author:  Sergio Lo Meo (sergio.lo.meo@cern.ch) following what Ianna Osburne made for DTs (DD4HEP migration)
 //          Created:  Fri, 20 Sep 2019 
+//          Modified: Tue, 19 May 2020, following what Sunanda Banerjee made in PR #29842  
 */
+
 #include "Geometry/RPCGeometryBuilder/src/RPCGeometryBuilderFromDDD.h"
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
 #include "Geometry/RPCGeometry/interface/RPCRollSpecs.h"
-
 #include <DetectorDescription/Core/interface/DDFilter.h>
 #include <DetectorDescription/Core/interface/DDFilteredView.h>
 #include <DetectorDescription/DDCMS/interface/DDFilteredView.h>
 #include <DetectorDescription/DDCMS/interface/DDCompactView.h>
 #include <DetectorDescription/Core/interface/DDSolid.h>
-
 #include "Geometry/MuonNumbering/interface/DD4hep_MuonNumbering.h"
 #include "Geometry/MuonNumbering/interface/MuonDDDNumbering.h"
 #include "Geometry/MuonNumbering/interface/MuonBaseNumber.h"
 #include "Geometry/MuonNumbering/interface/RPCNumberingScheme.h"
 #include "Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h"
-
 #include "DataFormats/GeometrySurface/interface/RectangularPlaneBounds.h"
 #include "DataFormats/GeometrySurface/interface/TrapezoidalPlaneBounds.h"
-
 #include "DataFormats/GeometryVector/interface/Basic3DVector.h"
-
 #include <iostream>
 #include <algorithm>
 #include "DetectorDescription/DDCMS/interface/DDSpecParRegistry.h"
-#include "Geometry/MuonNumbering/interface/DD4hep_RPCNumberingScheme.h"
-
 #include "DataFormats/Math/interface/CMSUnits.h"
 #include "DataFormats/Math/interface/GeantUnits.h"
 
 using namespace cms_units::operators;
 
 RPCGeometryBuilderFromDDD::RPCGeometryBuilderFromDDD(bool comp11) : theComp11Flag(comp11) {}
-
 RPCGeometryBuilderFromDDD::~RPCGeometryBuilderFromDDD() {}
 
 // for DDD
@@ -52,7 +46,7 @@ RPCGeometry* RPCGeometryBuilderFromDDD::build(const DDCompactView* cview, const 
 }
 // for DD4hep
 RPCGeometry* RPCGeometryBuilderFromDDD::build(const cms::DDCompactView* cview,
-                                              const cms::MuonNumbering& muonConstants) {
+                                              const MuonGeometryConstants& muonConstants) {
   const std::string attribute = "ReadOutName";
   const std::string value = "MuonRPCHits";
   cms::DDFilteredView fview(cview->detector(), cview->detector()->worldVolume());
@@ -252,18 +246,23 @@ RPCGeometry* RPCGeometryBuilderFromDDD::buildGeometry(DDFilteredView& fview,
 
 // for DD4hep
 RPCGeometry* RPCGeometryBuilderFromDDD::buildGeometry(cms::DDFilteredView& fview,
-                                                      const cms::MuonNumbering& muonConstants) {
+                                                      const MuonGeometryConstants& muonConstants) {
   RPCGeometry* geometry = new RPCGeometry();
 
   while (fview.firstChild()) {
+   
+    MuonDDDNumbering mdddnum(muonConstants);
+    RPCNumberingScheme rpcnum(muonConstants);
+    int rawidCh = rpcnum.baseNumberToUnitNumber(mdddnum.geoHistoryToBaseNumber(fview.history()));
+    RPCDetId rpcid = RPCDetId(rawidCh);
+   
+    /*
     MuonBaseNumber mbn = muonConstants.geoHistoryToBaseNumber(fview.history());
-
     cms::RPCNumberingScheme rpcnum(muonConstants.values());
-
     rpcnum.baseNumberToUnitNumber(mbn);
     int detid = rpcnum.getDetId();
-
     RPCDetId rpcid(detid);
+    */
     RPCDetId chid(rpcid.region(), rpcid.ring(), rpcid.station(), rpcid.sector(), rpcid.layer(), rpcid.subsector(), 0);
 
     auto nStrips = fview.get<double>("nStrips");
