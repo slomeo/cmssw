@@ -14,6 +14,12 @@
 
 #include <vector>
 
+namespace cms {
+  class DDFilteredView;
+  class DDCompactView;
+  struct DDSpecPar;
+  struct DDSpecParRegistry;
+}  // namespace cms
 class DTGeometry;
 class DDCompactView;
 class DDFilteredView;
@@ -39,10 +45,15 @@ public:
   // Operations
   void build(DTGeometry& theGeometry, const DDCompactView* cview, const MuonGeometryConstants& muonConstants);
 
+  void build(DTGeometry& theGeometry, const cms::DDCompactView* cview, const MuonGeometryConstants& muonConstants);
+
 private:
   /// create the chamber
   DTChamber* buildChamber(DDFilteredView& fv,
                           const std::string& type,
+                          const MuonGeometryConstants& muonConstants) const;
+
+  DTChamber* buildChamber(cms::DDFilteredView& fview,
                           const MuonGeometryConstants& muonConstants) const;
 
   /// create the SL
@@ -51,10 +62,18 @@ private:
                                 const std::string& type,
                                 const MuonGeometryConstants& muonConstants) const;
 
+  DTSuperLayer* buildSuperLayer(cms::DDFilteredView& fview,
+                                DTChamber* chamber,
+                                const MuonGeometryConstants& muonConstants) const;
+
   /// create the layer
   DTLayer* buildLayer(DDFilteredView& fv,
                       DTSuperLayer* sl,
                       const std::string& type,
+                      const MuonGeometryConstants& muonConstants) const;
+
+  DTLayer* buildLayer(cms::DDFilteredView& fview,
+		      DTSuperLayer* sl,
                       const MuonGeometryConstants& muonConstants) const;
 
   /// get parameter also for boolean solid.
@@ -64,6 +83,10 @@ private:
 
   RCPPlane plane(const DDFilteredView& fv, Bounds* bounds) const;
 
+  RCPPlane plane(const cms::DDFilteredView& fview, Bounds* bounds) const;
+
   void buildGeometry(DTGeometry& theGeometry, DDFilteredView& fv, const MuonGeometryConstants& muonConstants) const;
+
+  void buildGeometry(DTGeometry& geom, cms::DDFilteredView& fview, const MuonGeometryConstants& num) const;
 };
 #endif

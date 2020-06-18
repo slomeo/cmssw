@@ -17,32 +17,46 @@
 #include <memory>
 #include <iostream>
 
+#include "Geometry/MuonNumbering/interface/MuonGeometryConstants.h"
+#include "Geometry/MuonNumbering/interface/MuonBaseNumber.h"
+#include <FWCore/Framework/interface/EventSetup.h>
+#include "FWCore/Framework/interface/ESTransientHandle.h"
+#include <FWCore/Framework/interface/ESHandle.h>
+#include <FWCore/Framework/interface/ESProducer.h>
+#include <unordered_map>
+#include <memory>
+
 using namespace edm;
 using namespace std;
 
 DTGeometryESModule::DTGeometryESModule(const edm::ParameterSet& p)
-    : alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
-      myLabel_(p.getParameter<std::string>("appendToDataLabel")),
-      fromDDD_(p.getParameter<bool>("fromDDD")) {
-  applyAlignment_ = p.getParameter<bool>("applyAlignment");
-
-  auto cc = setWhatProduced(this);
-  if (applyAlignment_) {
-    globalPositionToken_ = cc.consumesFrom<Alignments, GlobalPositionRcd>(edm::ESInputTag{"", alignmentsLabel_});
-    alignmentsToken_ = cc.consumesFrom<Alignments, DTAlignmentRcd>(edm::ESInputTag{"", alignmentsLabel_});
-    alignmentErrorsToken_ =
-        cc.consumesFrom<AlignmentErrorsExtended, DTAlignmentErrorExtendedRcd>(edm::ESInputTag{"", alignmentsLabel_});
-  }
-  if (fromDDD_) {
-    mdcToken_ = cc.consumesFrom<MuonGeometryConstants, IdealGeometryRecord>(edm::ESInputTag{});
-    cpvToken_ = cc.consumesFrom<DDCompactView, IdealGeometryRecord>(edm::ESInputTag{});
+  : alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
+    myLabel_(p.getParameter<std::string>("appendToDataLabel")),
+    fromDDD_(p.getParameter<bool>("fromDDD")),
+    useDD4hep_{p.getUntrackedParameter<bool>("useDD4hep", false)}
+ {
+   applyAlignment_ = p.getParameter<bool>("applyAlignment");
+   
+   auto cc = setWhatProduced(this);
+   if (applyAlignment_) {
+     globalPositionToken_ = cc.consumesFrom<Alignments, GlobalPositionRcd>(edm::ESInputTag{"", alignmentsLabel_});
+     alignmentsToken_ = cc.consumesFrom<Alignments, DTAlignmentRcd>(edm::ESInputTag{"", alignmentsLabel_});
+     alignmentErrorsToken_ =
+       cc.consumesFrom<AlignmentErrorsExtended, DTAlignmentErrorExtendedRcd>(edm::ESInputTag{"", alignmentsLabel_});
+   }
+   if (fromDDD_) {
+     mdcToken_ = cc.consumesFrom<MuonGeometryConstants, IdealGeometryRecord>(edm::ESInputTag{});
+     cpvToken_ = cc.consumesFrom<DDCompactView, IdealGeometryRecord>(edm::ESInputTag{});
+  } else if (useDD4hep_) {
+     mdcTokendd4hep_ = cc.consumesFrom<MuonGeometryConstants, IdealGeometryRecord>(edm::ESInputTag{});
+     cpvTokendd4hep_ = cc.consumesFrom<cms::DDCompactView, IdealGeometryRecord>(edm::ESInputTag{});
   } else {
-    rigToken_ = cc.consumesFrom<RecoIdealGeometry, DTRecoGeometryRcd>(edm::ESInputTag{});
-  }
-
-  edm::LogInfo("Geometry") << "@SUB=DTGeometryESModule"
-                           << "Label '" << myLabel_ << "' " << (applyAlignment_ ? "looking for" : "IGNORING")
-                           << " alignment labels '" << alignmentsLabel_ << "'.";
+     rigToken_ = cc.consumesFrom<RecoIdealGeometry, DTRecoGeometryRcd>(edm::ESInputTag{});
+   }
+   
+   edm::LogInfo("Geometry") << "@SUB=DTGeometryESModule"
+			    << "Label '" << myLabel_ << "' " << (applyAlignment_ ? "looking for" : "IGNORING")
+			    << " alignment labels '" << alignmentsLabel_ << "'.";
 }
 
 DTGeometryESModule::~DTGeometryESModule() {}
@@ -51,6 +65,8 @@ std::shared_ptr<DTGeometry> DTGeometryESModule::produce(const MuonGeometryRecord
   auto host = holder_.makeOrGet([]() { return new HostType; });
 
   if (fromDDD_) {
+    host->ifRecordChanges<MuonNumberingRecord>(record, [this, &host](auto const& rec) { setupGeometry(rec, host); });
+  } else if (useDD4hep_) {
     host->ifRecordChanges<MuonNumberingRecord>(record, [this, &host](auto const& rec) { setupGeometry(rec, host); });
   } else {
     host->ifRecordChanges<DTRecoGeometryRcd>(record, [this, &host](auto const& rec) { setupDBGeometry(rec, host); });
@@ -84,14 +100,22 @@ void DTGeometryESModule::setupGeometry(const MuonNumberingRecord& record, std::s
   //
   // Called whenever the muon numbering (or ideal geometry) changes
   //
-
+   if (fromDDD_) {
   host->clear();
-
   const auto& mdc = record.get(mdcToken_);
   edm::ESTransientHandle<DDCompactView> cpv = record.getTransientHandle(cpvToken_);
-
   DTGeometryBuilderFromDDD builder;
   builder.build(*host, cpv.product(), mdc);
+   }
+  else if (useDD4hep_) {
+  host->clear();
+  const auto& mdc = record.get(mdcTokendd4hep_);
+  edm::ESTransientHandle<cms::DDCompactView> cpv = record.getTransientHandle(cpvTokendd4hep_);
+  DTGeometryBuilderFromDDD builder;
+  builder.build(*host, cpv.product(), mdc);
+   }
+
+
 }
 
 void DTGeometryESModule::setupDBGeometry(const DTRecoGeometryRcd& record, std::shared_ptr<HostType>& host) {

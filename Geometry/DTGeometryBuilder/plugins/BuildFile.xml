@@ -8,6 +8,10 @@
 <use name="Geometry/Records"/>
 <library name="DTGeometryPlugins" file="DTGeometryESModule.cc">
   <use name="DetectorDescription/Core"/>
+  <use name="DetectorDescription/DDCMS"/>
+  <use name="Geometry/DTGeometry"/>
+  <use name="dd4hep"/>
+  <lib name="Geom"/>
   <use name="Geometry/DTGeometryBuilder"/>
   <flags EDM_PLUGIN="1"/>
 </library>
