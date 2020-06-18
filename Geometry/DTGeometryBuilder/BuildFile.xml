@@ -4,6 +4,8 @@
 <use name="Geometry/DTGeometry"/>
 <use name="Geometry/MuonNumbering"/>
 <use name="clhep"/>
+<use name="DetectorDescription/DDCMS"/>
+<use name="dd4hep"/>
 <export>
-  <lib name="GeometryDTGeometryBuilder"/>
+  <lib name="1"/>
 </export>

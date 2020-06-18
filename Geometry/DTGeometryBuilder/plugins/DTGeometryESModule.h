@@ -31,7 +31,7 @@
 #include "CondFormats/AlignmentRecord/interface/DTAlignmentRcd.h"
 #include "CondFormats/AlignmentRecord/interface/DTAlignmentErrorRcd.h"
 #include "CondFormats/AlignmentRecord/interface/DTAlignmentErrorExtendedRcd.h"
-
+#include <DetectorDescription/DDCMS/interface/DDCompactView.h>
 #include "DetectorDescription/Core/interface/DDCompactView.h"
 
 #include <memory>
@@ -60,12 +60,15 @@ private:
   edm::ESGetToken<Alignments, DTAlignmentRcd> alignmentsToken_;
   edm::ESGetToken<AlignmentErrorsExtended, DTAlignmentErrorExtendedRcd> alignmentErrorsToken_;
   edm::ESGetToken<MuonGeometryConstants, IdealGeometryRecord> mdcToken_;
+edm::ESGetToken<MuonGeometryConstants, IdealGeometryRecord> mdcTokendd4hep_;
   edm::ESGetToken<DDCompactView, IdealGeometryRecord> cpvToken_;
+edm::ESGetToken<cms::DDCompactView, IdealGeometryRecord> cpvTokendd4hep_;
   edm::ESGetToken<RecoIdealGeometry, DTRecoGeometryRcd> rigToken_;
 
   bool applyAlignment_;  // Switch to apply alignment corrections
   const std::string alignmentsLabel_;
   const std::string myLabel_;
   bool fromDDD_;
+  bool useDD4hep_;
 };
 #endif
