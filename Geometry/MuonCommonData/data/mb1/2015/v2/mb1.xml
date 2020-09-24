@@ -153,33 +153,18 @@
         <Box name="MB1SLZElectronics_58Cells" dx="[mbCommon:MBSLZL58]" dy="[mbCommon:MBLayerElectronics_width]" dz="[mbCommon:MBGas_height]"/>
         <Box name="MB1SLZCommonElectronics" dx="[mbCommon:MBSLZPl_x]" dy="35./2.*mm" dz="[mbCommon:MBSuperLayer_height]-10.*mm"/>
         <!--%% Effective gas volume -->
-        <Box name="MB1SLZGas_a" dx="20.35*mm" dy="[MB1SLZBareWire_length]" dz="[mbCommon:MBGas_height]"/>
+	<!-- Sergio, 24/09/2020 -->
+        <Box name="MB1SLZGas_aa" dx="20.35*mm-2*3.175*mm" dy="[MB1SLZBareWire_length]" dz="[mbCommon:MBGas_height]"/>
+	<Box name="MB1SLZGas_bb" dx="20.35*mm" dy="[MB1SLZBareWire_length]" dz="[mbCommon:MBGas_height]-2*0.65*mm"/>
         <!--%% Horizontal bars to make the 'I' shape (without them it would be a '|') -->
         <Box name="MB1SLZIBeamWing" dx="3.175*mm" dy="[MB1SLZBareWire_length]" dz="0.65*mm"/>
-        <SubtractionSolid name="MB1SLZGas_b">
-            <rSolid name="MB1SLZGas_a"/>
-            <rSolid name="MB1SLZIBeamWing"/>
+        <UnionSolid name="MB1SLZGas">
+            <rSolid name="MB1SLZGas_aa"/>
+            <rSolid name="MB1SLZGas_bb"/>
             <rRotation name="rotations:000D"/>
-            <Translation x="17.175*mm" y="0.*fm" z="5.1*mm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MB1SLZGas_c">
-            <rSolid name="MB1SLZGas_b"/>
-            <rSolid name="MB1SLZIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="17.175*mm" y="0.*fm" z="-5.1*mm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MB1SLZGas_d">
-            <rSolid name="MB1SLZGas_c"/>
-            <rSolid name="MB1SLZIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="-17.175*mm" y="0.*fm" z="5.1*mm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MB1SLZGas">
-            <rSolid name="MB1SLZGas_d"/>
-            <rSolid name="MB1SLZIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="-17.175*mm" y="0.*fm" z="-5.1*mm"/>
-        </SubtractionSolid>
+            <Translation x="0.*fm" y="0.*fm" z="0.*fm"/>
+        </UnionSolid>
+       	<!-- Sergio, 24/09/2020 -->
         <!-- ####  MB1: Honeycomb -->
         <Box name="MB1HoneycombBox" dx="[mb1:MB1HC_x]" dy="[mbCommon:MBHC_z]" dz="[mbCommon:MBHC_height]"/>
         <Box name="MB1Honeycomb" dx="[mb1:MB1HC_x]-125.*mm" dy="[mbCommon:MBHC_z]-125.*mm" dz="[mbCommon:MBHC_height]-2*[mbCommon:MBAlPlate_height]"/>

@@ -69,61 +69,29 @@
     <SolidSection label="mbCommon.xml">
         <!-- ####  DTBX Gas cell for non chimney chambers -->
         <!--%% Effective gas volume: This volume should not include the Ibeam horizontal bars (those that make the 'I' shape; without them it would be a '|') -->
-        <Box name="MBSLPhiGas_a" dx="20.35*mm" dz="[MBGas_height]" dy="[MBSLPhiBareWire_length]"/>
+	<!-- Sergio, 24/09/2020 start new lines --> 
+	<Box name="MBSLPhiGas_aa" dx="20.35*mm-2*3.175*mm" dz="[MBGas_height]" dy="[MBSLPhiBareWire_length]"/>
+	<Box name="MBSLPhiGas_bb" dx="20.35*mm" dz="[MBGas_height]-2*0.65*mm" dy="[MBSLPhiBareWire_length]"/>
         <Box name="MBSLPhiIBeamWing" dx="3.175*mm" dz="0.65*mm" dy="[MBSLPhiBareWire_length]"/>
-        <SubtractionSolid name="MBSLPhiGas_b">
-            <rSolid name="MBSLPhiGas_a"/>
-            <rSolid name="MBSLPhiIBeamWing"/>
+        <UnionSolid name="MBSLPhiGas"> 
+            <rSolid name="MBSLPhiGas_aa"/>
+            <rSolid name="MBSLPhiGas_bb"/>
             <rRotation name="rotations:000D"/>
-            <Translation x="17.175*mm" z="5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MBSLPhiGas_c">
-            <rSolid name="MBSLPhiGas_b"/>
-            <rSolid name="MBSLPhiIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="17.175*mm" z="-5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MBSLPhiGas_d">
-            <rSolid name="MBSLPhiGas_c"/>
-            <rSolid name="MBSLPhiIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="-17.175*mm" z="5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MBSLPhiGas">
-            <rSolid name="MBSLPhiGas_d"/>
-            <rSolid name="MBSLPhiIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="-17.175*mm" z="-5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
+            <Translation x="0.*fm" z="0.*fm" y="0.*fm"/>
+        </UnionSolid>
         <!-- ####  DTBX Gas cell for chimney chambers -->
         <!--%% Effective gas volume.
              This volume should not include the Ibeam horizontal bars (those that make the 'I' shape; without them it would be a '|') -->
-        <Box name="MBChimSLPhiGas_a" dx="20.35*mm" dz="[MBGas_height]" dy="[MBChimSLPhiBareWire_length]"/>
+        <Box name="MBChimSLPhiGas_aa" dx="20.35*mm-2*3.175*mm" dz="[MBGas_height]" dy="[MBChimSLPhiBareWire_length]"/>
+	<Box name="MBChimSLPhiGas_bb" dx="20.35*mm" dz="[MBGas_height]-2*0.65*mm" dy="[MBChimSLPhiBareWire_length]"/>
         <Box name="MBChimSLPhiIBeamWing" dx="3.175*mm" dz="0.65*mm" dy="[MBChimSLPhiBareWire_length]"/>
-        <SubtractionSolid name="MBChimSLPhiGas_b">
-            <rSolid name="MBChimSLPhiGas_a"/>
-            <rSolid name="MBChimSLPhiIBeamWing"/>
+        <UnionSolid name="MBChimSLPhiGas">
+            <rSolid name="MBChimSLPhiGas_aa"/>
+	    <rSolid name="MBChimSLPhiGas_bb"/>
             <rRotation name="rotations:000D"/>
-            <Translation x="17.175*mm" z="5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MBChimSLPhiGas_c">
-            <rSolid name="MBChimSLPhiGas_b"/>
-            <rSolid name="MBChimSLPhiIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="17.175*mm" z="-5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MBChimSLPhiGas_d">
-            <rSolid name="MBChimSLPhiGas_c"/>
-            <rSolid name="MBChimSLPhiIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="-17.175*mm" z="5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
-        <SubtractionSolid name="MBChimSLPhiGas">
-            <rSolid name="MBChimSLPhiGas_d"/>
-            <rSolid name="MBChimSLPhiIBeamWing"/>
-            <rRotation name="rotations:000D"/>
-            <Translation x="-17.175*mm" z="-5.1*mm" y="0.*fm"/>
-        </SubtractionSolid>
+            <Translation x="0.*fm" z="0.*fm" y="0.*fm"/>
+        </UnionSolid>
+	<!-- Sergio, 24/09/2020 end new lines --> 
         <!--%%%%%%%%%%%  Cables inside wheels -->
         <Box name="MBCablesBox_Int" dx="50*cm" dy="10*cm" dz="1.268*m"/>
         <Box name="MBCablesBox_IntChim" dx="50*cm" dy="10*cm" dz="1.073*m"/>
