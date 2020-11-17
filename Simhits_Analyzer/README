@@ -1,0 +1,13 @@
+The analyzer is: plugins/Simhits_Analyzer.cc
+--> It currently processes Simhits from EB, ES and EE.
+--> Stores a variety of histograms in the output root file
+
+The python cfg used to run, with cmsRun, using any step 1 input file(ddd OR dd4hep) is: test/Test_SimHits_cfg.py
+--> Change the path to the "PoolSource" to the absolute path of a Step 1 file 
+
+
+RUN:
+-- Either stick the folder in a CMSSW release and cmsRun with the python cfg
+OR
+-- Copy out the cc file and cfg file into the plugins and test(or wherever) folders respectively of
+an existing mkedanlzr setup.
