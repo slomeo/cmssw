@@ -62,6 +62,9 @@
 #include <DataFormats/MuonDetId/interface/RPCDetId.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include "DataFormats/MuonDetId/interface/DTWireId.h"
+#include "DataFormats/MuonDetId/interface/DTLayerId.h"
+#include "DataFormats/MuonDetId/interface/DTSuperLayerId.h"
+#include "DataFormats/MuonDetId/interface/DTChamberId.h"
 #include <DataFormats/MuonDetId/interface/GEMDetId.h>
 #include <DataFormats/MuonDetId/interface/ME0DetId.h>
 #include "DataFormats/RPCDigi/interface/RPCDigi.h"
@@ -216,6 +219,9 @@ private:
   TH1F* NHits_EE_Minus;
   TH2F* Hits_EE_Minus;   
   */
+
+  TH2F* XY_Hits_MUON;
+
   Long64_t run, event, lumi;
 
   edm::Handle<edm::View<reco::GenParticle> > particle;
@@ -312,22 +318,36 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   iSetup.get<MuonGeometryRecord>().get(dtGeometry); // crea problemi...
   const DTGeometry* dtgeo = dtGeometry.product(); //forse non c'e' bisogno di questa linea
 
-  //SimiHits
+  // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
 
      int pid            = (*iHit).particleType();
      DetId theDetUnitId((*iHit).detUnitId());
      DetId simdetid= DetId((*iHit).detUnitId());
+
+     // DT Sim Hits ------------------------------------------------------------------
      if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::DT){
      
      DTWireId wireId(theDetUnitId);
 
      GlobalPoint DTGlobalPoint = dtgeo->idToDet(wireId)->toGlobal((*iHit).localPosition());
      double DT_GlobalPoint_R = sqrt(pow(DTGlobalPoint.x(),2)+pow(DTGlobalPoint.y(),2));     
-     if(pid==13) cout<<"Wire ID: "<<wireId.wire()<<" R: "<<DT_GlobalPoint_R<<" z: "<<DTGlobalPoint.z()<<endl;
-    
-     }// chiude simdetid.det()=DetId::Muon
-  }// Chiude fro sulle SimHits
+
+     DTLayerId myDTLayerId = wireId.layerId();
+     DTSuperLayerId myDTSuperLayerId = myDTLayerId.superlayerId();
+     DTChamberId myDTChamberId = myDTSuperLayerId.chamberId();
+
+     if((pid==13) || (pid==-13))
+       {
+	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 cout<<" Wheel Id: "<<myDTChamberId.wheel()<<" Station Id: "<<myDTChamberId.station()<<" Sector Id: "<<myDTChamberId.sector()<<endl;
+	 cout<<" SuperLayer Id: "<<myDTSuperLayerId.superlayer()<<" Layer Id: "<<myDTLayerId.layer()<<" Wire ID: "<<wireId.wire()<<endl;
+	 cout<<" R: "<<DT_GlobalPoint_R<<" x: "<<DTGlobalPoint.x()<<" y: "<<DTGlobalPoint.y()<<" z: "<<DTGlobalPoint.z()<<endl;
+	 XY_Hits_MUON->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+       }
+     }// end DT Sim Hits -------------------------------------------------------------
+
+  }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   
   /*
@@ -420,7 +440,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   */
 
   for (auto &p : *particle){
-    if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
+    // if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
   }
 
 
@@ -434,14 +454,17 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
 // ------------ method called once each job just before starting event loop  ------------
 void Simhits_Analyzer::beginJob() {
-  // please remove this method if not needed
+ 
+  edm::Service<TFileService> fs;
+  XY_Hits_MUON = fs->make<TH2F>("XY_Hits_MUON","XY_Hits_MUON",2000,-1000, 1000, 2000,-1000, 1000); 
+// please remove this method if not needed
   /* 
- edm::Service<TFileService> fs;
+ 
   NHits_EB = fs->make<TH1F>("NHits_EB","NHits_EB",500,0, 500);
   Hits_EB = fs->make<TH2F>("Hits_EB","Hits_EB",400,-200, 200, 360,0, 360);
 
   NHits_ES_Plus = fs->make<TH1F>("NHits_ES_Plus","NHits_ES_Plus",500,0, 500);
-  Hits_ES_Plus = fs->make<TH2F>("Hits_ES_Plus","Hits_ES_Plus",400,-200, 200, 400,-200, 200);
+ 
   NHits_ES_Minus = fs->make<TH1F>("NHits_ES_Minus","NHits_ES_Minus",500,0, 500);
   Hits_ES_Minus = fs->make<TH2F>("Hits_ES_Minus","Hits_ES_Minus",400,-200, 200, 400,-200, 200);
 
