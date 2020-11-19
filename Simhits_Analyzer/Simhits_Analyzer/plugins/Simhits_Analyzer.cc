@@ -5,21 +5,25 @@
 //
 /**\class Simhits_Analyzer Simhits_Analyzer.cc Simhits_Analyzer/Simhits_Analyzer/plugins/Simhits_Analyzer.cc
 
- Description: [one line class summary]
+ Description: Analyzer for Simi Hits of the Muon System (needed to check the migration to DD4Hep of the Muon Geometry)
 
- Implementation:
-     [Notes on implementation]
+ Implementation: Code made from Mon, 16 Nov 2020 to  
+    
 */
 //
-// Original Author:  Sergio Lo Meo
+// Original Author:  Sergio Lo Meo (sergio.lo.meo@cern.ch) 
 //         Created:  Mon, 16 Nov 2020 14:03:21 GMT
 //
 //
-
 // system include files
 #include <memory>
-
-// user include files
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <math.h>
+// fwcore include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -27,11 +31,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-
-
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
-
+// geometry include files
 #include "Geometry/Records/interface/MuonGeometryRecord.h"
 #include "Geometry/Records/interface/GlobalTrackingGeometryRecord.h"
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
@@ -49,8 +49,8 @@
 #include "Geometry/DTGeometry/interface/DTSuperLayer.h"
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
-
-//--
+// data format include files
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/GeometrySurface/interface/Surface.h"
 #include <DataFormats/GeometrySurface/interface/LocalError.h>
 #include <DataFormats/GeometryVector/interface/LocalPoint.h>
@@ -60,6 +60,7 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/MuonDetId/interface/MuonSubdetId.h"
 #include <DataFormats/MuonDetId/interface/RPCDetId.h>
+#include <DataFormats/MuonDetId/interface/RPCCompDetId.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include "DataFormats/MuonDetId/interface/DTWireId.h"
 #include "DataFormats/MuonDetId/interface/DTLayerId.h"
@@ -99,13 +100,13 @@
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
-//
+// sim data format include files
 #include "SimDataFormats/Track/interface/SimTrack.h"
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
 #include "SimDataFormats/Vertex/interface/SimVertex.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 #include "SimDataFormats/TrackingHit/interface/PSimHitContainer.h"
-//
+// tracking tool include files
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/GeomPropagators/interface/Propagator.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
@@ -116,7 +117,7 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-//
+// reco include files
 #include "RecoMuon/TrackingTools/interface/MuonPatternRecoDumper.h"
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
 #include "RecoLocalMuon/DTSegment/src/DTSegmentUpdator.h"
@@ -124,44 +125,13 @@
 #include "RecoLocalMuon/DTSegment/src/DTHitPairForFit.h"
 #include "RecoLocalMuon/DTSegment/src/DTSegmentCand.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-//--
-
-#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
-#include "Geometry/CaloGeometry/interface/TruncatedPyramid.h"
-#include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
-#include "Geometry/CaloTopology/interface/EcalPreshowerTopology.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
-#include "Geometry/CaloTopology/interface/CaloTopology.h"
-
-
-#include "SimDataFormats/CaloHit/interface/PCaloHit.h"
-#include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
-
-#include "DataFormats/EcalDetId/interface/EBDetId.h"
-#include "DataFormats/EcalDetId/interface/ESDetId.h"
-#include "DataFormats/EcalDetId/interface/EEDetId.h"
-
-
+// common tools include files
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
+// root include files
 #include "TTree.h"
 #include "TH1.h"
 #include "TH2F.h"
 #include "TCanvas.h"
-#include <iostream>
-#include <fstream>
-
-
-#include <string>
-#include <sstream>
-
-#include <iomanip>
-#include <math.h>
-
-
 #include <TRandom.h>
 #include "TROOT.h"
 #include "TStyle.h"
@@ -182,7 +152,6 @@
 #include <TFrame.h>
 #include "TLorentzVector.h"
 #include "TMath.h"
-
 
 //
 // class declaration
@@ -222,13 +191,14 @@ private:
 
   Long64_t run, event, lumi;
 
+  // Particles
   edm::Handle<edm::View<reco::GenParticle> > particle;
   edm::EDGetTokenT<edm::View< reco::GenParticle > > particleToken;
  
-  // parte nuova per i Muoni
-   edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
+  // DT
+  edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
-  // fine parte nuova per i Muoni
+  // 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
