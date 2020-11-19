@@ -188,12 +188,6 @@
 // class declaration
 //
 
-// If the analyzer does not use TFileService, please remove
-// the template argument to the base class so the class inherits
-// from  edm::one::EDAnalyzer<>
-// This will improve performance in multithreaded jobs.
-
-
 class Simhits_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
   explicit Simhits_Analyzer(const edm::ParameterSet&);
@@ -206,19 +200,8 @@ private:
   void analyze(const edm::Event&, const edm::EventSetup&) override;
   void endJob() override;
 
-  // ----------member data ---------------------------
-  /*
-  TH1F* NHits_EB;
-  TH2F* Hits_EB;
-  TH1F* NHits_ES_Plus;
-  TH2F* Hits_ES_Plus;
-  TH1F* NHits_ES_Minus;
-  TH2F* Hits_ES_Minus;
-  TH1F* NHits_EE_Plus;
-  TH2F* Hits_EE_Plus;
-  TH1F* NHits_EE_Minus;
-  TH2F* Hits_EE_Minus;   
-  */
+  // Member Data
+
   // only mu- mu+
   TH1F* Z_DTHits_Muon;
   TH2F* XY_DTHits_Muon;
@@ -242,16 +225,6 @@ private:
   edm::Handle<edm::View<reco::GenParticle> > particle;
   edm::EDGetTokenT<edm::View< reco::GenParticle > > particleToken;
  
-  /*
-  edm::Handle<edm::PCaloHitContainer> pCaloHits_EB_Handle;
-  edm::EDGetTokenT<edm::PCaloHitContainer> pCaloHits_EB_Token;
-
-  edm::Handle<edm::PCaloHitContainer> pCaloHits_ES_Handle;
-  edm::EDGetTokenT<edm::PCaloHitContainer> pCaloHits_ES_Token;
-  
-  edm::Handle<edm::PCaloHitContainer> pCaloHits_EE_Handle;
-  edm::EDGetTokenT<edm::PCaloHitContainer> pCaloHits_EE_Token;  
-  */
   // parte nuova per i Muoni
    edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
@@ -274,27 +247,18 @@ private:
 // constructors and destructor
 //
 Simhits_Analyzer::Simhits_Analyzer(const edm::ParameterSet& iConfig){
-  consumesMany<edm::PSimHitContainer>();// questo viene dal MyAnalyzer5
+  consumesMany<edm::PSimHitContainer>();
   usesResource("TFileService");
   particleToken = consumes< edm::View < reco::GenParticle> >(edm::InputTag("genParticles"));
-	/*
-	pCaloHits_EB_Token = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits", "EcalHitsEB", "SIM"));
-        pCaloHits_ES_Token = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits","EcalHitsES","SIM"));
-        pCaloHits_EE_Token = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits", "EcalHitsEE", "SIM"));
-
-	*/
-   theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));// OK
+  theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
 #endif
-  //now do what ever initialization is needed
+ 
 }
 
 Simhits_Analyzer::~Simhits_Analyzer() {
-  // do anything here that needs to be done at desctruction time
-  // (e.g. close files, deallocate resources etc.)
-  //
-  // please remove this method altogether if it would be left empty
+ 
 }
 
 //
@@ -311,13 +275,8 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   event = iEvent.id().event();
   lumi = iEvent.id().luminosityBlock();
 
-  iEvent.getByToken(particleToken, particle);         //GenParticles
-  /*
-  iEvent.getByToken(pCaloHits_EB_Token, pCaloHits_EB_Handle); //PCaloHits EB
-  iEvent.getByToken(pCaloHits_ES_Token, pCaloHits_ES_Handle); //PCaloHits ES
-  iEvent.getByToken(pCaloHits_EE_Token, pCaloHits_EE_Handle); //PCaloHits EE
-  */
-
+  iEvent.getByToken(particleToken, particle);  
+  
   std::vector<edm::Handle<edm::PSimHitContainer> > theSimHitContainers;
   iEvent.getManyByType(theSimHitContainers); 
 
@@ -325,13 +284,11 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   for (int i = 0; i < int(theSimHitContainers.size()); ++i) {
     theSimHits.insert(theSimHits.end(),theSimHitContainers.at(i)->begin(),theSimHitContainers.at(i)->end());
   }
-
- //OK 
-  //new line for Muon
-  iEvent.getByToken(theDTSimHitToken, theDTSimHitHandle); //DT Sim Hits
+  // DT
+  iEvent.getByToken(theDTSimHitToken, theDTSimHitHandle); 
   ESHandle<DTGeometry> dtGeometry;
-  iSetup.get<MuonGeometryRecord>().get(dtGeometry); // crea problemi...
-  const DTGeometry* dtgeo = dtGeometry.product(); //forse non c'e' bisogno di questa linea
+  iSetup.get<MuonGeometryRecord>().get(dtGeometry); 
+  const DTGeometry* dtgeo = dtGeometry.product(); 
 
   // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
@@ -382,106 +339,15 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
   }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  
-  /*
-  ESHandle<CaloGeometry> pG;
-  iSetup.get<CaloGeometryRecord>().get(pG);
-  const CaloGeometry* geo = pG.product();
-
-  EBDetId* DidEB;
-  ESDetId* DidES;
-  EEDetId* DidEE;
  
-
-  int NHits, NHits_Plus, NHits_Minus = 0;
-  float Energy = 0.;
-
-  edm::PCaloHitContainer::const_iterator caloHitsItr;
-
-  const CaloSubdetectorGeometry* ecalEBGeom = static_cast<const CaloSubdetectorGeometry*>(geo->getSubdetectorGeometry(DetId::Ecal, EcalBarrel));
-
-  
-  for(caloHitsItr = pCaloHits_EB_Handle->begin(); caloHitsItr != pCaloHits_EB_Handle->end(); caloHitsItr++){
-          int temp = caloHitsItr->depth();
-          DidEB = new EBDetId(caloHitsItr->id());
-          temp &= 0x0003;
-          double depth = (double)(caloHitsItr->depth()>>2)/16383.;
-	  NHits++;
-          Energy += caloHitsItr->energy();
-          Hits_EB->Fill(DidEB->ieta(), DidEB->iphi());
-	  std::shared_ptr<const CaloCellGeometry> geom = ecalEBGeom->getGeometry(*DidEB);  
-	  //	  Hits_EB_cartesian->Fill(geom->getPosition().x(), geom->getPosition().y());
-//          cout << "EB ==> temp flag: " << temp << " || depth: " << depth << " || energy: " << caloHitsItr->energy() << endl << endl;
-//          cout << endl << "iEta = "<< DidEB->ieta() << " iPhi = "<<DidEB->iphi()<<endl;
-  }
-
-  NHits_EB->Fill(NHits);
-  cout<<endl<<"EB Total Hits = "<< NHits <<  "Total Energy = "<< Energy <<endl;
-
-
-  const CaloSubdetectorGeometry* ecalESGeom = static_cast<const CaloSubdetectorGeometry*>(geo->getSubdetectorGeometry(DetId::Ecal, EcalPreshower));
-  NHits_Plus = 0;
-  NHits_Minus = 0;
-  Energy = 0.;
-
-  for(caloHitsItr = pCaloHits_ES_Handle->begin(); caloHitsItr != pCaloHits_ES_Handle->end(); caloHitsItr++){
-          int temp = caloHitsItr->depth();
-          DidES = new ESDetId(caloHitsItr->id());
-          NHits++;
-          Energy += caloHitsItr->energy();
-	  std::shared_ptr<const CaloCellGeometry> geom = ecalESGeom->getGeometry(*DidES);
-//	  cout<<endl<<geom->getPosition().x()<<" "<<geom->getPosition().y()<<endl;
-	  if (DidES->zside() == 1){
-          	Hits_ES_Plus->Fill(geom->getPosition().x(), geom->getPosition().y());
-		NHits_Plus++;
-	  }
-	  if (DidES->zside() == -1){
-                Hits_ES_Minus->Fill(geom->getPosition().x(), geom->getPosition().y());
-		NHits_Minus++;
-	  }
-
-  }
-
-
-  NHits_ES_Plus->Fill(NHits_Plus);
-  NHits_ES_Minus->Fill(NHits_Minus);
-  NHits_Plus = 0;
-  NHits_Minus = 0;
-  Energy = 0.;
-
-  for(caloHitsItr = pCaloHits_EE_Handle->begin(); caloHitsItr != pCaloHits_EE_Handle->end(); caloHitsItr++){
-          int temp = caloHitsItr->depth();
-          DidEE = new EEDetId(caloHitsItr->id());
-          temp &= 0x0003;
-	  NHits++;
-	  Energy += caloHitsItr->energy();
-          double depth = (double)(caloHitsItr->depth()>>2)/16383.;
-//          cout << "EE ==> temp flag: " << temp << " || depth: " << depth << " || energy: " << caloHitsItr->energy() << endl << endl;
-//	  cout << endl << "iEta = "<< DidEE->ix() << " iPhi = "<<DidEE->iy()<<" "<<DidEE->zside()<<endl;
-	  if (DidEE->zside() == 1){
-		Hits_EE_Plus->Fill(DidEE->ix(), DidEE->iy());
-		NHits_Plus++;
-	  }
-	  if (DidEE->zside() == -1){
-                Hits_EE_Minus->Fill(DidEE->ix(), DidEE->iy());
-		NHits_Minus++;
-	  }
-  }
-
-  NHits_EE_Plus->Fill(NHits_Plus);
-  NHits_EE_Minus->Fill(NHits_Minus);
-  */
-
   for (auto &p : *particle){
     // if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
   }
 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-  // if the SetupData is always needed
-  auto setup = iSetup.getData(setupToken_);
-  // if need the ESHandle to check if the SetupData was there or not
-  auto pSetup = iSetup.getHandle(setupToken_);
+   auto setup = iSetup.getData(setupToken_);
+   auto pSetup = iSetup.getHandle(setupToken_);
 #endif
 }
 
@@ -506,43 +372,19 @@ void Simhits_Analyzer::beginJob() {
   Wheel_1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_1_XY_DTHits_AllParticles","Wheel_1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Wheel_2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_2_XY_DTHits_AllParticles","Wheel_2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
  
-// please remove this method if not needed
-  /* 
- 
-  NHits_EB = fs->make<TH1F>("NHits_EB","NHits_EB",500,0, 500);
-  Hits_EB = fs->make<TH2F>("Hits_EB","Hits_EB",400,-200, 200, 360,0, 360);
-
-  NHits_ES_Plus = fs->make<TH1F>("NHits_ES_Plus","NHits_ES_Plus",500,0, 500);
- 
-  NHits_ES_Minus = fs->make<TH1F>("NHits_ES_Minus","NHits_ES_Minus",500,0, 500);
-  Hits_ES_Minus = fs->make<TH2F>("Hits_ES_Minus","Hits_ES_Minus",400,-200, 200, 400,-200, 200);
-
-  NHits_EE_Plus = fs->make<TH1F>("NHits_EE_Plus","NHits_EE_Plus",500,0, 500);
-  Hits_EE_Plus = fs->make<TH2F>("Hits_EE_Plus","Hits_EE_Plus",100,0, 100, 100,0, 100);
-  NHits_EE_Minus = fs->make<TH1F>("NHits_EE_Minus","NHits_EE_Minus",500,0, 500);
-  Hits_EE_Minus = fs->make<TH2F>("Hits_EE_Minus","Hits_EE_Minus",100,0, 100, 100,0, 100);
-  */
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void Simhits_Analyzer::endJob() {
-  // please remove this method if not needed
+ 
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void Simhits_Analyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-  //The following says we do not know what parameters are allowed so do no validation
-  // Please change this to state exactly what you do use, even if it is no parameters
+ 
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   descriptions.addDefault(desc);
-
-  //Specify that only 'tracks' is allowed
-  //To use, remove the default given above and uncomment below
-  //ParameterSetDescription desc;
-  //desc.addUntracked<edm::InputTag>("tracks","ctfWithMaterialTracks");
-  //descriptions.addDefault(desc);
 }
 
-//define this as a plug-in
 DEFINE_FWK_MODULE(Simhits_Analyzer);
