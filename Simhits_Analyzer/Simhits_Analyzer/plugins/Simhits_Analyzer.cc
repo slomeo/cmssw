@@ -219,8 +219,23 @@ private:
   TH1F* NHits_EE_Minus;
   TH2F* Hits_EE_Minus;   
   */
-
-  TH2F* XY_Hits_MUON;
+  // only mu- mu+
+  TH1F* Z_DTHits_Muon;
+  TH2F* XY_DTHits_Muon;
+  TH2F* ZR_DTHits_Muon;
+  TH2F* Wheel_Minus2_XY_DTHits_Muon;
+  TH2F* Wheel_Minus1_XY_DTHits_Muon;
+  TH2F* Wheel_0_XY_DTHits_Muon;
+  TH2F* Wheel_1_XY_DTHits_Muon;
+  TH2F* Wheel_2_XY_DTHits_Muon;
+  // all particles
+  TH1F* Z_DTHits_AllParticles;
+  TH2F* XY_DTHits_AllParticles;
+  TH2F* Wheel_Minus2_XY_DTHits_AllParticles;
+  TH2F* Wheel_Minus1_XY_DTHits_AllParticles;
+  TH2F* Wheel_0_XY_DTHits_AllParticles;
+  TH2F* Wheel_1_XY_DTHits_AllParticles;
+  TH2F* Wheel_2_XY_DTHits_AllParticles;
 
   Long64_t run, event, lumi;
 
@@ -336,15 +351,33 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      DTLayerId myDTLayerId = wireId.layerId();
      DTSuperLayerId myDTSuperLayerId = myDTLayerId.superlayerId();
      DTChamberId myDTChamberId = myDTSuperLayerId.chamberId();
+     // all particles
+     Z_DTHits_AllParticles->Fill(DTGlobalPoint.z());
+     XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
 
+     // only mu- mu+
      if((pid==13) || (pid==-13))
        {
 	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
 	 cout<<" Wheel Id: "<<myDTChamberId.wheel()<<" Station Id: "<<myDTChamberId.station()<<" Sector Id: "<<myDTChamberId.sector()<<endl;
 	 cout<<" SuperLayer Id: "<<myDTSuperLayerId.superlayer()<<" Layer Id: "<<myDTLayerId.layer()<<" Wire ID: "<<wireId.wire()<<endl;
 	 cout<<" R: "<<DT_GlobalPoint_R<<" x: "<<DTGlobalPoint.x()<<" y: "<<DTGlobalPoint.y()<<" z: "<<DTGlobalPoint.z()<<endl;
-	 XY_Hits_MUON->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-       }
+
+	 Z_DTHits_Muon->Fill(DTGlobalPoint.z());
+	 XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 ZR_DTHits_Muon->Fill(DTGlobalPoint.z(),DT_GlobalPoint_R);
+	 if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+       } // end only mu- mu+
+
      }// end DT Sim Hits -------------------------------------------------------------
 
   }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -456,7 +489,23 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 void Simhits_Analyzer::beginJob() {
  
   edm::Service<TFileService> fs;
-  XY_Hits_MUON = fs->make<TH2F>("XY_Hits_MUON","XY_Hits_MUON",2000,-1000, 1000, 2000,-1000, 1000); 
+  Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
+  XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  ZR_DTHits_Muon = fs->make<TH2F>("ZR_DTHits_Muon","ZR_DTHits_Muon",2000,-1000, 1000, 2000, 0, 1000); 
+  Wheel_Minus2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_Muon","Wheel_Minus2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_Muon","Wheel_Minus1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_0_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_0_XY_DTHits_Muon","Wheel_0_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_1_XY_DTHits_Muon","Wheel_1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_2_XY_DTHits_Muon","Wheel_2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);
+
+  Z_DTHits_AllParticles = fs->make<TH1F>("Z_DTHits_AllParticles","Z_DTHits_AllParticles",2000,-1000, 1000); 
+  XY_DTHits_AllParticles = fs->make<TH2F>("XY_DTHits_AllParticles","XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_AllParticles","Wheel_Minus2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_AllParticles","Wheel_Minus1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_0_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_0_XY_DTHits_AllParticles","Wheel_0_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_1_XY_DTHits_AllParticles","Wheel_1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_2_XY_DTHits_AllParticles","Wheel_2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+ 
 // please remove this method if not needed
   /* 
  
