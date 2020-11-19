@@ -171,6 +171,7 @@ private:
 
   // Member Data
 
+  // DT------------------------------
   // only mu- mu+
   TH1F* Z_DTHits_Muon;
   TH2F* XY_DTHits_Muon;
@@ -188,6 +189,13 @@ private:
   TH2F* Wheel_0_XY_DTHits_AllParticles;
   TH2F* Wheel_1_XY_DTHits_AllParticles;
   TH2F* Wheel_2_XY_DTHits_AllParticles;
+  // RPC------------------------------
+  TH1F* Z_RPCHits_Muon;
+  TH2F* XY_RPCHits_Muon;
+  TH2F* ZR_RPCHits_Muon;
+
+  TH1F* Z_RPCHits_AllParticles;
+  TH2F* XY_RPCHits_AllParticles;
 
   Long64_t run, event, lumi;
 
@@ -198,6 +206,11 @@ private:
   // DT
   edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
+  // 
+
+  // RPC
+  edm::Handle<edm::PSimHitContainer> theRPCSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theRPCSimHitToken;
   // 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
@@ -217,10 +230,14 @@ private:
 // constructors and destructor
 //
 Simhits_Analyzer::Simhits_Analyzer(const edm::ParameterSet& iConfig){
+
   consumesMany<edm::PSimHitContainer>();
   usesResource("TFileService");
+
   particleToken = consumes< edm::View < reco::GenParticle> >(edm::InputTag("genParticles"));
   theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
+  theRPCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonRPCHits", "SIM"));
+
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
 #endif
@@ -260,6 +277,12 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   iSetup.get<MuonGeometryRecord>().get(dtGeometry); 
   const DTGeometry* dtgeo = dtGeometry.product(); 
 
+  // RPC
+  iEvent.getByToken(theRPCSimHitToken, theRPCSimHitHandle); 
+  ESHandle<RPCGeometry> rpcGeometry;
+  iSetup.get<MuonGeometryRecord>().get(rpcGeometry); 
+  const RPCGeometry* rpcgeo = rpcGeometry.product(); 
+
   // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
 
@@ -290,10 +313,21 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      // only mu- mu+
      if((pid==13) || (pid==-13))
        {
-	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
-	 cout<<" Wheel Id: "<<myDTChamberId.wheel()<<" Station Id: "<<myDTChamberId.station()<<" Sector Id: "<<myDTChamberId.sector()<<endl;
-	 cout<<" SuperLayer Id: "<<myDTSuperLayerId.superlayer()<<" Layer Id: "<<myDTLayerId.layer()<<" Wire ID: "<<wireId.wire()<<endl;
-	 cout<<" R: "<<DT_GlobalPoint_R<<" x: "<<DTGlobalPoint.x()<<" y: "<<DTGlobalPoint.y()<<" z: "<<DTGlobalPoint.z()<<endl;
+	 /// DT GEOMETRY INFO
+	 /// Wheel id from -2 to 2 
+	 /// Station id from 1 to 4
+	 /// SuperLayer Id from 0 to 3
+	 /// Layer Id from 0 to 4 (lowest layer id 0 indicates a full SL)
+	 /// Wire Id: lowest wire id (numbering starts from 1 or 2), highest wire id (chambers have 48 to 96 wires) 
+	 ///Sectors are numbered from 1 to 12,
+	 /// starting at phi=0 and increasing with phi.
+	 /// In station 4, where the top and bottom setcors are made of two chambers,
+	 /// two additional sector numbers are used, 13 (after sector 4, top)
+	 /// and 14 (after sector 10, bottom).
+	 // cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 //cout<<" Wheel Id: "<<myDTChamberId.wheel()<<" Station Id: "<<myDTChamberId.station()<<" Sector Id: "<<myDTChamberId.sector()<<endl;
+	 //cout<<" SuperLayer Id: "<<myDTSuperLayerId.superlayer()<<" Layer Id: "<<myDTLayerId.layer()<<" Wire ID: "<<wireId.wire()<<endl;
+	 //cout<<" R: "<<DT_GlobalPoint_R<<" x: "<<DTGlobalPoint.x()<<" y: "<<DTGlobalPoint.y()<<" z: "<<DTGlobalPoint.z()<<endl;
 
 	 Z_DTHits_Muon->Fill(DTGlobalPoint.z());
 	 XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
@@ -306,6 +340,62 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
        } // end only mu- mu+
 
      }// end DT Sim Hits -------------------------------------------------------------
+
+     // RPC Sim Hits ------------------------------------------------------------------
+     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){
+     
+     RPCCompDetId rpccompdetId(theDetUnitId);
+
+     GlobalPoint RPCGlobalPoint = rpcgeo->idToDet(rpccompdetId)->toGlobal((*iHit).localPosition());
+     double RPC_GlobalPoint_R = sqrt(pow(RPCGlobalPoint.x(),2)+pow(RPCGlobalPoint.y(),2));
+     Z_RPCHits_AllParticles->Fill(RPCGlobalPoint.z());
+     XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());     
+     /*
+     // all particles
+     Z_DTHits_AllParticles->Fill(DTGlobalPoint.z());
+     XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     */
+     // only mu- mu+
+     if((pid==13) || (pid==-13))
+       {
+	 /// RPC GEOMETRY INFO
+	 /// Region id: 0 for Barrel, +/-1 For +/- Endcap
+	 /// Ring id: Wheel number in Barrel (from -2 to +2) Ring Number in Endcap (from 1 to 3)
+	 /// Ring has a different meaning in Barrel and Endcap! In Barrel it is wheel, in Endcap
+	 /// it is the physical ring located on a disk (a disk contains three rings). In Endcap
+	 /// the ring is the group of chambers with same r (distance of beam axis) and increasing phi
+	 // Station id : For Barrel: the four groups of chambers at same r (distance from beam axis) and increasing phi
+	 ///             For Endcap: the three groups of chambers at same z (distance from interaction point), i.e. the disk
+	 /// Sector id: the group of chambers at same phi (and increasing r)
+	 /// Layer id: each station can have two layers of chambers: layer 1 is the inner chamber and layer 2 is the outer chamber (when present)
+	 /// Only in Barrel: RB1 and RB2.
+	 /// SubSector id : some sectors are divided along the phi direction in subsectors (from 1 to 4 in Barrel, from 1 to 6 in Endcap)
+	 /// Roll id  (also known as eta partition): each chamber is divided along the strip direction in
+	 /// two or three parts (rolls) for Barrel and two, three or four parts for endcap
+	 /// Roll is defined in RPCDetId.h and not in RPCCompDetId
+	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 cout<<" Wheel Id: "<<rpccompdetId.wheel()<<" Station Id: "<<rpccompdetId.station()<<" Sector Id: "<<rpccompdetId.sector()<<" Sub Sector Id: "<<rpccompdetId.subsector()<<endl;
+	 cout<<" Region Id: "<<rpccompdetId.region()<<" Layer Id: "<<rpccompdetId.layer()<<" Disk ID: "<<rpccompdetId.disk()<<endl;
+	 cout<<" R: "<<RPC_GlobalPoint_R<<" x: "<<RPCGlobalPoint.x()<<" y: "<<RPCGlobalPoint.y()<<" z: "<<RPCGlobalPoint.z()<<endl;
+	 Z_RPCHits_Muon->Fill(RPCGlobalPoint.z());
+	 XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 ZR_RPCHits_Muon->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
+	 /*
+	   if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 */
+       } // end only mu- mu+
+     
+     }// end RPC Sim Hits -------------------------------------------------------------
+
 
   }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
@@ -325,6 +415,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 void Simhits_Analyzer::beginJob() {
  
   edm::Service<TFileService> fs;
+  // DT
   Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
   XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   ZR_DTHits_Muon = fs->make<TH2F>("ZR_DTHits_Muon","ZR_DTHits_Muon",2000,-1000, 1000, 2000, 0, 1000); 
@@ -341,7 +432,13 @@ void Simhits_Analyzer::beginJob() {
   Wheel_0_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_0_XY_DTHits_AllParticles","Wheel_0_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Wheel_1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_1_XY_DTHits_AllParticles","Wheel_1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Wheel_2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_2_XY_DTHits_AllParticles","Wheel_2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
- 
+  // RPC
+  Z_RPCHits_Muon = fs->make<TH1F>("Z_RPCHits_Muon","Z_RPCHits_Muon",2400,-1200, 1200); 
+  XY_RPCHits_Muon = fs->make<TH2F>("XY_RPCHits_Muon","XY_RPCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200); 
+  ZR_RPCHits_Muon = fs->make<TH2F>("ZR_RPCHits_Muon","ZR_RPCHits_Muon",2400,-1200, 1200, 2400, 0, 1200); 
+
+  Z_RPCHits_AllParticles = fs->make<TH1F>("Z_RPCHits_AllParticles","Z_RPCHits_AllParticles",2400,-1200, 1200); 
+  XY_RPCHits_AllParticles = fs->make<TH2F>("XY_RPCHits_AllParticles","XY_RPCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200); 
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
