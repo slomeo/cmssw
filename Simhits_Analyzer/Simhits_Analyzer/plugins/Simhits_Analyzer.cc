@@ -200,9 +200,11 @@ private:
   TH2F* Barrel_Wheel_0_XY_RPCHits_Muon;
   TH2F* Barrel_Wheel_1_XY_RPCHits_Muon;
   TH2F* Barrel_Wheel_2_XY_RPCHits_Muon;
+  TH2F* Endcap_1_XY_RPCHits_Muon;
   TH2F* Endcap_1_Ring_1_XY_RPCHits_Muon;
   TH2F* Endcap_1_Ring_2_XY_RPCHits_Muon;
   TH2F* Endcap_1_Ring_3_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_XY_RPCHits_Muon;
   TH2F* Endcap_Minus1_Ring_1_XY_RPCHits_Muon;
   TH2F* Endcap_Minus1_Ring_2_XY_RPCHits_Muon;
   TH2F* Endcap_Minus1_Ring_3_XY_RPCHits_Muon;
@@ -215,12 +217,19 @@ private:
   TH2F* Barrel_Wheel_0_XY_RPCHits_AllParticles;
   TH2F* Barrel_Wheel_1_XY_RPCHits_AllParticles;
   TH2F* Barrel_Wheel_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_XY_RPCHits_AllParticles;
   TH2F* Endcap_1_Ring_1_XY_RPCHits_AllParticles;
   TH2F* Endcap_1_Ring_2_XY_RPCHits_AllParticles;
   TH2F* Endcap_1_Ring_3_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_XY_RPCHits_AllParticles;
   TH2F* Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles;
   TH2F* Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles;
   TH2F* Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles;
+  // CSC ----------------------------
+  // all particles
+  TH1F* Z_CSCHits_AllParticles;
+  TH2F* XY_CSCHits_AllParticles;
+  TH2F* ZR_CSCHits_AllParticles;
 
   Long64_t run, event, lumi;
 
@@ -236,6 +245,11 @@ private:
   // RPC
   edm::Handle<edm::PSimHitContainer> theRPCSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theRPCSimHitToken;
+  // 
+
+  // CSC
+  edm::Handle<edm::PSimHitContainer> theCSCSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theCSCSimHitToken;
   // 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
@@ -262,6 +276,7 @@ Simhits_Analyzer::Simhits_Analyzer(const edm::ParameterSet& iConfig){
   particleToken = consumes< edm::View < reco::GenParticle> >(edm::InputTag("genParticles"));
   theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
   theRPCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonRPCHits", "SIM"));
+  theCSCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonCSCHits", "SIM"));
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -307,6 +322,12 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   ESHandle<RPCGeometry> rpcGeometry;
   iSetup.get<MuonGeometryRecord>().get(rpcGeometry); 
   const RPCGeometry* rpcgeo = rpcGeometry.product(); 
+
+  // CSC
+  iEvent.getByToken(theCSCSimHitToken, theCSCSimHitHandle); 
+  ESHandle<CSCGeometry> cscGeometry;
+  iSetup.get<MuonGeometryRecord>().get(cscGeometry); 
+  const CSCGeometry* cscgeo = cscGeometry.product(); 
 
   // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
@@ -384,10 +405,12 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      if((rpcdetId.region() == 0) && (rpcdetId.ring() == 1)) Barrel_Wheel_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == 0) && (rpcdetId.ring() == 2)) Barrel_Wheel_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 
+     if(rpcdetId.region() == 1) Endcap_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == 1) && (rpcdetId.ring() == 1)) Endcap_1_Ring_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == 1) && (rpcdetId.ring() == 2)) Endcap_1_Ring_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == 1) && (rpcdetId.ring() == 3)) Endcap_1_Ring_3_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      
+     if(rpcdetId.region() == -1) Endcap_Minus1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == -1) && (rpcdetId.ring() == 1)) Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == -1) && (rpcdetId.ring() == 2)) Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
      if((rpcdetId.region() == -1) && (rpcdetId.ring() == 3)) Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
@@ -410,9 +433,9 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	 /// Roll id  (also known as eta partition): each chamber is divided along the strip direction in
 	 /// two or three parts (rolls) for Barrel and two, three or four parts for endcap
 	 /// Roll is defined in RPCDetId.h and not in RPCCompDetId
-	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
-	 cout<<" Region Id: "<<rpcdetId.region()<<" Ring Id: "<<rpcdetId.ring()<<" Roll ID: "<<rpcdetId.roll()<<endl;
-	 cout<<" R: "<<RPC_GlobalPoint_R<<" x: "<<RPCGlobalPoint.x()<<" y: "<<RPCGlobalPoint.y()<<" z: "<<RPCGlobalPoint.z()<<endl;
+	 //cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 //cout<<" Region Id: "<<rpcdetId.region()<<" Ring Id: "<<rpcdetId.ring()<<" Roll ID: "<<rpcdetId.roll()<<endl;
+	 //cout<<" R: "<<RPC_GlobalPoint_R<<" x: "<<RPCGlobalPoint.x()<<" y: "<<RPCGlobalPoint.y()<<" z: "<<RPCGlobalPoint.z()<<endl;
 	 Z_RPCHits_Muon->Fill(RPCGlobalPoint.z());
 	 XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 ZR_RPCHits_Muon->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
@@ -423,10 +446,12 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 1)) Barrel_Wheel_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 2)) Barrel_Wheel_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 
+	 if(rpcdetId.region() == 1) Endcap_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 1)) Endcap_1_Ring_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 2)) Endcap_1_Ring_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 3)) Endcap_1_Ring_3_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 
+	 if(rpcdetId.region() == -1) Endcap_Minus1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 1)) Endcap_Minus1_Ring_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 2)) Endcap_Minus1_Ring_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 3)) Endcap_Minus1_Ring_3_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
@@ -435,6 +460,26 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      
      }// end RPC Sim Hits -------------------------------------------------------------
     
+     // CSC Sim Hits ------------------------------------------------------------------
+     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::CSC){
+       
+       CSCDetId cscdetId(theDetUnitId);
+
+       GlobalPoint CSCGlobalPoint = cscgeo->idToDet(cscdetId)->toGlobal((*iHit).localPosition());
+       double CSC_GlobalPoint_R = sqrt(pow(CSCGlobalPoint.x(),2)+pow(CSCGlobalPoint.y(),2));
+       Z_CSCHits_AllParticles->Fill(CSCGlobalPoint.z());
+       XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+       ZR_CSCHits_AllParticles->Fill(CSCGlobalPoint.z(),CSC_GlobalPoint_R);
+       if((pid==13) || (pid==-13))
+	 {
+	   //Endcap label. 1=forward (+Z); 2=backward (-Z)
+	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	   cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Ring ID: "<<cscdetId.ring()<<endl;
+	   cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<endl;
+	   cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
+	 }
+
+     }// end CSC Sim Hits -------------------------------------------------------------
 
   }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
@@ -481,9 +526,11 @@ void Simhits_Analyzer::beginJob() {
   Barrel_Wheel_0_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_0_XY_RPCHits_Muon","Barrel_Wheel_0_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   Barrel_Wheel_1_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_1_XY_RPCHits_Muon","Barrel_Wheel_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   Barrel_Wheel_2_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_2_XY_RPCHits_Muon","Barrel_Wheel_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_XY_RPCHits_Muon","Endcap_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_1_Ring_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_1_XY_RPCHits_Muon","Endcap_1_Ring_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_1_Ring_2_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_2_XY_RPCHits_Muon","Endcap_1_Ring_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
-  Endcap_1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_Muon","Endcap_1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_Muon","Endcap_1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_Minus1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_XY_RPCHits_Muon","Endcap_Minus1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);  
   Endcap_Minus1_Ring_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_1_XY_RPCHits_Muon","Endcap_Minus1_Ring_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_Minus1_Ring_2_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_2_XY_RPCHits_Muon","Endcap_Minus1_Ring_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_Minus1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_3_XY_RPCHits_Muon","Endcap_Minus1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
@@ -496,12 +543,19 @@ void Simhits_Analyzer::beginJob() {
   Barrel_Wheel_0_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_0_XY_RPCHits_AllParticles","Barrel_Wheel_0_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Barrel_Wheel_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_1_XY_RPCHits_AllParticles","Barrel_Wheel_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Barrel_Wheel_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_2_XY_RPCHits_AllParticles","Barrel_Wheel_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_XY_RPCHits_AllParticles","Endcap_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_1_Ring_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_1_XY_RPCHits_AllParticles","Endcap_1_Ring_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_1_Ring_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_2_XY_RPCHits_AllParticles","Endcap_1_Ring_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
-  Endcap_1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_AllParticles","Endcap_1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_AllParticles","Endcap_1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_Minus1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_XY_RPCHits_AllParticles","Endcap_Minus1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);  
   Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
   Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);  
+
+  // CSC
+  Z_CSCHits_AllParticles  = fs->make<TH1F>("Z_CSCHits_AllParticles","Z_CSCHits_AllParticles",2400,-1200, 1200); 
+  XY_CSCHits_AllParticles = fs->make<TH2F>("XY_CSCHits_AllParticles","XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_CSCHits_AllParticles = fs->make<TH2F>("ZR_CSCHits_AllParticles","ZR_CSCHits_AllParticles",2400,-1200, 1200, 2400, 0, 1200);  
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
