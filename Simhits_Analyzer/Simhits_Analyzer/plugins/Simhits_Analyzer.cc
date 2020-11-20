@@ -184,18 +184,43 @@ private:
   // all particles
   TH1F* Z_DTHits_AllParticles;
   TH2F* XY_DTHits_AllParticles;
+  TH2F* ZR_DTHits_AllParticles;
   TH2F* Wheel_Minus2_XY_DTHits_AllParticles;
   TH2F* Wheel_Minus1_XY_DTHits_AllParticles;
   TH2F* Wheel_0_XY_DTHits_AllParticles;
   TH2F* Wheel_1_XY_DTHits_AllParticles;
   TH2F* Wheel_2_XY_DTHits_AllParticles;
   // RPC------------------------------
+  // mu+ mu-
   TH1F* Z_RPCHits_Muon;
   TH2F* XY_RPCHits_Muon;
   TH2F* ZR_RPCHits_Muon;
-
+  TH2F* Barrel_Wheel_Minus2_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_Minus1_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_0_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_1_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_2_XY_RPCHits_Muon;
+  TH2F* Endcap_1_Ring_1_XY_RPCHits_Muon;
+  TH2F* Endcap_1_Ring_2_XY_RPCHits_Muon;
+  TH2F* Endcap_1_Ring_3_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_Ring_1_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_Ring_2_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_Ring_3_XY_RPCHits_Muon;
+  // all particles
   TH1F* Z_RPCHits_AllParticles;
   TH2F* XY_RPCHits_AllParticles;
+  TH2F* ZR_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_Minus2_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_Minus1_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_0_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_1_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_Ring_1_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_Ring_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_Ring_3_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles;
 
   Long64_t run, event, lumi;
 
@@ -304,6 +329,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      // all particles
      Z_DTHits_AllParticles->Fill(DTGlobalPoint.z());
      XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     ZR_DTHits_AllParticles->Fill(DTGlobalPoint.z(),DT_GlobalPoint_R);
      if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
      if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
      if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
@@ -341,7 +367,160 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
      }// end DT Sim Hits -------------------------------------------------------------
 
-     // RPC Sim Hits ------------------------------------------------------------------
+ // RPC Sim Hits ------------------------------------------------------------------
+     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){
+     
+     RPCDetId rpcdetId(theDetUnitId);
+
+     GlobalPoint RPCGlobalPoint = rpcgeo->idToDet(rpcdetId)->toGlobal((*iHit).localPosition());
+     double RPC_GlobalPoint_R = sqrt(pow(RPCGlobalPoint.x(),2)+pow(RPCGlobalPoint.y(),2));
+     Z_RPCHits_AllParticles->Fill(RPCGlobalPoint.z());
+     XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());     
+     ZR_RPCHits_AllParticles->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
+
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == -2)) Barrel_Wheel_Minus2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == -1)) Barrel_Wheel_Minus1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == 0)) Barrel_Wheel_0_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == 1)) Barrel_Wheel_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == 2)) Barrel_Wheel_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+
+     if((rpcdetId.region() == 1) && (rpcdetId.ring() == 1)) Endcap_1_Ring_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 1) && (rpcdetId.ring() == 2)) Endcap_1_Ring_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 1) && (rpcdetId.ring() == 3)) Endcap_1_Ring_3_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     
+     if((rpcdetId.region() == -1) && (rpcdetId.ring() == 1)) Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == -1) && (rpcdetId.ring() == 2)) Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == -1) && (rpcdetId.ring() == 3)) Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     
+     // only mu- mu+
+     if((pid==13) || (pid==-13))
+       {
+	 /// RPC GEOMETRY INFO
+	 /// Region id: 0 for Barrel, +/-1 For +/- Endcap
+	 /// Ring id: Wheel number in Barrel (from -2 to +2) Ring Number in Endcap (from 1 to 3)
+	 /// Ring has a different meaning in Barrel and Endcap! In Barrel it is wheel, in Endcap
+	 /// it is the physical ring located on a disk (a disk contains three rings). In Endcap
+	 /// the ring is the group of chambers with same r (distance of beam axis) and increasing phi
+	 // Station id : For Barrel: the four groups of chambers at same r (distance from beam axis) and increasing phi
+	 ///             For Endcap: the three groups of chambers at same z (distance from interaction point), i.e. the disk
+	 /// Sector id: the group of chambers at same phi (and increasing r)
+	 /// Layer id: each station can have two layers of chambers: layer 1 is the inner chamber and layer 2 is the outer chamber (when present)
+	 /// Only in Barrel: RB1 and RB2.
+	 /// SubSector id : some sectors are divided along the phi direction in subsectors (from 1 to 4 in Barrel, from 1 to 6 in Endcap)
+	 /// Roll id  (also known as eta partition): each chamber is divided along the strip direction in
+	 /// two or three parts (rolls) for Barrel and two, three or four parts for endcap
+	 /// Roll is defined in RPCDetId.h and not in RPCCompDetId
+	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 cout<<" Region Id: "<<rpcdetId.region()<<" Ring Id: "<<rpcdetId.ring()<<" Roll ID: "<<rpcdetId.roll()<<endl;
+	 cout<<" R: "<<RPC_GlobalPoint_R<<" x: "<<RPCGlobalPoint.x()<<" y: "<<RPCGlobalPoint.y()<<" z: "<<RPCGlobalPoint.z()<<endl;
+	 Z_RPCHits_Muon->Fill(RPCGlobalPoint.z());
+	 XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 ZR_RPCHits_Muon->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
+	 
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == -2)) Barrel_Wheel_Minus2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == -1)) Barrel_Wheel_Minus1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 0)) Barrel_Wheel_0_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 1)) Barrel_Wheel_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 2)) Barrel_Wheel_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+
+	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 1)) Endcap_1_Ring_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 2)) Endcap_1_Ring_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 3)) Endcap_1_Ring_3_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+
+	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 1)) Endcap_Minus1_Ring_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 2)) Endcap_Minus1_Ring_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 3)) Endcap_Minus1_Ring_3_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 
+       } // end only mu- mu+
+     
+     }// end RPC Sim Hits -------------------------------------------------------------
+    
+
+  }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+ 
+  for (auto &p : *particle){
+    // if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
+  }
+
+
+#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
+   auto setup = iSetup.getData(setupToken_);
+   auto pSetup = iSetup.getHandle(setupToken_);
+#endif
+}
+
+// ------------ method called once each job just before starting event loop  ------------
+void Simhits_Analyzer::beginJob() {
+ 
+  edm::Service<TFileService> fs;
+  // DT --------------------------------
+  Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
+  XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  ZR_DTHits_Muon = fs->make<TH2F>("ZR_DTHits_Muon","ZR_DTHits_Muon",2000,-1000, 1000, 2000, 0, 1000); 
+  Wheel_Minus2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_Muon","Wheel_Minus2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_Muon","Wheel_Minus1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_0_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_0_XY_DTHits_Muon","Wheel_0_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_1_XY_DTHits_Muon","Wheel_1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_2_XY_DTHits_Muon","Wheel_2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);
+
+  Z_DTHits_AllParticles = fs->make<TH1F>("Z_DTHits_AllParticles","Z_DTHits_AllParticles",2000,-1000, 1000); 
+  XY_DTHits_AllParticles = fs->make<TH2F>("XY_DTHits_AllParticles","XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  ZR_DTHits_AllParticles = fs->make<TH2F>("ZR_DTHits_AllPraticles","ZR_DTHits_AllParticles",2000,-1000, 1000, 2000, 0, 1000);  
+  Wheel_Minus2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_AllParticles","Wheel_Minus2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_AllParticles","Wheel_Minus1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_0_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_0_XY_DTHits_AllParticles","Wheel_0_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_1_XY_DTHits_AllParticles","Wheel_1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_2_XY_DTHits_AllParticles","Wheel_2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  // RPC -------------------------------
+  Z_RPCHits_Muon = fs->make<TH1F>("Z_RPCHits_Muon","Z_RPCHits_Muon",2400,-1200, 1200); 
+  XY_RPCHits_Muon = fs->make<TH2F>("XY_RPCHits_Muon","XY_RPCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200); 
+  ZR_RPCHits_Muon = fs->make<TH2F>("ZR_RPCHits_Muon","ZR_RPCHits_Muon",2400,-1200, 1200, 2400, 0, 1200); 
+  Barrel_Wheel_Minus2_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_Minus2_XY_RPCHits_Muon","Barrel_Wheel_Minus2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_Minus1_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_Minus1_XY_RPCHits_Muon","Barrel_Wheel_Minus1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_0_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_0_XY_RPCHits_Muon","Barrel_Wheel_0_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_1_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_1_XY_RPCHits_Muon","Barrel_Wheel_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_2_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_2_XY_RPCHits_Muon","Barrel_Wheel_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_1_XY_RPCHits_Muon","Endcap_1_Ring_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_2_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_2_XY_RPCHits_Muon","Endcap_1_Ring_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_Muon","Endcap_1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_1_XY_RPCHits_Muon","Endcap_Minus1_Ring_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_2_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_2_XY_RPCHits_Muon","Endcap_Minus1_Ring_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_3_XY_RPCHits_Muon","Endcap_Minus1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+ 
+  Z_RPCHits_AllParticles = fs->make<TH1F>("Z_RPCHits_AllParticles","Z_RPCHits_AllParticles",2400,-1200, 1200); 
+  XY_RPCHits_AllParticles = fs->make<TH2F>("XY_RPCHits_AllParticles","XY_RPCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_RPCHits_AllParticles = fs->make<TH2F>("ZR_RPCHits_AllParticles","ZR_RPCHits_AllParticles",2400,-1200, 1200, 2400, 0, 1200);  
+  Barrel_Wheel_Minus2_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_Minus2_XY_RPCHits_AllParticles","Barrel_Wheel_Minus2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_Minus1_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_Minus1_XY_RPCHits_AllParticles","Barrel_Wheel_Minus1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_0_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_0_XY_RPCHits_AllParticles","Barrel_Wheel_0_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_1_XY_RPCHits_AllParticles","Barrel_Wheel_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_2_XY_RPCHits_AllParticles","Barrel_Wheel_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_1_Ring_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_1_XY_RPCHits_AllParticles","Endcap_1_Ring_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_2_XY_RPCHits_AllParticles","Endcap_1_Ring_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_AllParticles","Endcap_1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);  
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void Simhits_Analyzer::endJob() {
+ 
+}
+
+// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
+void Simhits_Analyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+ 
+  edm::ParameterSetDescription desc;
+  desc.setUnknown();
+  descriptions.addDefault(desc);
+}
+
+DEFINE_FWK_MODULE(Simhits_Analyzer);
+
+/*
+ // RPC Sim Hits ------------------------------------------------------------------
      if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){
      
      RPCCompDetId rpccompdetId(theDetUnitId);
@@ -350,16 +529,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      double RPC_GlobalPoint_R = sqrt(pow(RPCGlobalPoint.x(),2)+pow(RPCGlobalPoint.y(),2));
      Z_RPCHits_AllParticles->Fill(RPCGlobalPoint.z());
      XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());     
-     /*
-     // all particles
-     Z_DTHits_AllParticles->Fill(DTGlobalPoint.z());
-     XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-     if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-     if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-     if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-     if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-     if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-     */
+
      // only mu- mu+
      if((pid==13) || (pid==-13))
        {
@@ -385,73 +555,15 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	 Z_RPCHits_Muon->Fill(RPCGlobalPoint.z());
 	 XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	 ZR_RPCHits_Muon->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
-	 /*
-	   if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-	 if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-	 if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-	 if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-	 if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
-	 */
+	 
+	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == -2)) Barrel_Wheel_Minus2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == -1)) Barrel_Wheel_Minus1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == 0)) Barrel_Wheel_0_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == 1)) Barrel_Wheel_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == 2)) Barrel_Wheel_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	
        } // end only mu- mu+
      
      }// end RPC Sim Hits -------------------------------------------------------------
 
-
-  }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
- 
-  for (auto &p : *particle){
-    // if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
-  }
-
-
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   auto setup = iSetup.getData(setupToken_);
-   auto pSetup = iSetup.getHandle(setupToken_);
-#endif
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void Simhits_Analyzer::beginJob() {
- 
-  edm::Service<TFileService> fs;
-  // DT
-  Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
-  XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
-  ZR_DTHits_Muon = fs->make<TH2F>("ZR_DTHits_Muon","ZR_DTHits_Muon",2000,-1000, 1000, 2000, 0, 1000); 
-  Wheel_Minus2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_Muon","Wheel_Minus2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_Minus1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_Muon","Wheel_Minus1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_0_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_0_XY_DTHits_Muon","Wheel_0_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_1_XY_DTHits_Muon","Wheel_1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_2_XY_DTHits_Muon","Wheel_2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);
-
-  Z_DTHits_AllParticles = fs->make<TH1F>("Z_DTHits_AllParticles","Z_DTHits_AllParticles",2000,-1000, 1000); 
-  XY_DTHits_AllParticles = fs->make<TH2F>("XY_DTHits_AllParticles","XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_Minus2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_AllParticles","Wheel_Minus2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_Minus1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_AllParticles","Wheel_Minus1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_0_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_0_XY_DTHits_AllParticles","Wheel_0_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_1_XY_DTHits_AllParticles","Wheel_1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
-  Wheel_2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_2_XY_DTHits_AllParticles","Wheel_2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
-  // RPC
-  Z_RPCHits_Muon = fs->make<TH1F>("Z_RPCHits_Muon","Z_RPCHits_Muon",2400,-1200, 1200); 
-  XY_RPCHits_Muon = fs->make<TH2F>("XY_RPCHits_Muon","XY_RPCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200); 
-  ZR_RPCHits_Muon = fs->make<TH2F>("ZR_RPCHits_Muon","ZR_RPCHits_Muon",2400,-1200, 1200, 2400, 0, 1200); 
-
-  Z_RPCHits_AllParticles = fs->make<TH1F>("Z_RPCHits_AllParticles","Z_RPCHits_AllParticles",2400,-1200, 1200); 
-  XY_RPCHits_AllParticles = fs->make<TH2F>("XY_RPCHits_AllParticles","XY_RPCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200); 
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void Simhits_Analyzer::endJob() {
- 
-}
-
-// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
-void Simhits_Analyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
- 
-  edm::ParameterSetDescription desc;
-  desc.setUnknown();
-  descriptions.addDefault(desc);
-}
-
-DEFINE_FWK_MODULE(Simhits_Analyzer);
+ */
