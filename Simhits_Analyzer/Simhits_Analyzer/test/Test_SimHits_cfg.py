@@ -12,14 +12,14 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 options = VarParsing.VarParsing('standard')
 
 
-#print only every 10000th event
+#print only every 20000th event
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1)
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20000) )
 
 process.source = cms.Source("PoolSource",
-	    fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_ZMM_dd4hep.root')
-#            fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/r/rchatter/ECAL_MissingHits/CMSSW_11_2_X_2020-10-15-1100/src/step1_ZMM_ddd.root')
+#                            fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_SingleMu_ddd.root')
+                           fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_SingleMu_dd4hep.root')
 	    )
 # turn on VID producer, indicate data format  to be
 #from PhysicsTools.SelectorUtils.tools.vid_id_tools import *

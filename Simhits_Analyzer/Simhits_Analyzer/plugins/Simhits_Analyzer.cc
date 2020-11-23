@@ -230,7 +230,32 @@ private:
   TH1F* Z_CSCHits_AllParticles;
   TH2F* XY_CSCHits_AllParticles;
   TH2F* ZR_CSCHits_AllParticles;
+  TH2F* Endcap_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_3_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_4_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_3_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_4_XY_CSCHits_AllParticles;
 
+  // muon
+  TH1F* Z_CSCHits_Muon;
+  TH2F* XY_CSCHits_Muon;
+  TH2F* ZR_CSCHits_Muon;
+  TH2F* Endcap_1_XY_CSCHits_Muon;
+  TH2F* Endcap_2_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_1_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_2_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_3_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_4_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_1_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_2_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_3_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_4_XY_CSCHits_Muon;
+ 
   Long64_t run, event, lumi;
 
   // Particles
@@ -470,13 +495,40 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
        Z_CSCHits_AllParticles->Fill(CSCGlobalPoint.z());
        XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
        ZR_CSCHits_AllParticles->Fill(CSCGlobalPoint.z(),CSC_GlobalPoint_R);
+       if(cscdetId.endcap() == 1) Endcap_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+       if(cscdetId.endcap() == 2) Endcap_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 2)) Endcap_1_Ring_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 3)) Endcap_1_Ring_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 4)) Endcap_1_Ring_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 1)) Endcap_2_Ring_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 2)) Endcap_2_Ring_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 3)) Endcap_2_Ring_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 4)) Endcap_2_Ring_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y()); 
+      
        if((pid==13) || (pid==-13))
 	 {
 	   //Endcap label. 1=forward (+Z); 2=backward (-Z)
+	   //Ring ID : from 1 to 4
 	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
 	   cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Ring ID: "<<cscdetId.ring()<<endl;
 	   cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<endl;
 	   cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
+	
+	   Z_CSCHits_Muon->Fill(CSCGlobalPoint.z());
+	   XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+	   ZR_CSCHits_Muon->Fill(CSCGlobalPoint.z(),CSC_GlobalPoint_R);
+       
+	   if(cscdetId.endcap() == 1) Endcap_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+	   if(cscdetId.endcap() == 2) Endcap_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 2)) Endcap_1_Ring_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 3)) Endcap_1_Ring_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 4)) Endcap_1_Ring_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 1)) Endcap_2_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 2)) Endcap_2_Ring_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 3)) Endcap_2_Ring_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 4)) Endcap_2_Ring_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
 	 }
 
      }// end CSC Sim Hits -------------------------------------------------------------
@@ -556,6 +608,34 @@ void Simhits_Analyzer::beginJob() {
   Z_CSCHits_AllParticles  = fs->make<TH1F>("Z_CSCHits_AllParticles","Z_CSCHits_AllParticles",2400,-1200, 1200); 
   XY_CSCHits_AllParticles = fs->make<TH2F>("XY_CSCHits_AllParticles","XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
   ZR_CSCHits_AllParticles = fs->make<TH2F>("ZR_CSCHits_AllParticles","ZR_CSCHits_AllParticles",2400,-1200, 1200, 2400, 0, 1200);  
+
+  Endcap_1_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_XY_CSCHits_AllParticles","Endcap_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_XY_CSCHits_AllParticles","Endcap_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_1_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_1_XY_CSCHits_AllParticles","Endcap_1_Ring_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_2_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_2_XY_CSCHits_AllParticles","Endcap_1_Ring_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_3_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_3_XY_CSCHits_AllParticles","Endcap_1_Ring_3_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_4_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_4_XY_CSCHits_AllParticles","Endcap_1_Ring_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_1_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_1_XY_CSCHits_AllParticles","Endcap_2_Ring_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_2_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_2_XY_CSCHits_AllParticles","Endcap_2_Ring_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_3_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_3_XY_CSCHits_AllParticles","Endcap_2_Ring_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_4_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_4_XY_CSCHits_AllParticles","Endcap_2_Ring_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+
+  Z_CSCHits_Muon  = fs->make<TH1F>("Z_CSCHits_Muon","Z_CSCHits_Muon",2400,-1200, 1200); 
+  XY_CSCHits_Muon = fs->make<TH2F>("XY_CSCHits_Muon","XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_CSCHits_Muon = fs->make<TH2F>("ZR_CSCHits_Muon","ZR_CSCHits_Muon",2400,-1200, 1200, 2400, 0, 1200);  
+
+  Endcap_1_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_XY_CSCHits_Muon","Endcap_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_XY_CSCHits_Muon","Endcap_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_1_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_1_XY_CSCHits_Muon","Endcap_1_Ring_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_2_XY_CSCHits_Muon","Endcap_1_Ring_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_3_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_3_XY_CSCHits_Muon","Endcap_1_Ring_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_4_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_4_XY_CSCHits_Muon","Endcap_1_Ring_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_1_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_1_XY_CSCHits_Muon","Endcap_2_Ring_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_2_XY_CSCHits_Muon","Endcap_2_Ring_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_3_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_3_XY_CSCHits_Muon","Endcap_2_Ring_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_4_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_4_XY_CSCHits_Muon","Endcap_2_Ring_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -573,51 +653,3 @@ void Simhits_Analyzer::fillDescriptions(edm::ConfigurationDescriptions& descript
 
 DEFINE_FWK_MODULE(Simhits_Analyzer);
 
-/*
- // RPC Sim Hits ------------------------------------------------------------------
-     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){
-     
-     RPCCompDetId rpccompdetId(theDetUnitId);
-
-     GlobalPoint RPCGlobalPoint = rpcgeo->idToDet(rpccompdetId)->toGlobal((*iHit).localPosition());
-     double RPC_GlobalPoint_R = sqrt(pow(RPCGlobalPoint.x(),2)+pow(RPCGlobalPoint.y(),2));
-     Z_RPCHits_AllParticles->Fill(RPCGlobalPoint.z());
-     XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());     
-
-     // only mu- mu+
-     if((pid==13) || (pid==-13))
-       {
-	 /// RPC GEOMETRY INFO
-	 /// Region id: 0 for Barrel, +/-1 For +/- Endcap
-	 /// Ring id: Wheel number in Barrel (from -2 to +2) Ring Number in Endcap (from 1 to 3)
-	 /// Ring has a different meaning in Barrel and Endcap! In Barrel it is wheel, in Endcap
-	 /// it is the physical ring located on a disk (a disk contains three rings). In Endcap
-	 /// the ring is the group of chambers with same r (distance of beam axis) and increasing phi
-	 // Station id : For Barrel: the four groups of chambers at same r (distance from beam axis) and increasing phi
-	 ///             For Endcap: the three groups of chambers at same z (distance from interaction point), i.e. the disk
-	 /// Sector id: the group of chambers at same phi (and increasing r)
-	 /// Layer id: each station can have two layers of chambers: layer 1 is the inner chamber and layer 2 is the outer chamber (when present)
-	 /// Only in Barrel: RB1 and RB2.
-	 /// SubSector id : some sectors are divided along the phi direction in subsectors (from 1 to 4 in Barrel, from 1 to 6 in Endcap)
-	 /// Roll id  (also known as eta partition): each chamber is divided along the strip direction in
-	 /// two or three parts (rolls) for Barrel and two, three or four parts for endcap
-	 /// Roll is defined in RPCDetId.h and not in RPCCompDetId
-	 cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
-	 cout<<" Wheel Id: "<<rpccompdetId.wheel()<<" Station Id: "<<rpccompdetId.station()<<" Sector Id: "<<rpccompdetId.sector()<<" Sub Sector Id: "<<rpccompdetId.subsector()<<endl;
-	 cout<<" Region Id: "<<rpccompdetId.region()<<" Layer Id: "<<rpccompdetId.layer()<<" Disk ID: "<<rpccompdetId.disk()<<endl;
-	 cout<<" R: "<<RPC_GlobalPoint_R<<" x: "<<RPCGlobalPoint.x()<<" y: "<<RPCGlobalPoint.y()<<" z: "<<RPCGlobalPoint.z()<<endl;
-	 Z_RPCHits_Muon->Fill(RPCGlobalPoint.z());
-	 XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
-	 ZR_RPCHits_Muon->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
-	 
-	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == -2)) Barrel_Wheel_Minus2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
-	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == -1)) Barrel_Wheel_Minus1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
-	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == 0)) Barrel_Wheel_0_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
-	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == 1)) Barrel_Wheel_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
-	 if((rpccompdetId.region() == 0) && (rpccompdetId.wheel() == 2)) Barrel_Wheel_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
-	
-       } // end only mu- mu+
-     
-     }// end RPC Sim Hits -------------------------------------------------------------
-
- */
