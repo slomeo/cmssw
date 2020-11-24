@@ -6,6 +6,10 @@
 /**\class Simhits_Analyzer Simhits_Analyzer.cc Simhits_Analyzer/Simhits_Analyzer/plugins/Simhits_Analyzer.cc
 
  Description: Analyzer for Simi Hits of the Muon System (needed to check the migration to DD4Hep of the Muon Geometry)
+            For DT, RPC, CSC it's necessary to comment ALL the lines of GEM and ME0 and it's necessary to see which lines have to be comment in
+            test/Test_SimHits_cfg.py (please read the comments inside it)
+            For GEM and ME0 it's necessary to comment ALL the lines of DT, RPC, CSC and it's necessary to see which lines have to be comment in
+	    test/Test_SimHits_cfg.py (please read the comments inside it)
 
  Implementation: Code made from Mon, 16 Nov 2020 to  
     
@@ -171,6 +175,7 @@ private:
 
   // Member Data
 
+  /*
   // DT------------------------------
   // only mu- mu+
   TH1F* Z_DTHits_Muon;
@@ -255,13 +260,31 @@ private:
   TH2F* Endcap_2_Ring_2_XY_CSCHits_Muon;
   TH2F* Endcap_2_Ring_3_XY_CSCHits_Muon;
   TH2F* Endcap_2_Ring_4_XY_CSCHits_Muon;
- 
+  */
+
+  // GEM
+
+  // all particles
+
+  TH1F* Z_GEMHits_AllParticles;
+  TH2F* XY_GEMHits_AllParticles;
+  TH2F* ZR_GEMHits_AllParticles;
+  TH2F* Region_1_XY_GEMHits_AllParticles;
+  TH2F* Region_Minus1_XY_GEMHits_AllParticles;
+
+  // muon
+  TH1F* Z_GEMHits_Muon;
+  TH2F* XY_GEMHits_Muon;
+  TH2F* ZR_GEMHits_Muon;
+  TH2F* Region_1_XY_GEMHits_Muon;
+  TH2F* Region_Minus1_XY_GEMHits_Muon;
+
   Long64_t run, event, lumi;
 
   // Particles
   edm::Handle<edm::View<reco::GenParticle> > particle;
   edm::EDGetTokenT<edm::View< reco::GenParticle > > particleToken;
- 
+  /* 
   // DT
   edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
@@ -275,6 +298,11 @@ private:
   // CSC
   edm::Handle<edm::PSimHitContainer> theCSCSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theCSCSimHitToken;
+  // 
+  */
+  // GEM
+  edm::Handle<edm::PSimHitContainer> theGEMSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theGEMSimHitToken;
   // 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
@@ -299,9 +327,12 @@ Simhits_Analyzer::Simhits_Analyzer(const edm::ParameterSet& iConfig){
   usesResource("TFileService");
 
   particleToken = consumes< edm::View < reco::GenParticle> >(edm::InputTag("genParticles"));
+  /*
   theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
   theRPCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonRPCHits", "SIM"));
   theCSCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonCSCHits", "SIM"));
+  */
+  theGEMSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonGEMHits", "SIM"));
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -336,6 +367,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   for (int i = 0; i < int(theSimHitContainers.size()); ++i) {
     theSimHits.insert(theSimHits.end(),theSimHitContainers.at(i)->begin(),theSimHitContainers.at(i)->end());
   }
+  /*
   // DT
   iEvent.getByToken(theDTSimHitToken, theDTSimHitHandle); 
   ESHandle<DTGeometry> dtGeometry;
@@ -353,14 +385,20 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   ESHandle<CSCGeometry> cscGeometry;
   iSetup.get<MuonGeometryRecord>().get(cscGeometry); 
   const CSCGeometry* cscgeo = cscGeometry.product(); 
+  */
+  // GEM
+  iEvent.getByToken(theGEMSimHitToken, theGEMSimHitHandle); 
+  ESHandle<GEMGeometry> gemGeometry;
+  iSetup.get<MuonGeometryRecord>().get(gemGeometry); 
+  const GEMGeometry* gemgeo = gemGeometry.product(); 
 
   // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
 
      int pid            = (*iHit).particleType();
      DetId theDetUnitId((*iHit).detUnitId());
-     DetId simdetid= DetId((*iHit).detUnitId());
-
+      DetId simdetid= DetId((*iHit).detUnitId());
+     /*
      // DT Sim Hits ------------------------------------------------------------------
      if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::DT){
      
@@ -510,10 +548,10 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	 {
 	   //Endcap label. 1=forward (+Z); 2=backward (-Z)
 	   //Ring ID : from 1 to 4
-	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
-	   cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Ring ID: "<<cscdetId.ring()<<endl;
-	   cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<endl;
-	   cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
+	   //	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	   // cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Ring ID: "<<cscdetId.ring()<<endl;
+	   //cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<endl;
+	   //cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
 	
 	   Z_CSCHits_Muon->Fill(CSCGlobalPoint.z());
 	   XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
@@ -532,12 +570,67 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	 }
 
      }// end CSC Sim Hits -------------------------------------------------------------
+     */
+      // GEM Sim Hits
+      if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::GEM){
+
+	GEMDetId gemdetId(theDetUnitId);
+	GlobalPoint GEMGlobalPoint = gemgeo->idToDet(gemdetId)->toGlobal((*iHit).localPosition());
+	double GEM_GlobalPoint_R = sqrt(pow(GEMGlobalPoint.x(),2)+pow(GEMGlobalPoint.y(),2));
+	
+	Z_GEMHits_AllParticles->Fill(GEMGlobalPoint.z());
+	XY_GEMHits_AllParticles->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
+	ZR_GEMHits_AllParticles->Fill(GEMGlobalPoint.z(),GEM_GlobalPoint_R);
+	if(gemdetId.region() == 1) Region_1_XY_GEMHits_AllParticles->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
+	if(gemdetId.region() == -1) Region_Minus1_XY_GEMHits_AllParticles->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());
+	   
+	// GEM GEOMETRY INFO
+	// Region id: 0 for Barrel Not in use, +/-1 For +/- Endcap
+	//Ring id: GEM are installed only on ring 1
+	//the ring is the group of chambers with same r (distance of beam axis)
+	// and increasing phi
+	//Station id : the station is the set of chambers at same disk 
+	// Chamber id: it identifies a chamber in a ring it goes from 1 to 36
+	//for GE1 and GE2 and 1 to 18 for ME0
+	// Layer id: each station have two layers of chambers for GE1 and GE2:
+	// layer 1 is the inner chamber and layer 2 is the outer chamber
+	// For ME0 there are 6 layers of chambers
+	// Roll id  (also known as eta partition): each chamber is divided along
+	// the strip direction in  several parts  (rolls) GEM up to 12 
+
+	if((pid==13) || (pid==-13))
+	  {
+	    cout<<" PID: "<<pid<<" Muon Hit in: "<<endl;
+	    cout<<" Region Id: "<<gemdetId.region()<<" Station Id: "<<gemdetId.station()<<" Ring ID: "<<gemdetId.ring()<<endl;
+	    cout<<" Chamber Id: "<<gemdetId.chamber()<<" Layer Id: "<<gemdetId.layer()<<" Roll Id: "<<gemdetId.roll()<<endl;
+	    cout<<" R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	    /* // are GE21 and ME0 present in Scenario 2021 (Run3)? It seem that only GE11 is present by using the code below
+	       if(gemdetId.isGE11()) cout<<"GE11, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	       if(gemdetId.isGE21()) cout<<"GE21, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	       if(gemdetId.isME0()) cout<<"ME0, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	    */      	  
+	
+	   Z_GEMHits_Muon->Fill(GEMGlobalPoint.z());
+	   XY_GEMHits_Muon->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
+	   ZR_GEMHits_Muon->Fill(GEMGlobalPoint.z(),GEM_GlobalPoint_R);
+	   if(gemdetId.region() == 1) Region_1_XY_GEMHits_Muon->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
+	   if(gemdetId.region() == -1) Region_Minus1_XY_GEMHits_Muon->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
+	   /*
+	   // it seems that there is only ring == 1 for Run3 (Scenario 2021)
+	   if((gemdetId.region() == -1) && (gemdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   */
+	 }
+      }
+      // end GEM Sim Hits
+
+      // ME0 Sim Hits: ME0 will be present only in Phase 2, so for Run3 there are no code lines for ME0
 
   }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
  
   for (auto &p : *particle){
     // if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
+    if(p.pdgId()==2112) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
   }
 
 
@@ -551,6 +644,8 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 void Simhits_Analyzer::beginJob() {
  
   edm::Service<TFileService> fs;
+
+  /*
   // DT --------------------------------
   Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
   XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
@@ -634,7 +729,21 @@ void Simhits_Analyzer::beginJob() {
   Endcap_2_Ring_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_2_XY_CSCHits_Muon","Endcap_2_Ring_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
   Endcap_2_Ring_3_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_3_XY_CSCHits_Muon","Endcap_2_Ring_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
   Endcap_2_Ring_4_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_4_XY_CSCHits_Muon","Endcap_2_Ring_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  */
 
+  //GEM
+
+  Z_GEMHits_AllParticles  = fs->make<TH1F>("Z_GEMHits_AllParticles","Z_GEMHits_AllParticles",2400,-1200, 1200); 
+  XY_GEMHits_AllParticles = fs->make<TH2F>("XY_GEMHits_AllParticles","XY_GEMHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_GEMHits_AllParticles = fs->make<TH2F>("ZR_GEMHits_AllParticles","ZR_GEMHits_AllParticles",2400,-1200, 1200, 2400, 0, 1200);  
+  Region_1_XY_GEMHits_AllParticles = fs->make<TH2F>("Region_1_XY_GEMHits_AllParticles","Region_1_XY_GEMHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Region_Minus1_XY_GEMHits_AllParticles = fs->make<TH2F>("Region_Minus1_XY_GEMHits_AllParticles","Region_Minus1_XY_GEMHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+
+  Z_GEMHits_Muon  = fs->make<TH1F>("Z_GEMHits_Muon","Z_GEMHits_Muon",2400,-1200, 1200); 
+  XY_GEMHits_Muon = fs->make<TH2F>("XY_GEMHits_Muon","XY_GEMHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_GEMHits_Muon = fs->make<TH2F>("ZR_GEMHits_Muon","ZR_GEMHits_Muon",2400,-1200, 1200, 2400, 0, 1200);  
+  Region_1_XY_GEMHits_Muon = fs->make<TH2F>("Region_1_XY_GEMHits_Muon","Region_1_XY_GEMHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Region_Minus1_XY_GEMHits_Muon = fs->make<TH2F>("Region_Minus1_XY_GEMHits_Muon","Region_Minus1_XY_GEMHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
 
 }
 

@@ -5,21 +5,25 @@
 //
 /**\class Simhits_Analyzer Simhits_Analyzer.cc Simhits_Analyzer/Simhits_Analyzer/plugins/Simhits_Analyzer.cc
 
- Description: [one line class summary]
+ Description: Analyzer for Simi Hits of the Muon System (needed to check the migration to DD4Hep of the Muon Geometry)
 
- Implementation:
-     [Notes on implementation]
+ Implementation: Code made from Mon, 16 Nov 2020 to  
+    
 */
 //
-// Original Author:  Sergio Lo Meo
+// Original Author:  Sergio Lo Meo (sergio.lo.meo@cern.ch) 
 //         Created:  Mon, 16 Nov 2020 14:03:21 GMT
 //
 //
-
 // system include files
 #include <memory>
-
-// user include files
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <math.h>
+// fwcore include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -27,11 +31,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-
-
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
-
+// geometry include files
 #include "Geometry/Records/interface/MuonGeometryRecord.h"
 #include "Geometry/Records/interface/GlobalTrackingGeometryRecord.h"
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
@@ -49,8 +49,8 @@
 #include "Geometry/DTGeometry/interface/DTSuperLayer.h"
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
-
-//--
+// data format include files
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/GeometrySurface/interface/Surface.h"
 #include <DataFormats/GeometrySurface/interface/LocalError.h>
 #include <DataFormats/GeometryVector/interface/LocalPoint.h>
@@ -60,8 +60,12 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/MuonDetId/interface/MuonSubdetId.h"
 #include <DataFormats/MuonDetId/interface/RPCDetId.h>
+#include <DataFormats/MuonDetId/interface/RPCCompDetId.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include "DataFormats/MuonDetId/interface/DTWireId.h"
+#include "DataFormats/MuonDetId/interface/DTLayerId.h"
+#include "DataFormats/MuonDetId/interface/DTSuperLayerId.h"
+#include "DataFormats/MuonDetId/interface/DTChamberId.h"
 #include <DataFormats/MuonDetId/interface/GEMDetId.h>
 #include <DataFormats/MuonDetId/interface/ME0DetId.h>
 #include "DataFormats/RPCDigi/interface/RPCDigi.h"
@@ -96,13 +100,13 @@
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
-//
+// sim data format include files
 #include "SimDataFormats/Track/interface/SimTrack.h"
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
 #include "SimDataFormats/Vertex/interface/SimVertex.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 #include "SimDataFormats/TrackingHit/interface/PSimHitContainer.h"
-//
+// tracking tool include files
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/GeomPropagators/interface/Propagator.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
@@ -113,7 +117,7 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-//
+// reco include files
 #include "RecoMuon/TrackingTools/interface/MuonPatternRecoDumper.h"
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
 #include "RecoLocalMuon/DTSegment/src/DTSegmentUpdator.h"
@@ -121,44 +125,13 @@
 #include "RecoLocalMuon/DTSegment/src/DTHitPairForFit.h"
 #include "RecoLocalMuon/DTSegment/src/DTSegmentCand.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-//--
-
-#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
-#include "Geometry/CaloGeometry/interface/TruncatedPyramid.h"
-#include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
-#include "Geometry/CaloTopology/interface/EcalPreshowerTopology.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
-#include "Geometry/CaloTopology/interface/CaloTopology.h"
-
-
-#include "SimDataFormats/CaloHit/interface/PCaloHit.h"
-#include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
-
-#include "DataFormats/EcalDetId/interface/EBDetId.h"
-#include "DataFormats/EcalDetId/interface/ESDetId.h"
-#include "DataFormats/EcalDetId/interface/EEDetId.h"
-
-
+// common tools include files
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
+// root include files
 #include "TTree.h"
 #include "TH1.h"
 #include "TH2F.h"
 #include "TCanvas.h"
-#include <iostream>
-#include <fstream>
-
-
-#include <string>
-#include <sstream>
-
-#include <iomanip>
-#include <math.h>
-
-
 #include <TRandom.h>
 #include "TROOT.h"
 #include "TStyle.h"
@@ -180,16 +153,9 @@
 #include "TLorentzVector.h"
 #include "TMath.h"
 
-
 //
 // class declaration
 //
-
-// If the analyzer does not use TFileService, please remove
-// the template argument to the base class so the class inherits
-// from  edm::one::EDAnalyzer<>
-// This will improve performance in multithreaded jobs.
-
 
 class Simhits_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
@@ -203,37 +169,118 @@ private:
   void analyze(const edm::Event&, const edm::EventSetup&) override;
   void endJob() override;
 
-  // ----------member data ---------------------------
-  /*
-  TH1F* NHits_EB;
-  TH2F* Hits_EB;
-  TH1F* NHits_ES_Plus;
-  TH2F* Hits_ES_Plus;
-  TH1F* NHits_ES_Minus;
-  TH2F* Hits_ES_Minus;
-  TH1F* NHits_EE_Plus;
-  TH2F* Hits_EE_Plus;
-  TH1F* NHits_EE_Minus;
-  TH2F* Hits_EE_Minus;   
-  */
+  // Member Data
+
+  // DT------------------------------
+  // only mu- mu+
+  TH1F* Z_DTHits_Muon;
+  TH2F* XY_DTHits_Muon;
+  TH2F* ZR_DTHits_Muon;
+  TH2F* Wheel_Minus2_XY_DTHits_Muon;
+  TH2F* Wheel_Minus1_XY_DTHits_Muon;
+  TH2F* Wheel_0_XY_DTHits_Muon;
+  TH2F* Wheel_1_XY_DTHits_Muon;
+  TH2F* Wheel_2_XY_DTHits_Muon;
+  // all particles
+  TH1F* Z_DTHits_AllParticles;
+  TH2F* XY_DTHits_AllParticles;
+  TH2F* ZR_DTHits_AllParticles;
+  TH2F* Wheel_Minus2_XY_DTHits_AllParticles;
+  TH2F* Wheel_Minus1_XY_DTHits_AllParticles;
+  TH2F* Wheel_0_XY_DTHits_AllParticles;
+  TH2F* Wheel_1_XY_DTHits_AllParticles;
+  TH2F* Wheel_2_XY_DTHits_AllParticles;
+  // RPC------------------------------
+  // mu+ mu-
+  TH1F* Z_RPCHits_Muon;
+  TH2F* XY_RPCHits_Muon;
+  TH2F* ZR_RPCHits_Muon;
+  TH2F* Barrel_Wheel_Minus2_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_Minus1_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_0_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_1_XY_RPCHits_Muon;
+  TH2F* Barrel_Wheel_2_XY_RPCHits_Muon;
+  TH2F* Endcap_1_XY_RPCHits_Muon;
+  TH2F* Endcap_1_Ring_1_XY_RPCHits_Muon;
+  TH2F* Endcap_1_Ring_2_XY_RPCHits_Muon;
+  TH2F* Endcap_1_Ring_3_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_Ring_1_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_Ring_2_XY_RPCHits_Muon;
+  TH2F* Endcap_Minus1_Ring_3_XY_RPCHits_Muon;
+  // all particles
+  TH1F* Z_RPCHits_AllParticles;
+  TH2F* XY_RPCHits_AllParticles;
+  TH2F* ZR_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_Minus2_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_Minus1_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_0_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_1_XY_RPCHits_AllParticles;
+  TH2F* Barrel_Wheel_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_Ring_1_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_Ring_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_1_Ring_3_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles;
+  TH2F* Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles;
+  // CSC ----------------------------
+  // all particles
+  TH1F* Z_CSCHits_AllParticles;
+  TH2F* XY_CSCHits_AllParticles;
+  TH2F* ZR_CSCHits_AllParticles;
+  TH2F* Endcap_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_3_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Ring_4_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_3_XY_CSCHits_AllParticles;
+  TH2F* Endcap_2_Ring_4_XY_CSCHits_AllParticles;
+
+  // muon
+  TH1F* Z_CSCHits_Muon;
+  TH2F* XY_CSCHits_Muon;
+  TH2F* ZR_CSCHits_Muon;
+  TH2F* Endcap_1_XY_CSCHits_Muon;
+  TH2F* Endcap_2_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_1_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_2_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_3_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Ring_4_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_1_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_2_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_3_XY_CSCHits_Muon;
+  TH2F* Endcap_2_Ring_4_XY_CSCHits_Muon;
+ 
   Long64_t run, event, lumi;
 
+  // Particles
   edm::Handle<edm::View<reco::GenParticle> > particle;
   edm::EDGetTokenT<edm::View< reco::GenParticle > > particleToken;
-  /*
-  edm::Handle<edm::PCaloHitContainer> pCaloHits_EB_Handle;
-  edm::EDGetTokenT<edm::PCaloHitContainer> pCaloHits_EB_Token;
+ 
+  // DT
+  edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
+  // 
 
-  edm::Handle<edm::PCaloHitContainer> pCaloHits_ES_Handle;
-  edm::EDGetTokenT<edm::PCaloHitContainer> pCaloHits_ES_Token;
-  
-  edm::Handle<edm::PCaloHitContainer> pCaloHits_EE_Handle;
-  edm::EDGetTokenT<edm::PCaloHitContainer> pCaloHits_EE_Token;  
-  */
-  // parte nuova per i Muoni
-  //  edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
-  //edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
-  // fine parte nuova per i Muoni
+  // RPC
+  edm::Handle<edm::PSimHitContainer> theRPCSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theRPCSimHitToken;
+  // 
+
+  // CSC
+  edm::Handle<edm::PSimHitContainer> theCSCSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theCSCSimHitToken;
+  // 
+
+  // GEM
+  edm::Handle<edm::PSimHitContainer> theGEMSimHitHandle;
+  edm::EDGetTokenT<edm::PSimHitContainer> theGEMSimHitToken;
+  // 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
@@ -252,26 +299,24 @@ private:
 // constructors and destructor
 //
 Simhits_Analyzer::Simhits_Analyzer(const edm::ParameterSet& iConfig){
-  consumesMany<edm::PSimHitContainer>();// questo viene dal MyAnalyzer5
+
+  consumesMany<edm::PSimHitContainer>();
   usesResource("TFileService");
+
   particleToken = consumes< edm::View < reco::GenParticle> >(edm::InputTag("genParticles"));
-	/*
-	pCaloHits_EB_Token = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits", "EcalHitsEB", "SIM"));
-        pCaloHits_ES_Token = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits","EcalHitsES","SIM"));
-        pCaloHits_EE_Token = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits", "EcalHitsEE", "SIM"));
-	//    theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
-	*/
+  theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
+  theRPCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonRPCHits", "SIM"));
+  theCSCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonCSCHits", "SIM"));
+  theGEMSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonGEMHits", "SIM"));
+
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
 #endif
-  //now do what ever initialization is needed
+ 
 }
 
 Simhits_Analyzer::~Simhits_Analyzer() {
-  // do anything here that needs to be done at desctruction time
-  // (e.g. close files, deallocate resources etc.)
-  //
-  // please remove this method altogether if it would be left empty
+ 
 }
 
 //
@@ -284,175 +329,340 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   using namespace std;
   using namespace reco;
 
-
   run = iEvent.id().run();
   event = iEvent.id().event();
   lumi = iEvent.id().luminosityBlock();
-  
 
-  iEvent.getByToken(particleToken, particle);         //GenParticles
-  /*
-  iEvent.getByToken(pCaloHits_EB_Token, pCaloHits_EB_Handle); //PCaloHits EB
-  iEvent.getByToken(pCaloHits_ES_Token, pCaloHits_ES_Handle); //PCaloHits ES
-  iEvent.getByToken(pCaloHits_EE_Token, pCaloHits_EE_Handle); //PCaloHits EE
-  */
- std::vector<edm::Handle<edm::PSimHitContainer> > theSimHitContainers;
+  iEvent.getByToken(particleToken, particle);  
+  
+  std::vector<edm::Handle<edm::PSimHitContainer> > theSimHitContainers;
   iEvent.getManyByType(theSimHitContainers); 
 
   std::vector<PSimHit> theSimHits;
   for (int i = 0; i < int(theSimHitContainers.size()); ++i) {
     theSimHits.insert(theSimHits.end(),theSimHitContainers.at(i)->begin(),theSimHitContainers.at(i)->end());
   }
-
-  /*
-  //new line for Muon
-  iEvent.getByToken(theDTSimHitToken, theDTSimHitHandle); //DT Sim Hits
+  // DT
+  iEvent.getByToken(theDTSimHitToken, theDTSimHitHandle); 
   ESHandle<DTGeometry> dtGeometry;
-  //iSetup.get<MuonGeometryRecord>().get(dtGeometry); // crea problemi...
-  // const DTGeometry* dtgeo = dtGeometry.product(); //forse non c'e' bisogno di questa linea
-  // end new line for Muon
-  */
-  /*
-  ESHandle<CaloGeometry> pG;
-  iSetup.get<CaloGeometryRecord>().get(pG);
-  const CaloGeometry* geo = pG.product();
+  iSetup.get<MuonGeometryRecord>().get(dtGeometry); 
+  const DTGeometry* dtgeo = dtGeometry.product(); 
 
-  EBDetId* DidEB;
-  ESDetId* DidES;
-  EEDetId* DidEE;
- 
+  // RPC
+  iEvent.getByToken(theRPCSimHitToken, theRPCSimHitHandle); 
+  ESHandle<RPCGeometry> rpcGeometry;
+  iSetup.get<MuonGeometryRecord>().get(rpcGeometry); 
+  const RPCGeometry* rpcgeo = rpcGeometry.product(); 
 
-  int NHits, NHits_Plus, NHits_Minus = 0;
-  float Energy = 0.;
+  // CSC
+  iEvent.getByToken(theCSCSimHitToken, theCSCSimHitHandle); 
+  ESHandle<CSCGeometry> cscGeometry;
+  iSetup.get<MuonGeometryRecord>().get(cscGeometry); 
+  const CSCGeometry* cscgeo = cscGeometry.product(); 
 
-  edm::PCaloHitContainer::const_iterator caloHitsItr;
+  // GEM
+  iEvent.getByToken(theGEMSimHitToken, theGEMSimHitHandle); 
+  ESHandle<GEMGeometry> gemGeometry;
+  iSetup.get<MuonGeometryRecord>().get(gemGeometry); 
+  const GEMGeometry* gemgeo = gemGeometry.product(); 
 
-  const CaloSubdetectorGeometry* ecalEBGeom = static_cast<const CaloSubdetectorGeometry*>(geo->getSubdetectorGeometry(DetId::Ecal, EcalBarrel));
+  // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
 
+     int pid            = (*iHit).particleType();
+     DetId theDetUnitId((*iHit).detUnitId());
+     DetId simdetid= DetId((*iHit).detUnitId());
+
+     // DT Sim Hits ------------------------------------------------------------------
+     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::DT){
+     
+     DTWireId wireId(theDetUnitId);
+
+     GlobalPoint DTGlobalPoint = dtgeo->idToDet(wireId)->toGlobal((*iHit).localPosition());
+     double DT_GlobalPoint_R = sqrt(pow(DTGlobalPoint.x(),2)+pow(DTGlobalPoint.y(),2));     
+
+     DTLayerId myDTLayerId = wireId.layerId();
+     DTSuperLayerId myDTSuperLayerId = myDTLayerId.superlayerId();
+     DTChamberId myDTChamberId = myDTSuperLayerId.chamberId();
+     // all particles
+     Z_DTHits_AllParticles->Fill(DTGlobalPoint.z());
+     XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     ZR_DTHits_AllParticles->Fill(DTGlobalPoint.z(),DT_GlobalPoint_R);
+     if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+     if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_AllParticles->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+
+     // only mu- mu+
+     if((pid==13) || (pid==-13))
+       {
+	 /// DT GEOMETRY INFO
+	 /// Wheel id from -2 to 2 
+	 /// Station id from 1 to 4
+	 /// SuperLayer Id from 0 to 3
+	 /// Layer Id from 0 to 4 (lowest layer id 0 indicates a full SL)
+	 /// Wire Id: lowest wire id (numbering starts from 1 or 2), highest wire id (chambers have 48 to 96 wires) 
+	 ///Sectors are numbered from 1 to 12,
+	 /// starting at phi=0 and increasing with phi.
+	 /// In station 4, where the top and bottom setcors are made of two chambers,
+	 /// two additional sector numbers are used, 13 (after sector 4, top)
+	 /// and 14 (after sector 10, bottom).
+	 // cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 //cout<<" Wheel Id: "<<myDTChamberId.wheel()<<" Station Id: "<<myDTChamberId.station()<<" Sector Id: "<<myDTChamberId.sector()<<endl;
+	 //cout<<" SuperLayer Id: "<<myDTSuperLayerId.superlayer()<<" Layer Id: "<<myDTLayerId.layer()<<" Wire ID: "<<wireId.wire()<<endl;
+	 //cout<<" R: "<<DT_GlobalPoint_R<<" x: "<<DTGlobalPoint.x()<<" y: "<<DTGlobalPoint.y()<<" z: "<<DTGlobalPoint.z()<<endl;
+
+	 Z_DTHits_Muon->Fill(DTGlobalPoint.z());
+	 XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 ZR_DTHits_Muon->Fill(DTGlobalPoint.z(),DT_GlobalPoint_R);
+	 if(myDTChamberId.wheel() == -2) Wheel_Minus2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == -1) Wheel_Minus1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 0) Wheel_0_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 1) Wheel_1_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+	 if(myDTChamberId.wheel() == 2) Wheel_2_XY_DTHits_Muon->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
+       } // end only mu- mu+
+
+     }// end DT Sim Hits -------------------------------------------------------------
+
+ // RPC Sim Hits ------------------------------------------------------------------
+     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){
+     
+     RPCDetId rpcdetId(theDetUnitId);
+
+     GlobalPoint RPCGlobalPoint = rpcgeo->idToDet(rpcdetId)->toGlobal((*iHit).localPosition());
+     double RPC_GlobalPoint_R = sqrt(pow(RPCGlobalPoint.x(),2)+pow(RPCGlobalPoint.y(),2));
+     Z_RPCHits_AllParticles->Fill(RPCGlobalPoint.z());
+     XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());     
+     ZR_RPCHits_AllParticles->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
+
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == -2)) Barrel_Wheel_Minus2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == -1)) Barrel_Wheel_Minus1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == 0)) Barrel_Wheel_0_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == 1)) Barrel_Wheel_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 0) && (rpcdetId.ring() == 2)) Barrel_Wheel_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+
+     if(rpcdetId.region() == 1) Endcap_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 1) && (rpcdetId.ring() == 1)) Endcap_1_Ring_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 1) && (rpcdetId.ring() == 2)) Endcap_1_Ring_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == 1) && (rpcdetId.ring() == 3)) Endcap_1_Ring_3_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     
+     if(rpcdetId.region() == -1) Endcap_Minus1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == -1) && (rpcdetId.ring() == 1)) Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == -1) && (rpcdetId.ring() == 2)) Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     if((rpcdetId.region() == -1) && (rpcdetId.ring() == 3)) Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+     
+     // only mu- mu+
+     if((pid==13) || (pid==-13))
+       {
+	 /// RPC GEOMETRY INFO
+	 /// Region id: 0 for Barrel, +/-1 For +/- Endcap
+	 /// Ring id: Wheel number in Barrel (from -2 to +2) Ring Number in Endcap (from 1 to 3)
+	 /// Ring has a different meaning in Barrel and Endcap! In Barrel it is wheel, in Endcap
+	 /// it is the physical ring located on a disk (a disk contains three rings). In Endcap
+	 /// the ring is the group of chambers with same r (distance of beam axis) and increasing phi
+	 // Station id : For Barrel: the four groups of chambers at same r (distance from beam axis) and increasing phi
+	 ///             For Endcap: the three groups of chambers at same z (distance from interaction point), i.e. the disk
+	 /// Sector id: the group of chambers at same phi (and increasing r)
+	 /// Layer id: each station can have two layers of chambers: layer 1 is the inner chamber and layer 2 is the outer chamber (when present)
+	 /// Only in Barrel: RB1 and RB2.
+	 /// SubSector id : some sectors are divided along the phi direction in subsectors (from 1 to 4 in Barrel, from 1 to 6 in Endcap)
+	 /// Roll id  (also known as eta partition): each chamber is divided along the strip direction in
+	 /// two or three parts (rolls) for Barrel and two, three or four parts for endcap
+	 /// Roll is defined in RPCDetId.h and not in RPCCompDetId
+	 //cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	 //cout<<" Region Id: "<<rpcdetId.region()<<" Ring Id: "<<rpcdetId.ring()<<" Roll ID: "<<rpcdetId.roll()<<endl;
+	 //cout<<" R: "<<RPC_GlobalPoint_R<<" x: "<<RPCGlobalPoint.x()<<" y: "<<RPCGlobalPoint.y()<<" z: "<<RPCGlobalPoint.z()<<endl;
+	 Z_RPCHits_Muon->Fill(RPCGlobalPoint.z());
+	 XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 ZR_RPCHits_Muon->Fill(RPCGlobalPoint.z(),RPC_GlobalPoint_R);
+	 
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == -2)) Barrel_Wheel_Minus2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == -1)) Barrel_Wheel_Minus1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 0)) Barrel_Wheel_0_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 1)) Barrel_Wheel_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 0) && (rpcdetId.ring() == 2)) Barrel_Wheel_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+
+	 if(rpcdetId.region() == 1) Endcap_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 1)) Endcap_1_Ring_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 2)) Endcap_1_Ring_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == 1) && (rpcdetId.ring() == 3)) Endcap_1_Ring_3_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+
+	 if(rpcdetId.region() == -1) Endcap_Minus1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 1)) Endcap_Minus1_Ring_1_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 2)) Endcap_Minus1_Ring_2_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 if((rpcdetId.region() == -1) && (rpcdetId.ring() == 3)) Endcap_Minus1_Ring_3_XY_RPCHits_Muon->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
+	 
+       } // end only mu- mu+
+     
+     }// end RPC Sim Hits -------------------------------------------------------------
+    
+     // CSC Sim Hits ------------------------------------------------------------------
+     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::CSC){
+       
+       CSCDetId cscdetId(theDetUnitId);
+
+       GlobalPoint CSCGlobalPoint = cscgeo->idToDet(cscdetId)->toGlobal((*iHit).localPosition());
+       double CSC_GlobalPoint_R = sqrt(pow(CSCGlobalPoint.x(),2)+pow(CSCGlobalPoint.y(),2));
+       Z_CSCHits_AllParticles->Fill(CSCGlobalPoint.z());
+       XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+       ZR_CSCHits_AllParticles->Fill(CSCGlobalPoint.z(),CSC_GlobalPoint_R);
+       if(cscdetId.endcap() == 1) Endcap_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+       if(cscdetId.endcap() == 2) Endcap_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 2)) Endcap_1_Ring_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 3)) Endcap_1_Ring_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 1) && (cscdetId.ring() == 4)) Endcap_1_Ring_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 1)) Endcap_2_Ring_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 2)) Endcap_2_Ring_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 3)) Endcap_2_Ring_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.endcap() == 2) && (cscdetId.ring() == 4)) Endcap_2_Ring_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y()); 
+      
+       if((pid==13) || (pid==-13))
+	 {
+	   //Endcap label. 1=forward (+Z); 2=backward (-Z)
+	   //Ring ID : from 1 to 4
+	   //	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	   // cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Ring ID: "<<cscdetId.ring()<<endl;
+	   //cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<endl;
+	   //cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
+	
+	   Z_CSCHits_Muon->Fill(CSCGlobalPoint.z());
+	   XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+	   ZR_CSCHits_Muon->Fill(CSCGlobalPoint.z(),CSC_GlobalPoint_R);
+       
+	   if(cscdetId.endcap() == 1) Endcap_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
+	   if(cscdetId.endcap() == 2) Endcap_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 2)) Endcap_1_Ring_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 3)) Endcap_1_Ring_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 1) && (cscdetId.ring() == 4)) Endcap_1_Ring_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 1)) Endcap_2_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 2)) Endcap_2_Ring_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 3)) Endcap_2_Ring_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 4)) Endcap_2_Ring_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	 }
+
+     }// end CSC Sim Hits -------------------------------------------------------------
+
+  }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  for(caloHitsItr = pCaloHits_EB_Handle->begin(); caloHitsItr != pCaloHits_EB_Handle->end(); caloHitsItr++){
-          int temp = caloHitsItr->depth();
-          DidEB = new EBDetId(caloHitsItr->id());
-          temp &= 0x0003;
-          double depth = (double)(caloHitsItr->depth()>>2)/16383.;
-	  NHits++;
-          Energy += caloHitsItr->energy();
-          Hits_EB->Fill(DidEB->ieta(), DidEB->iphi());
-	  std::shared_ptr<const CaloCellGeometry> geom = ecalEBGeom->getGeometry(*DidEB);  
-	  //	  Hits_EB_cartesian->Fill(geom->getPosition().x(), geom->getPosition().y());
-//          cout << "EB ==> temp flag: " << temp << " || depth: " << depth << " || energy: " << caloHitsItr->energy() << endl << endl;
-//          cout << endl << "iEta = "<< DidEB->ieta() << " iPhi = "<<DidEB->iphi()<<endl;
-  }
-
-  NHits_EB->Fill(NHits);
-  cout<<endl<<"EB Total Hits = "<< NHits <<  "Total Energy = "<< Energy <<endl;
-
-
-  const CaloSubdetectorGeometry* ecalESGeom = static_cast<const CaloSubdetectorGeometry*>(geo->getSubdetectorGeometry(DetId::Ecal, EcalPreshower));
-  NHits_Plus = 0;
-  NHits_Minus = 0;
-  Energy = 0.;
-
-  for(caloHitsItr = pCaloHits_ES_Handle->begin(); caloHitsItr != pCaloHits_ES_Handle->end(); caloHitsItr++){
-          int temp = caloHitsItr->depth();
-          DidES = new ESDetId(caloHitsItr->id());
-          NHits++;
-          Energy += caloHitsItr->energy();
-	  std::shared_ptr<const CaloCellGeometry> geom = ecalESGeom->getGeometry(*DidES);
-//	  cout<<endl<<geom->getPosition().x()<<" "<<geom->getPosition().y()<<endl;
-	  if (DidES->zside() == 1){
-          	Hits_ES_Plus->Fill(geom->getPosition().x(), geom->getPosition().y());
-		NHits_Plus++;
-	  }
-	  if (DidES->zside() == -1){
-                Hits_ES_Minus->Fill(geom->getPosition().x(), geom->getPosition().y());
-		NHits_Minus++;
-	  }
-
-  }
-
-
-  NHits_ES_Plus->Fill(NHits_Plus);
-  NHits_ES_Minus->Fill(NHits_Minus);
-  NHits_Plus = 0;
-  NHits_Minus = 0;
-  Energy = 0.;
-
-  for(caloHitsItr = pCaloHits_EE_Handle->begin(); caloHitsItr != pCaloHits_EE_Handle->end(); caloHitsItr++){
-          int temp = caloHitsItr->depth();
-          DidEE = new EEDetId(caloHitsItr->id());
-          temp &= 0x0003;
-	  NHits++;
-	  Energy += caloHitsItr->energy();
-          double depth = (double)(caloHitsItr->depth()>>2)/16383.;
-//          cout << "EE ==> temp flag: " << temp << " || depth: " << depth << " || energy: " << caloHitsItr->energy() << endl << endl;
-//	  cout << endl << "iEta = "<< DidEE->ix() << " iPhi = "<<DidEE->iy()<<" "<<DidEE->zside()<<endl;
-	  if (DidEE->zside() == 1){
-		Hits_EE_Plus->Fill(DidEE->ix(), DidEE->iy());
-		NHits_Plus++;
-	  }
-	  if (DidEE->zside() == -1){
-                Hits_EE_Minus->Fill(DidEE->ix(), DidEE->iy());
-		NHits_Minus++;
-	  }
-  }
-
-  NHits_EE_Plus->Fill(NHits_Plus);
-  NHits_EE_Minus->Fill(NHits_Minus);
-  */
-
+ 
   for (auto &p : *particle){
-    if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
+    // if((p.pdgId()==13)||(p.pdgId()==-13)) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
+    if(p.pdgId()==2112) cout<<endl<<" PDG Id = "<<p.pdgId()<<" Energy  = "<<p.energy()<<" Eta = "<<p.eta()<<" Phi = "<<p.phi()<<endl;
   }
 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-  // if the SetupData is always needed
-  auto setup = iSetup.getData(setupToken_);
-  // if need the ESHandle to check if the SetupData was there or not
-  auto pSetup = iSetup.getHandle(setupToken_);
+   auto setup = iSetup.getData(setupToken_);
+   auto pSetup = iSetup.getHandle(setupToken_);
 #endif
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void Simhits_Analyzer::beginJob() {
-  // please remove this method if not needed
-  /* 
- edm::Service<TFileService> fs;
-  NHits_EB = fs->make<TH1F>("NHits_EB","NHits_EB",500,0, 500);
-  Hits_EB = fs->make<TH2F>("Hits_EB","Hits_EB",400,-200, 200, 360,0, 360);
+ 
+  edm::Service<TFileService> fs;
+  // DT --------------------------------
+  Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
+  XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  ZR_DTHits_Muon = fs->make<TH2F>("ZR_DTHits_Muon","ZR_DTHits_Muon",2000,-1000, 1000, 2000, 0, 1000); 
+  Wheel_Minus2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_Muon","Wheel_Minus2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_Muon","Wheel_Minus1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_0_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_0_XY_DTHits_Muon","Wheel_0_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_1_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_1_XY_DTHits_Muon","Wheel_1_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_2_XY_DTHits_Muon  = fs->make<TH2F>("Wheel_2_XY_DTHits_Muon","Wheel_2_XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);
 
-  NHits_ES_Plus = fs->make<TH1F>("NHits_ES_Plus","NHits_ES_Plus",500,0, 500);
-  Hits_ES_Plus = fs->make<TH2F>("Hits_ES_Plus","Hits_ES_Plus",400,-200, 200, 400,-200, 200);
-  NHits_ES_Minus = fs->make<TH1F>("NHits_ES_Minus","NHits_ES_Minus",500,0, 500);
-  Hits_ES_Minus = fs->make<TH2F>("Hits_ES_Minus","Hits_ES_Minus",400,-200, 200, 400,-200, 200);
+  Z_DTHits_AllParticles = fs->make<TH1F>("Z_DTHits_AllParticles","Z_DTHits_AllParticles",2000,-1000, 1000); 
+  XY_DTHits_AllParticles = fs->make<TH2F>("XY_DTHits_AllParticles","XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  ZR_DTHits_AllParticles = fs->make<TH2F>("ZR_DTHits_AllPraticles","ZR_DTHits_AllParticles",2000,-1000, 1000, 2000, 0, 1000);  
+  Wheel_Minus2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus2_XY_DTHits_AllParticles","Wheel_Minus2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_Minus1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_Minus1_XY_DTHits_AllParticles","Wheel_Minus1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_0_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_0_XY_DTHits_AllParticles","Wheel_0_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_1_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_1_XY_DTHits_AllParticles","Wheel_1_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Wheel_2_XY_DTHits_AllParticles  = fs->make<TH2F>("Wheel_2_XY_DTHits_AllParticles","Wheel_2_XY_DTHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  // RPC -------------------------------
+  Z_RPCHits_Muon = fs->make<TH1F>("Z_RPCHits_Muon","Z_RPCHits_Muon",2400,-1200, 1200); 
+  XY_RPCHits_Muon = fs->make<TH2F>("XY_RPCHits_Muon","XY_RPCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200); 
+  ZR_RPCHits_Muon = fs->make<TH2F>("ZR_RPCHits_Muon","ZR_RPCHits_Muon",2400,-1200, 1200, 2400, 0, 1200); 
+  Barrel_Wheel_Minus2_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_Minus2_XY_RPCHits_Muon","Barrel_Wheel_Minus2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_Minus1_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_Minus1_XY_RPCHits_Muon","Barrel_Wheel_Minus1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_0_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_0_XY_RPCHits_Muon","Barrel_Wheel_0_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_1_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_1_XY_RPCHits_Muon","Barrel_Wheel_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_2_XY_RPCHits_Muon = fs->make<TH2F>("Barrel_Wheel_2_XY_RPCHits_Muon","Barrel_Wheel_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_XY_RPCHits_Muon","Endcap_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_1_XY_RPCHits_Muon","Endcap_1_Ring_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_2_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_2_XY_RPCHits_Muon","Endcap_1_Ring_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_Muon","Endcap_1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_Minus1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_XY_RPCHits_Muon","Endcap_Minus1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000);  
+  Endcap_Minus1_Ring_1_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_1_XY_RPCHits_Muon","Endcap_Minus1_Ring_1_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_2_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_2_XY_RPCHits_Muon","Endcap_Minus1_Ring_2_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_3_XY_RPCHits_Muon = fs->make<TH2F>("Endcap_Minus1_Ring_3_XY_RPCHits_Muon","Endcap_Minus1_Ring_3_XY_RPCHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
+ 
+  Z_RPCHits_AllParticles = fs->make<TH1F>("Z_RPCHits_AllParticles","Z_RPCHits_AllParticles",2400,-1200, 1200); 
+  XY_RPCHits_AllParticles = fs->make<TH2F>("XY_RPCHits_AllParticles","XY_RPCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_RPCHits_AllParticles = fs->make<TH2F>("ZR_RPCHits_AllParticles","ZR_RPCHits_AllParticles",2400,-1200, 1200, 2400, 0, 1200);  
+  Barrel_Wheel_Minus2_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_Minus2_XY_RPCHits_AllParticles","Barrel_Wheel_Minus2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_Minus1_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_Minus1_XY_RPCHits_AllParticles","Barrel_Wheel_Minus1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_0_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_0_XY_RPCHits_AllParticles","Barrel_Wheel_0_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_1_XY_RPCHits_AllParticles","Barrel_Wheel_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Barrel_Wheel_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Barrel_Wheel_2_XY_RPCHits_AllParticles","Barrel_Wheel_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_XY_RPCHits_AllParticles","Endcap_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_1_XY_RPCHits_AllParticles","Endcap_1_Ring_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_2_XY_RPCHits_AllParticles","Endcap_1_Ring_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_3_XY_RPCHits_AllParticles","Endcap_1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);
+  Endcap_Minus1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_XY_RPCHits_AllParticles","Endcap_Minus1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);  
+  Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_1_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_2_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000); 
+  Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles = fs->make<TH2F>("Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles","Endcap_Minus1_Ring_3_XY_RPCHits_AllParticles",2000,-1000, 1000, 2000,-1000, 1000);  
 
-  NHits_EE_Plus = fs->make<TH1F>("NHits_EE_Plus","NHits_EE_Plus",500,0, 500);
-  Hits_EE_Plus = fs->make<TH2F>("Hits_EE_Plus","Hits_EE_Plus",100,0, 100, 100,0, 100);
-  NHits_EE_Minus = fs->make<TH1F>("NHits_EE_Minus","NHits_EE_Minus",500,0, 500);
-  Hits_EE_Minus = fs->make<TH2F>("Hits_EE_Minus","Hits_EE_Minus",100,0, 100, 100,0, 100);
-  */
+  // CSC
+  Z_CSCHits_AllParticles  = fs->make<TH1F>("Z_CSCHits_AllParticles","Z_CSCHits_AllParticles",2400,-1200, 1200); 
+  XY_CSCHits_AllParticles = fs->make<TH2F>("XY_CSCHits_AllParticles","XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_CSCHits_AllParticles = fs->make<TH2F>("ZR_CSCHits_AllParticles","ZR_CSCHits_AllParticles",2400,-1200, 1200, 2400, 0, 1200);  
+
+  Endcap_1_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_XY_CSCHits_AllParticles","Endcap_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_XY_CSCHits_AllParticles","Endcap_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_1_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_1_XY_CSCHits_AllParticles","Endcap_1_Ring_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_2_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_2_XY_CSCHits_AllParticles","Endcap_1_Ring_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_3_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_3_XY_CSCHits_AllParticles","Endcap_1_Ring_3_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_4_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_1_Ring_4_XY_CSCHits_AllParticles","Endcap_1_Ring_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_1_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_1_XY_CSCHits_AllParticles","Endcap_2_Ring_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_2_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_2_XY_CSCHits_AllParticles","Endcap_2_Ring_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_3_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_3_XY_CSCHits_AllParticles","Endcap_2_Ring_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_4_XY_CSCHits_AllParticles = fs->make<TH2F>("Endcap_2_Ring_4_XY_CSCHits_AllParticles","Endcap_2_Ring_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+
+  Z_CSCHits_Muon  = fs->make<TH1F>("Z_CSCHits_Muon","Z_CSCHits_Muon",2400,-1200, 1200); 
+  XY_CSCHits_Muon = fs->make<TH2F>("XY_CSCHits_Muon","XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  ZR_CSCHits_Muon = fs->make<TH2F>("ZR_CSCHits_Muon","ZR_CSCHits_Muon",2400,-1200, 1200, 2400, 0, 1200);  
+
+  Endcap_1_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_XY_CSCHits_Muon","Endcap_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_XY_CSCHits_Muon","Endcap_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_1_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_1_XY_CSCHits_Muon","Endcap_1_Ring_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_2_XY_CSCHits_Muon","Endcap_1_Ring_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_3_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_3_XY_CSCHits_Muon","Endcap_1_Ring_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Ring_4_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_1_Ring_4_XY_CSCHits_Muon","Endcap_1_Ring_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_1_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_1_XY_CSCHits_Muon","Endcap_2_Ring_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_2_XY_CSCHits_Muon","Endcap_2_Ring_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_3_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_3_XY_CSCHits_Muon","Endcap_2_Ring_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_2_Ring_4_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_4_XY_CSCHits_Muon","Endcap_2_Ring_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void Simhits_Analyzer::endJob() {
-  // please remove this method if not needed
+ 
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void Simhits_Analyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-  //The following says we do not know what parameters are allowed so do no validation
-  // Please change this to state exactly what you do use, even if it is no parameters
+ 
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   descriptions.addDefault(desc);
-
-  //Specify that only 'tracks' is allowed
-  //To use, remove the default given above and uncomment below
-  //ParameterSetDescription desc;
-  //desc.addUntracked<edm::InputTag>("tracks","ctfWithMaterialTracks");
-  //descriptions.addDefault(desc);
 }
 
-//define this as a plug-in
 DEFINE_FWK_MODULE(Simhits_Analyzer);
+
