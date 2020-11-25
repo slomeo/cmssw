@@ -5,16 +5,16 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 process = cms.Process("ntuples")
 
 # delete the comment below if you are working with DT, RPC, CSC----------
-#process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 # ------------------------------------------------------------------------
 # comment the lines below if you are working with DT, RPC, CSC----------
 # only for DD4HEP (comment the line for DDD)
-process.load('Configuration.StandardSequences.DD4hep_GeometrySim_cff')
+#process.load('Configuration.StandardSequences.DD4hep_GeometrySim_cff')
 # only for DD (comment the line for DD4HEP)
 #process.load('Configuration.Geometry.GeometryExtended2021_cff')
 #
-process.load("Geometry.MuonNumbering.muonGeometryConstants_cff")
-process.load("Geometry.GEMGeometryBuilder.gemGeometry_cff")
+#process.load("Geometry.MuonNumbering.muonGeometryConstants_cff")
+#process.load("Geometry.GEMGeometryBuilder.gemGeometry_cff")
 # ------------------------------------------------------------------------
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -30,8 +30,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20000) )
 
 # select DDD or DD4HEP file 
 process.source = cms.Source("PoolSource",
-#                            fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_SingleMu_ddd.root')
-                           fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_SingleMu_dd4hep.root')
+                            fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_SingleMu_ddd.root')
+#                           fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/s/slomeo/step1_SingleMu_dd4hep.root')
 	    )
 # turn on VID producer, indicate data format  to be
 #from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
@@ -57,9 +57,9 @@ process.TFileService = cms.Service("TFileService",
 
 # comment the 3 lines below if you are working with DT, RPC, CSC----------
 # only for GEM DD4HEP (comment these lines for DDD)
-process.muonGeometryConstants.fromDD4Hep = True
-process.gemGeometry.fromDDD = False
-process.gemGeometry.fromDD4Hep = True
+#process.muonGeometryConstants.fromDD4Hep = True
+#process.gemGeometry.fromDDD = False
+#process.gemGeometry.fromDD4Hep = True
 #-------------------------------------------------------------------------
 
 process.p = cms.Path(process.ntuples)

@@ -175,7 +175,7 @@ private:
 
   // Member Data
 
-  /*
+
   // DT------------------------------
   // only mu- mu+
   TH1F* Z_DTHits_Muon;
@@ -246,6 +246,15 @@ private:
   TH2F* Endcap_2_Ring_3_XY_CSCHits_AllParticles;
   TH2F* Endcap_2_Ring_4_XY_CSCHits_AllParticles;
 
+  TH2F* Endcap_1_Station_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Station_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Station_3_XY_CSCHits_AllParticles;
+  TH2F* Endcap_1_Station_4_XY_CSCHits_AllParticles;
+  TH2F* Endcap_Minus1_Station_1_XY_CSCHits_AllParticles;
+  TH2F* Endcap_Minus1_Station_2_XY_CSCHits_AllParticles;
+  TH2F* Endcap_Minus1_Station_3_XY_CSCHits_AllParticles;
+  TH2F* Endcap_Minus1_Station_4_XY_CSCHits_AllParticles;
+
   // muon
   TH1F* Z_CSCHits_Muon;
   TH2F* XY_CSCHits_Muon;
@@ -260,8 +269,16 @@ private:
   TH2F* Endcap_2_Ring_2_XY_CSCHits_Muon;
   TH2F* Endcap_2_Ring_3_XY_CSCHits_Muon;
   TH2F* Endcap_2_Ring_4_XY_CSCHits_Muon;
-  */
 
+  TH2F* Endcap_1_Station_1_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Station_2_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Station_3_XY_CSCHits_Muon;
+  TH2F* Endcap_1_Station_4_XY_CSCHits_Muon;
+  TH2F* Endcap_Minus1_Station_1_XY_CSCHits_Muon;
+  TH2F* Endcap_Minus1_Station_2_XY_CSCHits_Muon;
+  TH2F* Endcap_Minus1_Station_3_XY_CSCHits_Muon;
+  TH2F* Endcap_Minus1_Station_4_XY_CSCHits_Muon;
+  /*
   // GEM
 
   // all particles
@@ -278,13 +295,14 @@ private:
   TH2F* ZR_GEMHits_Muon;
   TH2F* Region_1_XY_GEMHits_Muon;
   TH2F* Region_Minus1_XY_GEMHits_Muon;
+  */
 
   Long64_t run, event, lumi;
-
+ 
   // Particles
   edm::Handle<edm::View<reco::GenParticle> > particle;
   edm::EDGetTokenT<edm::View< reco::GenParticle > > particleToken;
-  /* 
+  
   // DT
   edm::Handle<edm::PSimHitContainer> theDTSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theDTSimHitToken;
@@ -299,12 +317,12 @@ private:
   edm::Handle<edm::PSimHitContainer> theCSCSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theCSCSimHitToken;
   // 
-  */
+  /* 
   // GEM
   edm::Handle<edm::PSimHitContainer> theGEMSimHitHandle;
   edm::EDGetTokenT<edm::PSimHitContainer> theGEMSimHitToken;
   // 
-
+  */
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
 #endif
@@ -327,12 +345,10 @@ Simhits_Analyzer::Simhits_Analyzer(const edm::ParameterSet& iConfig){
   usesResource("TFileService");
 
   particleToken = consumes< edm::View < reco::GenParticle> >(edm::InputTag("genParticles"));
-  /*
   theDTSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonDTHits", "SIM"));
   theRPCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonRPCHits", "SIM"));
   theCSCSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonCSCHits", "SIM"));
-  */
-  theGEMSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonGEMHits", "SIM"));
+  // theGEMSimHitToken = consumes<edm::PSimHitContainer>(edm::InputTag("g4SimHits", "MuonGEMHits", "SIM"));
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -367,7 +383,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   for (int i = 0; i < int(theSimHitContainers.size()); ++i) {
     theSimHits.insert(theSimHits.end(),theSimHitContainers.at(i)->begin(),theSimHitContainers.at(i)->end());
   }
-  /*
+
   // DT
   iEvent.getByToken(theDTSimHitToken, theDTSimHitHandle); 
   ESHandle<DTGeometry> dtGeometry;
@@ -385,12 +401,13 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   ESHandle<CSCGeometry> cscGeometry;
   iSetup.get<MuonGeometryRecord>().get(cscGeometry); 
   const CSCGeometry* cscgeo = cscGeometry.product(); 
-  */
+  /*
   // GEM
   iEvent.getByToken(theGEMSimHitToken, theGEMSimHitHandle); 
   ESHandle<GEMGeometry> gemGeometry;
   iSetup.get<MuonGeometryRecord>().get(gemGeometry); 
   const GEMGeometry* gemgeo = gemGeometry.product(); 
+  */
 
   // SimiHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (std::vector<PSimHit>::const_iterator iHit = theSimHits.begin(); iHit != theSimHits.end(); ++iHit) {
@@ -398,7 +415,7 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      int pid            = (*iHit).particleType();
      DetId theDetUnitId((*iHit).detUnitId());
       DetId simdetid= DetId((*iHit).detUnitId());
-     /*
+
      // DT Sim Hits ------------------------------------------------------------------
      if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::DT){
      
@@ -543,15 +560,24 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
        if((cscdetId.endcap() == 2) && (cscdetId.ring() == 2)) Endcap_2_Ring_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
        if((cscdetId.endcap() == 2) && (cscdetId.ring() == 3)) Endcap_2_Ring_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
        if((cscdetId.endcap() == 2) && (cscdetId.ring() == 4)) Endcap_2_Ring_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y()); 
-      
+       //
+       if((cscdetId.zendcap() == 1) && (cscdetId.station() == 1)) Endcap_1_Station_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.zendcap() == 1) && (cscdetId.station() == 2)) Endcap_1_Station_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.zendcap() == 1) && (cscdetId.station() == 3)) Endcap_1_Station_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.zendcap() == 1) && (cscdetId.station() == 4)) Endcap_1_Station_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+       if((cscdetId.zendcap() == -1) && (cscdetId.station() == 1)) Endcap_Minus1_Station_1_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.zendcap() == -1) && (cscdetId.station() == 2)) Endcap_Minus1_Station_2_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.zendcap() == -1) && (cscdetId.station() == 3)) Endcap_Minus1_Station_3_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+       if((cscdetId.zendcap() == -1) && (cscdetId.station() == 4)) Endcap_Minus1_Station_4_XY_CSCHits_AllParticles->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+
        if((pid==13) || (pid==-13))
 	 {
 	   //Endcap label. 1=forward (+Z); 2=backward (-Z)
-	   //Ring ID : from 1 to 4
-	   //	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
-	   // cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Ring ID: "<<cscdetId.ring()<<endl;
-	   //cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<endl;
-	   //cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
+	   // Ring ID : from 1 to 4
+	   cout<<"PID: "<<pid<<" Muon Hit in: "<<endl;
+	   cout<<" Endcap Id: "<<cscdetId.endcap()<<" Station Id: "<<cscdetId.station()<<" Z endcap: "<<cscdetId.zendcap()<<endl;
+	   cout<<" Chamber Id: "<<cscdetId.chamber()<<" Layer Id: "<<cscdetId.layer()<<" Ring ID: "<<cscdetId.ring()<<endl;
+	   cout<<" R: "<<CSC_GlobalPoint_R<<" x: "<<CSCGlobalPoint.x()<<" y: "<<CSCGlobalPoint.y()<<" z: "<<CSCGlobalPoint.z()<<endl;
 	
 	   Z_CSCHits_Muon->Fill(CSCGlobalPoint.z());
 	   XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());     
@@ -567,10 +593,19 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 2)) Endcap_2_Ring_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
 	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 3)) Endcap_2_Ring_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
 	   if((cscdetId.endcap() == 2) && (cscdetId.ring() == 4)) Endcap_2_Ring_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   //
+	   if((cscdetId.zendcap() == 1) && (cscdetId.station() == 1)) Endcap_1_Station_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.zendcap() == 1) && (cscdetId.station() == 2)) Endcap_1_Station_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.zendcap() == 1) && (cscdetId.station() == 3)) Endcap_1_Station_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.zendcap() == 1) && (cscdetId.station() == 4)) Endcap_1_Station_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
+	   if((cscdetId.zendcap() == -1) && (cscdetId.station() == 1)) Endcap_Minus1_Station_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.zendcap() == -1) && (cscdetId.station() == 2)) Endcap_Minus1_Station_2_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.zendcap() == -1) && (cscdetId.station() == 3)) Endcap_Minus1_Station_3_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	   if((cscdetId.zendcap() == -1) && (cscdetId.station() == 4)) Endcap_Minus1_Station_4_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
 	 }
 
      }// end CSC Sim Hits -------------------------------------------------------------
-     */
+     /*
       // GEM Sim Hits
       if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::GEM){
 
@@ -604,25 +639,25 @@ void Simhits_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	    cout<<" Region Id: "<<gemdetId.region()<<" Station Id: "<<gemdetId.station()<<" Ring ID: "<<gemdetId.ring()<<endl;
 	    cout<<" Chamber Id: "<<gemdetId.chamber()<<" Layer Id: "<<gemdetId.layer()<<" Roll Id: "<<gemdetId.roll()<<endl;
 	    cout<<" R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
-	    /* // are GE21 and ME0 present in Scenario 2021 (Run3)? It seem that only GE11 is present by using the code below
-	       if(gemdetId.isGE11()) cout<<"GE11, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
-	       if(gemdetId.isGE21()) cout<<"GE21, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
-	       if(gemdetId.isME0()) cout<<"ME0, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
-	    */      	  
+	     // are GE21 and ME0 present in Scenario 2021 (Run3)? It seem that only GE11 is present by using the code below
+	    //   if(gemdetId.isGE11()) cout<<"GE11, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	    //   if(gemdetId.isGE21()) cout<<"GE21, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	    //   if(gemdetId.isME0()) cout<<"ME0, R: "<<GEM_GlobalPoint_R<<" x: "<<GEMGlobalPoint.x()<<" y: "<<GEMGlobalPoint.y()<<" z: "<<GEMGlobalPoint.z()<<endl;
+	          	  
 	
 	   Z_GEMHits_Muon->Fill(GEMGlobalPoint.z());
 	   XY_GEMHits_Muon->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
 	   ZR_GEMHits_Muon->Fill(GEMGlobalPoint.z(),GEM_GlobalPoint_R);
 	   if(gemdetId.region() == 1) Region_1_XY_GEMHits_Muon->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
 	   if(gemdetId.region() == -1) Region_Minus1_XY_GEMHits_Muon->Fill(GEMGlobalPoint.x(), GEMGlobalPoint.y());     
-	   /*
+	  
 	   // it seems that there is only ring == 1 for Run3 (Scenario 2021)
-	   if((gemdetId.region() == -1) && (gemdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
-	   */
+	  // if((gemdetId.region() == -1) && (gemdetId.ring() == 1)) Endcap_1_Ring_1_XY_CSCHits_Muon->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());          
+	  
 	 }
       }
       // end GEM Sim Hits
-
+      */
       // ME0 Sim Hits: ME0 will be present only in Phase 2, so for Run3 there are no code lines for ME0
 
   }// End SimHits +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -645,7 +680,7 @@ void Simhits_Analyzer::beginJob() {
  
   edm::Service<TFileService> fs;
 
-  /*
+ 
   // DT --------------------------------
   Z_DTHits_Muon = fs->make<TH1F>("Z_DTHits_Muon","Z_DTHits_Muon",2000,-1000, 1000); 
   XY_DTHits_Muon = fs->make<TH2F>("XY_DTHits_Muon","XY_DTHits_Muon",2000,-1000, 1000, 2000,-1000, 1000); 
@@ -729,8 +764,26 @@ void Simhits_Analyzer::beginJob() {
   Endcap_2_Ring_2_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_2_XY_CSCHits_Muon","Endcap_2_Ring_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
   Endcap_2_Ring_3_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_3_XY_CSCHits_Muon","Endcap_2_Ring_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
   Endcap_2_Ring_4_XY_CSCHits_Muon = fs->make<TH2F>("Endcap_2_Ring_4_XY_CSCHits_Muon","Endcap_2_Ring_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
-  */
 
+  Endcap_1_Station_1_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_1_Station_1_XY_CSCHits_Muon","Endcap_1_Station_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Station_2_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_1_Station_2_XY_CSCHits_Muon","Endcap_1_Station_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Station_3_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_1_Station_3_XY_CSCHits_Muon","Endcap_1_Station_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Station_4_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_1_Station_4_XY_CSCHits_Muon","Endcap_1_Station_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_1_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_Minus1_Station_1_XY_CSCHits_Muon","Endcap_Minus1_Station_1_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_2_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_Minus1_Station_2_XY_CSCHits_Muon","Endcap_Minus1_Station_2_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_3_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_Minus1_Station_3_XY_CSCHits_Muon","Endcap_Minus1_Station_3_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_4_XY_CSCHits_Muon  = fs->make<TH2F>("Endcap_Minus1_Station_4_XY_CSCHits_Muon","Endcap_Minus1_Station_4_XY_CSCHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
+
+
+ Endcap_1_Station_1_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_1_Station_1_XY_CSCHits_AllParticles","Endcap_1_Station_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Station_2_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_1_Station_2_XY_CSCHits_AllParticles","Endcap_1_Station_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Station_3_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_1_Station_3_XY_CSCHits_AllParticles","Endcap_1_Station_3_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_1_Station_4_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_1_Station_4_XY_CSCHits_AllParticles","Endcap_1_Station_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_1_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_Minus1_Station_1_XY_CSCHits_AllParticles","Endcap_Minus1_Station_1_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_2_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_Minus1_Station_2_XY_CSCHits_AllParticles","Endcap_Minus1_Station_2_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_3_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_Minus1_Station_3_XY_CSCHits_AllParticles","Endcap_Minus1_Station_3_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  Endcap_Minus1_Station_4_XY_CSCHits_AllParticles  = fs->make<TH2F>("Endcap_Minus1_Station_4_XY_CSCHits_AllParticles","Endcap_Minus1_Station_4_XY_CSCHits_AllParticles",2400,-1200, 1200, 2400,-1200, 1200);
+  /*
   //GEM
 
   Z_GEMHits_AllParticles  = fs->make<TH1F>("Z_GEMHits_AllParticles","Z_GEMHits_AllParticles",2400,-1200, 1200); 
@@ -744,7 +797,7 @@ void Simhits_Analyzer::beginJob() {
   ZR_GEMHits_Muon = fs->make<TH2F>("ZR_GEMHits_Muon","ZR_GEMHits_Muon",2400,-1200, 1200, 2400, 0, 1200);  
   Region_1_XY_GEMHits_Muon = fs->make<TH2F>("Region_1_XY_GEMHits_Muon","Region_1_XY_GEMHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
   Region_Minus1_XY_GEMHits_Muon = fs->make<TH2F>("Region_Minus1_XY_GEMHits_Muon","Region_Minus1_XY_GEMHits_Muon",2400,-1200, 1200, 2400,-1200, 1200);
-
+  */
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -761,4 +814,3 @@ void Simhits_Analyzer::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 DEFINE_FWK_MODULE(Simhits_Analyzer);
-
